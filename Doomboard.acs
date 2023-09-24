@@ -1,0 +1,6245 @@
+#library "DBLOGIC"
+#include "zcommon.acs"
+
+
+/*
+			¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦     ¦¦¦¦¦¦¦
+			¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦   ¦¦¦¦¦¦¦¦
+			¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦
+			¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦
+			¦¦¦¦¦¦¦     ¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦     ¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦     ¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦
+			¦¦¦¦¦¦¦     ¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦     ¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦     ¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦
+			¦¦¦¦¦¦¦     ¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦     ¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦     ¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦
+			¦¦¦¦¦¦¦     ¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦     ¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦     ¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦
+			¦¦¦¦¦¦¦     ¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦     ¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦     ¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦
+			¦¦¦¦¦¦¦     ¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦     ¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦     ¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦
+			¦¦¦¦¦¦¦     ¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦     ¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦     ¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦
+			¦¦¦¦¦¦¦   ¦¦¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦
+			¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦ ¦¦¦ ¦¦¦¦¦¦¦
+			¦¦¦¦¦                                                         ¦¦¦¦¦  ¦  ¦¦¦¦¦¦¦
+			¦¦¦¦¦  ¦¦¦¦¦¦¦¦¦¦¦  ¦¦¦¦¦¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦   ¦     ¦¦     ¦¦¦¦¦¦¦
+			¦¦¦¦¦  ¦¦¦¦¦¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦  ¦¦¦          ¦¦¦¦¦¦¦
+			¦¦¦¦¦  ¦¦¦¦   ¦¦¦¦¦ ¦¦¦¦    ¦¦¦¦ ¦¦¦¦    ¦¦¦¦ ¦¦¦¦   ¦¦¦¦¦ ¦¦¦¦         ¦¦¦¦¦¦¦
+			¦¦¦¦¦  ¦¦¦¦ ¦¦¦¦¦¦¦ ¦¦¦¦    ¦¦¦¦ ¦¦¦¦    ¦¦¦¦ ¦¦¦¦    ¦¦¦¦ ¦¦¦¦    ¦¦¦   ¦¦¦¦¦¦
+			¦¦¦¦¦  ¦¦¦¦   ¦¦¦¦¦ ¦¦¦¦    ¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦¦ ¦¦¦¦   ¦¦¦¦     ¦¦¦¦
+			¦¦¦¦   ¦¦¦¦¦¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦¦¦ ¦¦¦¦    ¦¦¦¦ ¦¦¦¦  ¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦¦¦        ¦¦
+			¦¦     ¦¦¦¦¦¦¦¦¦¦¦  ¦¦¦¦¦¦¦¦¦¦¦¦ ¦¦¦¦    ¦¦¦¦ ¦¦¦¦    ¦¦¦¦ ¦¦¦¦¦¦¦¦       	  ¦
+
+			B     Y        Z     E     B     E     R     P     A     L        F     O     R
+
+			¦¦¦¦¦¦¦¦¦¦ ¦¦¦¦¦¦ ¦¦¦  ¦¦¦ ¦¦¦¦¦¦ ¦¦¦¦¦¦¦   ¦¦¦¦¦¦  ¦¦¦  ¦¦¦ ¦¦   ¦¦ ¦¦      ¦¦
+				 ¦¦¦¦ ¦¦   ¦¦ ¦¦¦¦¦¦¦¦ ¦¦  ¦¦¦ ¦¦¦  ¦¦ ¦¦    ¦¦ ¦¦¦¦¦¦¦¦ ¦¦   ¦¦ ¦¦¦¦  ¦¦¦¦
+			   ¦¦¦¦   ¦¦¦¦¦¦¦ ¦¦¦¦¦¦¦¦ ¦¦   ¦¦ ¦¦¦¦¦¦¦ ¦¦    ¦¦ ¦¦¦¦¦¦¦¦ ¦¦   ¦¦ ¦¦¦¦¦¦¦¦¦¦
+			 ¦¦¦¦¦¦¦¦ ¦¦   ¦¦ ¦¦¦ ¦¦¦¦ ¦¦¦¦¦¦¦ ¦¦ ¦¦¦  ¦¦¦¦¦¦¦¦ ¦¦¦ ¦¦¦¦ ¦¦¦¦¦¦¦ ¦¦¦ ¦¦ ¦¦¦
+			¦¦¦¦¦¦¦¦¦ ¦¦   ¦¦ ¦¦¦  ¦¦¦ ¦¦¦¦¦¦¦ ¦¦   ¦¦¦ ¦¦¦¦¦¦  ¦¦¦  ¦¦¦ ¦¦¦¦¦¦¦ ¦¦¦    ¦¦¦
+
+*/
+			#libdefine			DB_Version		10
+			#libdefine  		DB_File			"i3"
+
+
+
+
+
+str DB_Changelog[DB_Version + 1] =							{
+
+"Fixed survival kick bug",																		//	0
+"Fixed scores sorting",																			//	1
+"Fixed memos appearing on wrong maps",															//	2,
+"Fixed survival kick bug",																		//	3,
+"Presumably fixed script termination bug",														//	4,
+"Extended maps count limit",																	//	5,
+"Fixed RankingsByMaps Scoreboard",																//	6,
+"Enhanced reset inventory mechanic",															//	7,
+"Minor bugs fixed",																				//	8,
+"Huge optimization, but accounts until May16 2023 has gone through setting update",				//	9,
+"Added Duel Elo Rankings, Added new scoring type systems",										//	10,
+															};
+
+
+/////////////////////////////////////////////////////////////
+#libdefine	MaxPlayers					64
+#libdefine	Sec							35
+#libdefine	ClientTicDelay				0.05
+#libdefine	MaxNameChars				32
+#libdefine	MaxIntLetters				10
+#libdefine	MaxWinners					10
+#libdefine	MaxFlags 					197
+#libdefine	DeathPenalty 				5
+#libdefine	MaxDuelPlayers				2
+#libdefine  DB_ClientSpot				216777
+#libdefine  DB_MemoSpot					215333
+#libdefine	MemoMinCost					3
+#libdefine	MaxMemos					25
+#libdefine	MaxCredits					100
+#libdefine	MemoRadius					16
+#libdefine	MemoLines					4
+#libdefine	MemoCharsInLine				62
+#libdefine	MapsPerStack				20
+#libdefine	MapsStacks					60
+#libdefine	DB_MaxTime					Sec*60*60*24		//24 hours
+#libdefine	SafetyTimeMax				SEC*3
+
+#libdefine	PPROP_PlayerExists			1
+#libdefine	PPROP_PlayerIngame			2
+#libdefine	PPROP_PlayerLogged			3
+#libdefine	PPROP_Score					4
+#libdefine	PPROP_DecorativeScore		5
+#libdefine	PPROP_Team					6
+#libdefine	PPROP_Carrier				7
+#libdefine	PPROP_FlagIndex				8
+#libdefine	PPROP_FlagUpdate			9
+#libdefine	PPROP_NameID				10
+#libdefine	PPROP_DuelElo				11
+#libdefine	PPROP_Credits				12
+#libdefine	PPROP_Place					13
+
+#libdefine	WI_PlayerName				1
+#libdefine	WI_PlayerFlag				2
+#libdefine	WI_PlayerScore				3
+#libdefine	WI_PlayerDate				4
+
+#libdefine	LTRSLT_Date					1
+#libdefine	LTRSLT_Time					2
+#libdefine	LTRSLT_Mode					3
+#libdefine	LTRSLT_Game					4
+#libdefine	LTRSLT_Map					5
+#libdefine	LTRSLT_NameID				6
+#libdefine	LTRSLT_ScoreType			7
+#libdefine	LTRSLT_Skill				8
+
+#libdefine	PTRSLT_Name					1
+#libdefine	PTRSLT_Flag					2
+
+#libdefine	WNR_NameID					1
+#libdefine	WNR_Score					2
+#libdefine	WNR_Date					3
+
+
+
+#libdefine	RESULT_Prominent			0
+#libdefine	RESULT_Latest				1
+#libdefine	RESULT_Map					2
+
+#libdefine	RESULT_AtNormal				0
+#libdefine	RESULT_AtMenu				1
+
+#libdefine	DBclient					0
+#libdefine	DBserver					-1
+
+#libdefine	None						0
+#libdefine	UMS_DuelRagequit			100
+
+
+#libdefine	HUDX_FULLSCREEN 			8
+#libdefine	HUDY_FULLSCREEN 			6
+
+#libdefine	HUDX_HUGE 					40
+#libdefine	HUDY_HUGE					30
+
+#libdefine	HUDX_TOOBIG 				80
+#libdefine	HUDY_TOOBIG 				60
+
+#libdefine	HUDX_VERYBIG 				160
+#libdefine	HUDY_VERYBIG 				120
+
+#libdefine	HUDX_BIG 					320
+#libdefine	HUDY_BIG 					240
+
+#libdefine	HUDX_LARGE 					480
+#libdefine	HUDY_LARGE					360
+
+#libdefine	HUDX_MEDIUM 				640
+#libdefine	HUDY_MEDIUM 				480
+
+#libdefine	HUDX_SMALL 					1024
+#libdefine	HUDY_SMALL 					768
+
+#libdefine	HUDX_VERYSMALL				1280
+#libdefine	HUDY_VERYSMALL				960
+
+#libdefine	HUDX_SUPERSMALL				1920
+#libdefine	HUDY_SUPERSMALL				1440
+
+#libdefine	HUDX_TINY					2560
+#libdefine	HUDY_TINY					1920
+
+#libdefine	HUDid_DB_HEADER				47000
+
+#libdefine	HUDid_DB_FlagSmall			101
+#libdefine	HUDid_DB_FlagBig			102
+
+#libdefine	HUDid_DB_MapCursor			110
+
+#libdefine	HUDid_DB_Transaction		112
+
+#libdefine	HUDid_DB_Server				200
+#libdefine	HUDid_DB_Title				201
+#libdefine	HUDid_DB_Score				222	// + MaxWinners
+#libdefine	HUDid_DB_ScoreType			202	// + MaxWinners
+#libdefine	HUDid_DB_Back				300
+#libdefine	HUDid_DB_MapTint			301
+
+#libdefine	HUDid_DB_MemoName			400
+#libdefine	HUDid_DB_MemoDate			401
+#libdefine	HUDid_DB_MemoFlag			402
+#libdefine	HUDid_DB_MemoText			403
+#libdefine	HUDid_DB_MemoBack			414
+
+#libdefine	MaxMapChars		8
+#libdefine	HUDBAR_SelMapAlpha			0.1
+
+#libdefine	GM_Cooperative				0
+#libdefine	GM_Survival					1
+#libdefine	GM_Invasion					2
+#libdefine	GM_Deathmatch				3
+#libdefine	GM_Teamplay					4
+#libdefine	GM_Duel						5
+#libdefine	GM_Terminator				6
+#libdefine	GM_LastManStanding			7
+#libdefine	GM_TeamLMS					8
+#libdefine	GM_Possession				9
+#libdefine	GM_TeamPossession			10
+#libdefine	GM_TeamGame					11
+#libdefine	GM_CTF						12
+#libdefine	GM_OneFlagCTF				13
+#libdefine	GM_Skulltag					14
+#libdefine	GM_Domination				15
+
+#libdefine	GT_Collab					0
+#libdefine	GT_Competitive				1
+#libdefine	GT_Team						2
+
+
+#libdefine	DBicon_NONE					32
+#libdefine	DBicon_FILL					33
+#libdefine	DBicon_FLAG					34
+#libdefine	DBicon_SKULL				35
+#libdefine	DBicon_DOT					36
+#libdefine	DBicon_UP					37
+#libdefine	DBicon_DOWN					38
+#libdefine	DBicon_ScoreType			39
+#libdefine	DBicon_ScoreStandart		39
+#libdefine	DBicon_ScoreClassic			40
+#libdefine	DBicon_ScoreTime			41
+#libdefine	DBicon_ScoreSpecial			42
+#libdefine	DBicon_FAKESPACE			126
+
+#libdefine	BLANK_Results				0
+#libdefine	BLANK_Memo					1
+
+#libdefine	ST_Standart					0
+#libdefine	ST_Classic					1
+#libdefine	ST_Speedrun					2
+#libdefine	ST_Special					3
+
+
+int		DB_CurrentFlag[MaxPlayers]		= {
+										999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999,
+										999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999,
+										999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999,
+										999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999
+										};
+
+int		DB_CurrentCarrier[MaxPlayers]	= {
+										-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+										-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+										-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+										-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
+										};
+
+int		DB_CurrentTeam[MaxPlayers]		= {
+										-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+										-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+										-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+										-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
+										};
+
+str		DB_CurrentID[MaxPlayers]		= {
+										"-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1",
+										"-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1",
+										"-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1",
+										"-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1"
+										};
+bool	DB_Kicked[MaxPlayers + 1];
+
+int		DuelPlayers[4] = { -1, -1, -1, -1  };
+bool 	DB_UpdatedAtStart;
+int		DB_PlayerCredits[MaxPlayers];
+int		DB_Sync;
+int		DB_MinutesPlayed;
+int		DB_CurrentTime = DB_MaxTime;
+
+int		ModeBonus;
+bool	DB_TimeStarted;
+bool 	DB_Transaction;
+bool	MinuteDBupdate;
+bool	DB_MemosUpdated;
+bool	DB_GameSim = TRUE;
+bool	DB_Aborted;
+bool	DB_UpdatedOnce;
+
+str		DB_MapReload[2] = {"", ""};	//Map Name, Reason
+//
+//		  ______       _    _       _   _        _____       _______       _____        ____        _   _        _____
+//		 |  ____|     | |  | |     | \ | |      / ____|     |__   __|     |_   _|      / __ \      | \ | |      / ____|
+//		 | |__        | |  | |     |  \| |     | |             | |          | |       | |  | |     |  \| |     | (___
+//		 |  __|       | |  | |     | . ` |     | |             | |          | |       | |  | |     | . ` |      \___ \
+//		 | |          | |__| |     | |\  |     | |____         | |         _| |_      | |__| |     | |\  |      ____) |
+//		 |_|           \____/      |_| \_|      \_____|        |_|        |_____|      \____/      |_| \_|     |_____/
+//
+
+
+function int int2fix(int value)
+{
+	return value * 1.0;
+}
+
+
+
+function int abs (int x)
+{
+	if (x < 0)
+	return -x;
+
+	return x;
+}
+
+function int CharToUpper(int input)
+{
+    if (input >= 'a' && input <= 'z')
+    {
+        return input ^ 0x20;
+    }
+
+    return input;
+}
+
+function str StrToUpper(str input)
+{
+    str output = "";
+    for (int i = 0; i < StrLen(input); i++)
+    {
+        int upper = CharToUpper(GetChar(input, i));
+        output = StrParam(s: output, c: upper);
+    }
+
+    return output;
+}
+
+
+
+function str StripColors(str input) //DrinkyBird + Mr.Satan
+{
+  str output = ""; bool isCol = false; bool isBracket = false;
+  for (int i = 0; i < StrLen(input); i++)
+  {
+    int c = GetChar(input, i);
+    if (GetChar(input, i) == '\\' && GetChar(input, i + 1) == 'c') { isCol = true; i++; }
+    else if (c == 0x1C) { isCol = true; }
+    else if (isCol)
+    {
+      if (c == '[') { isBracket = true; }
+      else if (c == ']') { isBracket = false; }
+      if (!isBracket) { isCol = false; }
+    }
+    else { output = StrParam(s: output, c: c); }
+  }
+  return output;
+}
+
+
+function bool ActorIsPlayer(int tid)
+{
+	return ClassifyActor(tid) & ACTOR_PLAYER;
+}
+
+function str PrintClock(int seconds) {
+    int m = seconds / 60;
+    int s = seconds % 60;
+
+    str result = StrParam(d: m, 	s: ":");
+    if (s < 10) result = StrParam(s: result, d: 0);
+    result = StrParam(s: result, d: s);
+    return result;
+}
+
+
+function int ClockToInt (str ClockStr)
+{
+	ClockStr = StrParam(s:":", s:ClockStr);
+int Time = (StrToNum(MergedStringInfo (':', 1, ClockStr))*60) 	+ 	StrToNum(MergedStringInfo (':', 2, ClockStr));
+
+return Time;
+
+}
+
+
+
+
+
+function int isEven (int num)
+{
+    return !(num & 1);
+}
+
+
+function int GetCVarFixed(str name)	//ZZYZX
+{
+    str c = GetCVarString(name);//str c = GetUserCVarString(ConsolePlayerNumber(), name);		//str c = GetCVarString(name);
+
+    // [-|+][123123123][.123123123]
+
+    int part_integer = 0;
+    int part_fractional = 0;
+
+    // first, get the location of the dot
+    int i;
+    int dot = 0;
+    for (i = 0; i < StrLen(c); i++)
+    {
+        if (GetChar(c, i) == '.')
+            break;
+    }
+    dot = i;
+
+    bool negative = false;
+
+    for (i = 0; i < dot; i++)
+    {
+        if (i == 0 && (GetChar(c, i) == '-'))
+        {
+            negative = true;
+        }
+        else
+        {
+            int ch = GetChar(c, i);
+            ch -= 0x30;
+            int countOr = dot-i-1;
+            for (int j = 0; j < countOr; j++)
+                ch *= 10;
+            part_integer += ch;
+        }
+    }
+
+    for (i = dot+1; i < StrLen(c); i++)
+    {
+        ch = GetChar(c, i);
+        ch -= 0x30;
+        ch <<= 16;
+        countOr = i-dot;
+        for (j = 0; j < countOr; j++)
+            ch /= 10;
+        part_fractional += ch;
+    }
+
+    return ((part_integer & 0xFFFF) << 16) | (part_fractional & 0xFFFF);
+}
+
+
+function int min(int a, int b)
+{
+return (a > b) ? b : a;
+}
+
+
+
+
+
+function int ClientCount(void) // code by Korshun, edited by TDRR
+{
+    int count = 0;
+    for (int i = 0; i < 32; i++)
+        if (PlayerInGame(i) || (PlayerIsSpectator(i) > 0))
+            count++;
+    return count;
+}
+
+
+function int CountStringColors (str String)		//DrinkyBird
+{
+int  Result;
+for (int i = 0; i < strlen(String); i++)
+		{
+    if (GetChar(String, i) == 28)
+			{
+
+			result++;
+			}
+		}
+
+if (Result) Result--;
+return Result;
+}
+
+
+
+function int PlusTrueChars (str String)
+{
+int Result;
+int Dlen = StrLen(StripColors(String));
+int Clen = StrLen(String);
+Result = Clen - Dlen;
+
+if (result < 0)	result = 0;
+
+if (result) result--;
+return Result;
+}
+
+
+
+
+function str LeadingZeros (int Value, int ZeroesCount)
+{
+    int i;
+    str result = StrParam(d:Value);
+    int len = StrLen(result);
+    for (i=len; i<ZeroesCount; i++)
+        result = StrParam(s:"0", s:result);
+    return result;
+}
+
+
+function str StringFill_int (int Value, int ZeroesCount, str Symbol)
+{
+    int i;
+    str result = StrParam(d:Value);
+    int len = StrLen(result);
+    for (i=len; i<ZeroesCount; i++)
+        result = StrParam( s:result, s:Symbol);
+    return result;
+}
+
+function str StringFill_str (str Value, int ZeroesCount, str Symbol)
+{
+    int i;
+    str result = Value;
+    int len = StrLen(result);
+    for (i=len; i<ZeroesCount; i++)
+        result = StrParam( s:result, s:Symbol);
+    return result;
+}
+
+function int StrToNum(str s)	//AToI
+{
+    int start = 0;
+    bool negative = false;
+    int n = 0;
+    int len = StrLen(s);
+
+    // Check if we start with a negative sign
+    if (GetChar(s, 0) == '-')
+    {
+        negative = true;
+        start++;
+    }
+
+    // Go through every character in the string
+    for (int i=start; i<len; i++)
+    {
+        int char = GetChar(s, i);
+
+        // Check that we are actually converting a number
+        if (char < '0' || char > '9')
+        {
+            print(s:"ERROR", s:"\"", s:s, s:"\"", s:" attempting to convert ", c:char, s:" to number!");
+            continue;
+        }
+
+        // Add the number to our total
+        n = n*10 + (char-'0');
+    }
+
+    if (negative)
+        n = -n;
+
+    return n;
+}
+
+function str GetOppositeChar  (int Char)
+{
+int Result;
+
+Result = Char;
+
+switch (Char)
+	{
+	case '(' :		Result = ')';	break;
+	case '[' :		Result = ']';	break;
+	case '<' :		Result = '>';	break;
+	case '{' :		Result = '}';	break;
+
+	case ')' :		Result = '(';	break;
+	case ']' :		Result = '[';	break;
+	case '>' :		Result = '<';	break;
+	case '}' :		Result = '{';	break;
+	}
+
+return Result;
+
+}
+
+
+
+
+function str InheritServerClusterName (str String)
+{
+str NewString = "";
+bool OpenChar, CloseChar;
+int counter;
+while(counter < StrLen(String))
+	{
+	if (!OpenChar)
+		if (GetOppositeChar(GetChar(String, counter)) !=   GetChar(String, counter))	OpenChar = GetChar(String, counter);
+
+	NewString = StrParam(s:NewString, c:GetChar(String, counter));
+
+
+
+	if (OpenChar)
+		if (GetOppositeChar(GetChar(String, counter)) ==   OpenChar)	{	CloseChar = TRUE;		break;	}
+
+	counter++;
+	}
+
+if (!CloseChar)		NewString = "";
+
+
+return NewString;
+}
+
+
+
+
+
+
+
+
+
+function int DB_Centiseconds( int remainderTics ) {	//HYPNOTOAD
+   int centiseconds = 0;
+
+   if ( remainderTics > 0 ) {
+      // TODO: Explain this algorithm better than this comment!
+      int percent = 10000 / ( ( Sec * 100 ) / remainderTics );
+      centiseconds = ( 1000 * percent ) / 1000;
+   }
+
+   return centiseconds;
+}
+
+
+
+function str DB_TicsToTime(int Tics, int wCentiseconds)
+{
+str Result = "";
+int TimeInSeconds = Tics / 35;
+
+if (wCentiseconds)	Result = StrParam(	  s : ":",		s : LeadingZeros (DB_Centiseconds(Tics % Sec), 	2));
+
+Result = StrParam(
+	  s: LeadingZeros (min(59, TimeInSeconds / 60), 		2),
+	  s: ":",
+	  s: LeadingZeros (TimeInSeconds % 60, 			2),
+	  s: Result
+	  );
+
+//HOURS
+if (tics > Sec * 60 * 60)	Result = StrParam(      i: TimeInSeconds / (60*60),		 s : ":", s:Result);
+
+
+return Result;
+}
+
+
+
+
+
+function bool CheckActorPosition (int TID, int range, int PosTID)
+{
+bool Result;
+
+if 	(
+	((GetActorX(TID) >> 16) > (GetActorX(posTID) >> 16) - range) &&
+	((GetActorY(TID) >> 16) > (GetActorY(posTID) >> 16) - range) &&
+	((GetActorZ(TID) >> 16) > (GetActorZ(posTID) >> 16) - range) &&
+	((GetActorX(TID) >> 16) < (GetActorX(posTID) >> 16) + range) &&
+	((GetActorY(TID) >> 16) < (GetActorY(posTID) >> 16) + range) &&
+	((GetActorZ(TID) >> 16) < (GetActorZ(posTID) >> 16) + range)
+	)
+	Result = true;
+
+return Result;
+}
+
+
+
+function int AddFakeNameSpace (str String)
+{
+int Result = StrLen(String) - StrLen(StripColors(String));
+return Result;
+
+}
+
+
+
+
+
+function str RemoveChar (str String, int Char)
+{
+str Result = "";
+int counter;
+while (counter < StrLen(String))
+	{
+	if (GetChar(String, counter) != Char)	Result = StrParam(s:Result, c:GetChar(String, counter));
+	counter++;
+	}
+return Result;
+}
+
+
+
+Function str String_Ending (str String, int Limit, str Ending)
+{
+int EndCount = StrLen(Ending);
+
+str Result = "";
+int CharCounter;
+while(CharCounter < StrLen(String))
+		{
+		//REPLACE LAST TWO LETTERS WITH 2 DOTS IF ITS TOO LONG
+		if ((CharCounter == Limit - EndCount) && (StrLen(String) > Limit))
+				{
+				Result = StrParam(s:Result, s:Ending);
+				break;
+				}
+		Result = StrParam(s:Result, c:GetChar(String, CharCounter));
+		CharCounter++;
+		}
+return Result;
+}
+
+
+function void SetNETpassword (void)
+{
+			SetCVar("DB_OldPass1", GetCVar("DB_Pass1"));	SetCVar("DB_Pass1", random(100,225));
+			SetCVar("DB_OldPass2", GetCVar("DB_Pass2"));	SetCVar("DB_Pass2", random(100,225));
+			SetCVar("DB_OldPass3", GetCVar("DB_Pass3"));	SetCVar("DB_Pass3", random(100,225));
+			SetCVar("DB_OldPass4", GetCVar("DB_Pass4"));	SetCVar("DB_Pass4", random(100,225));
+}
+
+function bool PasswordMatch (int Password)
+{
+bool Result;
+if ((Password == PasswordIs()) | (Password == OldPasswordIs()))			Result = TRUE;
+return Result;
+}
+
+
+function int PasswordIs (void)
+{
+int Result;
+Result = GetCVar("DB_Pass1") + GetCVar("DB_Pass2") + GetCVar("DB_Pass3") + GetCVar("DB_Pass4");
+return Result;
+}
+
+function int OldPasswordIs (void)
+{
+int Result;
+Result = GetCVar("DB_OldPass1") + GetCVar("DB_OldPass2") + GetCVar("DB_OldPass3") + GetCVar("DB_OldPass4");
+return Result;
+}
+
+function bool ClientExist (int PlayerNum)
+{
+bool Result;
+if (PlayerInGame(PlayerNum) | (PlayerIsSpectator(PlayerNum) > 0))	Result = TRUE;
+
+return Result;
+}
+
+function int GetPlayerTopIndex (void)
+{
+int Maxx;
+for (int i = 0; i < MaxPlayers; i++)
+	{
+	if (ClientExist (i))	Maxx = i;
+	}
+
+return Maxx;
+}
+
+
+
+
+function bool DB_PlayerStatus (int PlayerNum)
+{
+bool Result;
+		if (!ClientExist(PlayerNum))		{Result = FALSE;}
+else	if (PlayerIsBot(PlayerNum))			{Result = FALSE;}
+else	if (PlayerIsSpectator(PlayerNum))	{Result = FALSE;}
+else										{Result = TRUE;	}
+
+
+return Result;
+}
+
+
+
+
+function int MinutesPlayed (void)
+{
+int Result =
+
+StrToNum(Strftime (SystemTime(), "%j", true)) * 1440		+
+StrToNum(Strftime (SystemTime(), "%H", true)) * 60			+
+StrToNum(Strftime (SystemTime(), "%M", true));
+return Result;
+}
+
+
+
+
+
+
+
+function void DB_LastPlayDate (void)
+	{
+			SetDBEntryString		(StrParam(s:GameModeAbb(GetCVar("DB_GameMode")), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:"INFO"), "LastPlayDate",
+			Strftime (SystemTime(), "%b %e %R %Y", true));
+	}
+
+
+
+
+function str GetServerOrClusterName (int MaxChars)
+{
+
+str 								ServerTitle = InheritServerClusterName (GetCVarString("sv_hostname"));
+									ServerTitle = String_Ending(ServerTitle, MaxChars, "..");
+if (!StrLen(ServerTitle))			ServerTitle = String_Ending(GetCVarString("sv_hostname"), MaxChars, "..");
+return ServerTitle;
+}
+
+
+
+function str DB_WrongDatabase (void)
+{
+str Result = StrParam(s:"\ciAdmin! You have to set \cgdatabasefile \cito \cg", s:"\"", s:"doomboard.db", s:"\"", s:"\ci. Otherwise, Doomboard is innactive!");
+return Result;
+}
+
+
+function void DB_CheckLaunchConditions (int IsServer)
+{
+
+if 	(!StrLen(GetCVarString("DB_GameName")))
+		{
+		log(s:"\ci", s:"Admin! You have to set mod/game's abbreviation in console like this  \cfDB_GameNAME ",
+			s:"\"", s:"********", s:"\"", s:".\ci It should be no longer than 8 letters!\n\ciFilled your game name with random numbers this time. Change if you need to!");
+
+
+		if (IsServer)
+			{
+			int counter = 0;	str String = "";
+			while (counter < MaxMapChars)
+				{
+				String = StrParam(s:String, c:random(48,57));
+				counter++;
+				}
+			SetCVarString("DB_GameName", String);
+			SetCVarString("DB_GamePass", "");
+			ConsoleCommand(StrParam(s:"set DB_ServerGamePass ", s:"\"",  s:"\""));
+			}
+
+		}
+
+if (StrLen(GetCVarString("DB_GameName")) > 8)
+	{
+		log(s:"\cg", s:"Admin! GameName is too long, shorting it to 8 chars!");
+		SetCVarString("DB_GameName", String_Ending(GetCVarString("DB_GameName"), 8, ""));
+	}
+
+SetCVarString("DB_GameName", StrToUpper(GetCVarString("DB_GameName")));
+}
+
+
+
+
+function int DB_GameMode (void)
+{
+int Result;
+
+		if (!StrIcmp(GetCurrentGameMode(), "Cooperative"))			Result = GM_Cooperative;
+else	if (!StrIcmp(GetCurrentGameMode(), "Survival"))				Result = GM_Survival;
+else	if (!StrIcmp(GetCurrentGameMode(), "Invasion"))				Result = GM_Invasion;
+else	if (!StrIcmp(GetCurrentGameMode(), "Deathmatch"))			Result = GM_Deathmatch;
+else	if (!StrIcmp(GetCurrentGameMode(), "Teamplay"))				Result = GM_Teamplay;
+else	if (!StrIcmp(GetCurrentGameMode(), "Duel"))					Result = GM_Duel;
+else	if (!StrIcmp(GetCurrentGameMode(), "Terminator"))			Result = GM_Terminator;
+else	if (!StrIcmp(GetCurrentGameMode(), "LastManStanding"))		Result = GM_LastManStanding;
+else	if (!StrIcmp(GetCurrentGameMode(), "TeamLMS"))				Result = GM_TeamLMS;
+else	if (!StrIcmp(GetCurrentGameMode(), "Possession"))			Result = GM_Possession;
+else	if (!StrIcmp(GetCurrentGameMode(), "TeamPossession"))		Result = GM_TeamPossession;
+else	if (!StrIcmp(GetCurrentGameMode(), "TeamGame"))				Result = GM_TeamGame;
+else	if (!StrIcmp(GetCurrentGameMode(), "CTF"))					Result = GM_CTF;
+else	if (!StrIcmp(GetCurrentGameMode(), "OneFlagCTF"))			Result = GM_OneFlagCTF;
+else	if (!StrIcmp(GetCurrentGameMode(), "Skulltag"))				Result = GM_Skulltag;
+else	if (!StrIcmp(GetCurrentGameMode(), "Domination"))			Result = GM_Domination;
+
+return Result;
+}
+
+
+function str GameModeAbb (int GameMode)
+{
+str Result = "";
+Switch(Gamemode)
+	{
+	case GM_Cooperative:		Result = "COOP";			break;
+	case GM_Survival:			Result = "SURV";			break;
+	case GM_Invasion:			Result = "INV";				break;
+	case GM_Deathmatch:			Result = "DM";				break;
+	case GM_Teamplay:			Result = "TDM";				break;
+	case GM_Duel:				Result = "DUEL";			break;
+	case GM_Terminator:			Result = "TERM";			break;
+	case GM_LastManStanding:	Result = "LMS";				break;
+	case GM_TeamLMS:			Result = "TLMS";			break;
+	case GM_Possession:			Result = "POSS";			break;
+	case GM_TeamPossession:		Result = "TPOS";			break;
+	case GM_TeamGame:			Result = "TEAM";			break;
+	case GM_CTF:				Result = "CTF";				break;
+	case GM_OneFlagCTF:			Result = "OCTF";			break;
+	case GM_Skulltag:			Result = "ST";				break;
+	case GM_Domination:			Result = "DOM";				break;
+	}
+return Result;
+}
+
+
+function str SkillAbb (int Skill, int DontReveal)
+{
+str Result = StrParam(i:Skill);
+Switch(Skill)
+	{
+	case SKILL_VERY_EASY:		Result = "vez";				break;
+	case SKILL_EASY:			Result = "esy";				break;
+	case SKILL_NORMAL:			Result = "nml";				break;
+	case SKILL_HARD:			Result = "hrd";				break;
+	case SKILL_VERY_HARD:		Result = "nmr";				break;
+	}
+if (DontReveal)	Result = "---";
+return Result;
+}
+
+
+
+function str ScoreTypeStr (void)
+{
+str Result = "";
+Switch(GetCVar("DB_OldScoreType"))
+	{
+	case ST_Standart:			Result = "";				break;
+	case ST_Classic:			Result = "Classic";			break;
+	case ST_Speedrun:			Result = "Speedrun";		break;
+	case ST_Special:			Result = "Special";			break;
+	}
+return Result;
+}
+
+
+function int DB_GameTypeIs (int Mode)
+{
+int Result;
+	Switch(Mode)
+		{
+		case GM_Cooperative:			Result = GT_Collab;			break;
+		case GM_Survival:				Result = GT_Collab;			break;
+		case GM_Invasion:				Result = GT_Collab;			break;
+		case GM_Deathmatch:				Result = GT_Competitive;	break;
+		case GM_Teamplay:				Result = GT_Team;			break;
+		case GM_Duel:					Result = GT_Competitive;	break;
+		case GM_Terminator:				Result = GT_Competitive;	break;
+		case GM_LastManStanding:		Result = GT_Competitive;	break;
+		case GM_TeamLMS:				Result = GT_Team;			break;
+		case GM_Possession:				Result = GT_Competitive;	break;
+		case GM_TeamPossession:			Result = GT_Team;			break;
+		case GM_TeamGame:				Result = GT_Team;			break;
+		case GM_CTF:					Result = GT_Team;			break;
+		case GM_OneFlagCTF:				Result = GT_Team;			break;
+		case GM_Skulltag:				Result = GT_Team;			break;
+		case GM_Domination:				Result = GT_Team;			break;
+		}
+return Result;
+}
+
+
+
+
+
+
+
+function bool DB_ShouldUpdateNow (void)
+{
+bool Result;
+
+Switch(GetGameModeState())
+	{
+	case GAMESTATE_WAITFORPLAYERS:
+		Switch(GetCVar("DB_GameMode"))
+			{
+			case GM_Cooperative:		Result = TRUE;			break;
+			case GM_Survival:			Result = TRUE;			break;
+			case GM_Invasion:			Result = FALSE;			break;
+			case GM_Deathmatch:			Result = FALSE;			break;
+			case GM_Teamplay:			Result = FALSE;			break;
+			case GM_Duel:				Result = FALSE;			break;
+			case GM_Terminator:			Result = FALSE;			break;
+			case GM_LastManStanding:	Result = FALSE;			break;
+			case GM_TeamLMS:			Result = FALSE;			break;
+			case GM_Possession:			Result = FALSE;			break;
+			case GM_TeamPossession:		Result = FALSE;			break;
+			case GM_TeamGame:			Result = FALSE;			break;
+			case GM_CTF:				Result = FALSE;			break;
+			case GM_OneFlagCTF:			Result = FALSE;			break;
+			case GM_Skulltag:			Result = FALSE;			break;
+			case GM_Domination:			Result = FALSE;			break;
+			}
+	break;
+
+
+	case GAMESTATE_COUNTDOWN:
+		Switch(GetCVar("DB_GameMode"))
+			{
+			case GM_Cooperative:		Result = FALSE;			break;
+			case GM_Survival:			Result = FALSE;			break;
+			case GM_Invasion:			Result = FALSE;			break;
+			case GM_Deathmatch:			Result = FALSE;			break;
+			case GM_Teamplay:			Result = FALSE;			break;
+			case GM_Duel:				Result = FALSE;			break;
+			case GM_Terminator:			Result = FALSE;			break;
+			case GM_LastManStanding:	Result = FALSE;			break;
+			case GM_TeamLMS:			Result = FALSE;			break;
+			case GM_Possession:			Result = FALSE;			break;
+			case GM_TeamPossession:		Result = FALSE;			break;
+			case GM_TeamGame:			Result = FALSE;			break;
+			case GM_CTF:				Result = FALSE;			break;
+			case GM_OneFlagCTF:			Result = FALSE;			break;
+			case GM_Skulltag:			Result = FALSE;			break;
+			case GM_Domination:			Result = FALSE;			break;
+			}
+	break;
+
+
+	case GAMESTATE_INPROGRESS:
+		Switch(GetCVar("DB_GameMode"))
+			{
+			case GM_Cooperative:		Result = TRUE;			break;
+			case GM_Survival:			Result = TRUE;			break;
+			case GM_Invasion:			Result = FALSE;			break;
+			case GM_Deathmatch:			Result = FALSE;			break;
+			case GM_Teamplay:			Result = FALSE;			break;
+			case GM_Duel:				Result = FALSE;			break;
+			case GM_Terminator:			Result = FALSE;			break;
+			case GM_LastManStanding:	Result = FALSE;			break;
+			case GM_TeamLMS:			Result = FALSE;			break;
+			case GM_Possession:			Result = FALSE;			break;
+			case GM_TeamPossession:		Result = FALSE;			break;
+			case GM_TeamGame:			Result = FALSE;			break;
+			case GM_CTF:				Result = FALSE;			break;
+			case GM_OneFlagCTF:			Result = FALSE;			break;
+			case GM_Skulltag:			Result = FALSE;			break;
+			case GM_Domination:			Result = FALSE;			break;
+			}
+	break;
+
+
+	case GAMESTATE_INRESULTSEQUENCE:
+		Switch(GetCVar("DB_GameMode"))
+			{
+			case GM_Cooperative:		Result = FALSE;			break;
+			case GM_Survival:			Result = FALSE;			break;
+			case GM_Invasion:			Result = TRUE;			break;
+			case GM_Deathmatch:			Result = TRUE;			break;
+			case GM_Teamplay:			Result = TRUE;			break;
+			case GM_Duel:
+			if 		(DB_Aborted)		Result = FALSE;
+			else						Result = TRUE;
+																break;
+			case GM_Terminator:			Result = TRUE;			break;
+			case GM_LastManStanding:	Result = TRUE;			break;
+			case GM_TeamLMS:			Result = TRUE;			break;
+			case GM_Possession:			Result = TRUE;			break;
+			case GM_TeamPossession:		Result = TRUE;			break;
+			case GM_TeamGame:			Result = TRUE;			break;
+			case GM_CTF:				Result = TRUE;			break;
+			case GM_OneFlagCTF:			Result = TRUE;			break;
+			case GM_Skulltag:			Result = TRUE;			break;
+			case GM_Domination:			Result = TRUE;			break;
+			}
+	break;
+	}
+
+
+return Result;
+}
+
+
+
+
+
+
+
+function int DB_TeamGameFontColorInt (int Index)
+{
+int Result	= CR_WHITE;
+
+Switch(Index)
+	{
+	case  0:	Result = CR_LIGHTBLUE;			break;
+	case  1:	Result = CR_RED;				break;
+	case  2:	Result = CR_GREEN;				break;
+	case  3:	Result = CR_GOLD;				break;
+	}
+
+return Result;
+}
+
+function str DB_TeamGameFontColorStr (int Index)
+{
+str Result	= "\cc";
+
+Switch(Index)
+	{
+	case  0:	Result = "\cn";					break;
+	case  1:	Result = "\cg";					break;
+	case  2:	Result = "\cd";					break;
+	case  3:	Result = "\cf";					break;
+	}
+return Result;
+}
+
+
+
+function int DB_PedestalColor (int Index)
+{
+int Result	= CR_WHITE;
+
+Switch(Index)
+	{
+	case  0:	Result = CR_GOLD;				break;
+	case  1:	Result = CR_GREY;				break;
+	case  2:	Result = CR_ORANGE;				break;
+	}
+
+return Result;
+}
+
+
+
+
+
+function bool DB_CorrectDatabase	(void)
+{
+bool Result;
+	if (StrLen(GetCVarString("databasefile")))	//found database file
+		{
+
+			if 	(GetChar(GetCVarString("DB_ClientDatabase"), 	StrLen(GetCVarString("DB_ClientDatabase")) - 1) == 'b'    )
+			if 	(GetChar(GetCVarString("DB_ClientDatabase"), 	StrLen(GetCVarString("DB_ClientDatabase")) - 2) == 'd'    )
+			if 	(GetChar(GetCVarString("DB_ClientDatabase"), 	StrLen(GetCVarString("DB_ClientDatabase")) - 3) == '.'    )
+			if 	(GetChar(GetCVarString("DB_ClientDatabase"), 	StrLen(GetCVarString("DB_ClientDatabase")) - 4) == 'd'    )
+			if 	(GetChar(GetCVarString("DB_ClientDatabase"), 	StrLen(GetCVarString("DB_ClientDatabase")) - 5) == 'r'    )
+			if 	(GetChar(GetCVarString("DB_ClientDatabase"), 	StrLen(GetCVarString("DB_ClientDatabase")) - 6) == 'a'    )
+			if 	(GetChar(GetCVarString("DB_ClientDatabase"), 	StrLen(GetCVarString("DB_ClientDatabase")) - 7) == 'o'    )
+			if 	(GetChar(GetCVarString("DB_ClientDatabase"), 	StrLen(GetCVarString("DB_ClientDatabase")) - 8) == 'b'    )
+			if 	(GetChar(GetCVarString("DB_ClientDatabase"), 	StrLen(GetCVarString("DB_ClientDatabase")) - 9) == 'm'    )
+			if 	(GetChar(GetCVarString("DB_ClientDatabase"), 	StrLen(GetCVarString("DB_ClientDatabase")) - 10) == 'o'   )
+			if 	(GetChar(GetCVarString("DB_ClientDatabase"), 	StrLen(GetCVarString("DB_ClientDatabase")) - 11) == 'o'   )
+			if 	(GetChar(GetCVarString("DB_ClientDatabase"), 	StrLen(GetCVarString("DB_ClientDatabase")) - 12) == 'd'   )
+
+			Result = TRUE;
+		}
+//add / check? nah, for precaution
+return Result;
+}
+
+
+
+
+
+
+
+function int GetActorVelocity(int TID)
+{
+int Vel = 	sqrt(
+	FixedMul(GetActorVelX(TID), GetActorVelX(TID)) +
+	FixedMul(GetActorVelY(TID), GetActorVelY(TID)) +
+	FixedMul(GetActorVelZ(TID), GetActorVelZ(TID))
+	);
+return vel;
+}
+
+
+
+
+
+Function str DB_ScoreConvert (str String)
+{
+int i;
+Switch(GetCVar("DB_OldScoreType"))
+	{
+	case ST_Standart:
+	case ST_Classic:
+	case ST_Special:
+	break;
+
+	case ST_Speedrun:
+
+
+		i = StrToNum(String);
+		if (i > 0)
+		String = DB_TicsToTime(DB_MaxTime - i, TRUE);
+
+
+	break;
+	}
+
+return String;
+}
+
+
+
+
+
+
+//	 __   __   __  ___     __          ___      ___     __   __   __   __   ___  __
+//	/__` /  \ |__)  |     /  ` |    | |__  |\ |  |     /__` /  ` /  \ |__) |__  /__`
+//	.__/ \__/ |  \  |     \__, |___ | |___ | \|  |     .__/ \__, \__/ |  \ |___ .__/
+//
+
+
+
+
+// Show maximum points and players.
+function void SortClientScores (int EverySec, int Update)
+{
+MinuteDBupdate = FALSE;
+
+str SCS_ID[MaxWinners];
+int SCS_PlayerNum[MaxPlayers];
+int SCS_Score[MaxWinners];
+str PlayerProperties[MaxPlayers];
+int i, j, k, d, counter, DuelElo;
+str String = "";
+
+
+	// INITIALIZE ARRAYS
+	for (i = 0; i < MaxWinners; i++)	{	SCS_ID[i] 			= 	"";		SCS_Score[i]		=	-999999999;	}
+	for (i = 0; i < MaxPlayers; i++)	{	PlayerProperties[i]	= 	"";		SCS_PlayerNum[i]	= 	999;		}
+
+
+
+
+		if (Update == TRUE)
+			{
+			DB_Transaction = TRUE;
+			BeginDBTransaction();		DrawDatabaseTransaction("A");
+			}
+
+
+	//SORT
+	for (i = 0; i <= GetCVar("DB_PlayerTopIndex"); i++)
+
+		{
+
+
+
+		if 		(DB_PlayerStatus(i) == TRUE)
+				{
+
+					if (DB_GameTypeIs(GetCVar("DB_GameMode")) == GT_Team)
+										{
+											SetActivatorToPlayer(i);
+											if ((ClassifyActor(0) & ACTOR_DEAD)	|| (!ClientExist(i)))	DB_CurrentCarrier[i] = -1;
+											DB_CurrentTeam[i] = GetPlayerInfo(i, PLAYERINFO_TEAM);
+										}
+					else				DB_CurrentTeam[i] = -1;
+
+				SetActivator(0, AAPTR_NULL);
+
+				}
+
+		else
+				{
+
+					DB_CurrentCarrier[i]		= -1;
+					DB_CurrentTeam[i]			= -1;
+
+
+					//if (GetCVar(StrParam(s:"DB_CurrentScore", i:i)) > -999999999)		ConsoleCommand(StrParam(s:"set DB_CurrentScore",	i:i, s:" ", i:-999999999));
+																						//ConsoleCommand(StrParam(s:"set DB_DecorativeScore", i:i, s:" ", i:0));
+					if (!ClientExist(i))	{
+											DB_CurrentID[i]			= "-1";
+											DB_CurrentFlag[i]		= 999;
+											DB_PlayerCredits[i] 	= 0;
+											ConsoleCommand(StrParam(s:"set DB_PlayerIsLoggedAcc", i:i, s:" ", i:-1));
+											}
+
+				}
+
+
+
+
+
+			Switch(PlayerIsLoggedIn(i))
+				{
+				case FALSE:
+				DB_CurrentID[i]					= StrParam(s:"~", n:i + 1);
+				DB_CurrentFlag[i]				= 999;
+				DuelElo 						= 0;
+				ConsoleCommand(StrParam(s:"set DB_PlayerIsLoggedAcc", i:i, s:" ", i:-1));
+
+				if (Update == TRUE)		if (ClientExist(i))			DB_PlayerCredits[i]	=	min(DB_PlayerCredits[i] + 1 + DB_PlayerStatus(i)*2 , MaxCredits);
+
+				break;
+
+
+				case TRUE:
+
+					if (GetCVar(StrParam(s:"DB_PlayerIsLoggedAcc", i:i)) == -1)
+						{
+								counter = 0;
+								while(counter < GetCVar("DB_RegisteredPlayers"))
+									{
+									String = GetCVarString(StrParam(s:"DB_Acc", i:counter, s:"ACCOUNT"));
+									if (!StrICmp(GetPlayerAccountName(i), String))
+										{
+										////////////////////////////////////////
+										////////////////////////////  F L A G
+										DB_CurrentFlag[i] = 0;
+										while (DB_CurrentFlag[i] <= MaxFlags)
+											{
+											if (!StrIcmp(GetCVarString(StrParam(s:"DB_Acc", i:counter, s:"FLAGNAME")), 		Stripcolors(FlagName(DB_CurrentFlag[i]))	))			break;
+
+											DB_CurrentFlag[i]++;
+											}
+
+
+
+
+
+
+										if (DB_CurrentFlag[i] > MaxFlags)				DB_CurrentFlag[i] = -2;		// 	Didn't find player's flag by name
+
+										//TimeSpent
+										if (EverySec == Sec)	ConsoleCommand(StrParam(s:"set DB_TimeSpent", i:counter, s:" ", i:GetCvar(StrParam(s:"DB_TimeSpent", i:counter)) + 1));
+
+										break;
+										}
+									counter++;
+									}
+
+
+
+
+
+							//Player is not registered in database, make him auto-register
+							if (counter >= GetCVar("DB_RegisteredPlayers"))
+									{
+									DuelElo		 = 0;
+									SetActivatorToPlayer(i);
+									ACS_NamedExecute("DB_Account", 0, PasswordIs(), -1);
+									SetActivator(0, AAPTR_NULL);
+									}
+
+						ConsoleCommand(StrParam(s:"set DB_PlayerIsLoggedAcc", i:i, s:" ", i:counter));
+						DB_CurrentID[i] = GetCVar(StrParam(s:"DB_PlayerIsLoggedAcc", i:i));
+						DuelElo 		= GetCVar(StrParam(s:"DB_Acc", i:GetCVar(StrParam(s:"DB_PlayerIsLoggedAcc", i:i)), s:"DUELELO"));
+						}
+
+
+					else		//Player has been (re)logged in  (DB_PlayerIsLoggedAcc >= 0)
+						{
+										d = GetCVar(StrParam(s:"DB_PlayerIsLoggedAcc", i:i));
+
+
+										DB_CurrentID[i] = StrParam(i:d);
+										DuelElo 		= GetCVar(StrParam(s:"DB_Acc", i:d, s:"DUELELO"));
+
+
+										if (Update == TRUE)
+										if (StrLen(GetCVarString(StrParam(s:"DB_Acc", i:d, s:"ACCOUNT"))))		if (ClientExist(i))
+												{
+
+												SetDBEntry("AccountInfo",	StrParam(s:"id.", i:d, s:"___DBCREDITS"), min(GetDBEntry("AccountInfo",	StrParam(s:"id.", i:d, s:"___DBCREDITS")) + 1 + DB_PlayerStatus(i)*2,	 MaxCredits));
+												DB_PlayerCredits[i] = GetDBEntry("AccountInfo",	StrParam(s:"id.", i:d, s:"___DBCREDITS"));
+												}
+
+						}
+
+
+
+				break;
+				}
+
+
+
+
+			//SCS_PlayerNum[i] = i;
+
+			for (j = 0; j < MaxWinners ; j++)	// check ranks from highest to lowest
+				{
+
+
+
+
+				if (GetCVar(StrParam(s:"DB_CurrentScore", i:i)) > SCS_Score[j])	// Check if player has more points than rank j
+					{
+
+
+					for (k = MaxWinners - 1; k >= j; k--)
+						{
+						if (k < MaxWinners - 1)	// Don't shift last rank
+							{		// Shift down
+							SCS_Score		[k + 1]						= 	SCS_Score[k];
+							SCS_PlayerNum	[k + 1]						= 	SCS_PlayerNum[k];
+							SCS_ID			[k + 1]						=	SCS_ID[k];
+
+							}
+						}
+					// Set current points and index
+
+					SCS_Score		[j] 					=	GetCVar(StrParam(s:"DB_CurrentScore", i:i));
+					SCS_PlayerNum	[j]						=	i;
+					SCS_ID			[j]						=	DB_CurrentID[i];
+
+					break;
+
+
+
+					}
+
+
+
+
+
+
+				}
+
+
+
+
+		//SET PLAYER PROPERTIES FOR CLIENTSIDE///////////////////////////////////////////////////////////////////
+		d = 0;
+		//SCORE
+		if 		(DB_PlayerStatus(i) == TRUE)
+			{
+				if (GetCVar("DB_HideCurrentScores"))		d	= 0;
+				else
+					{
+						Switch(GetCVar("DB_OldScoreType"))
+							{
+							case ST_Standart:	d	= GetCVar(StrParam(s:"DB_CurrentScore", i:i));		break;
+							case ST_Classic:
+												Switch(GetCVar("DB_GameMode"))
+													{
+													case GM_Cooperative:
+													case GM_Survival:
+													case GM_Invasion:				//if (GetCVar("SV_AwardDamageInsteadKills"))	d = GetPlayerScore(i, SCORE_POINTS);
+																					/*else	*/									d = GetPlayerScore(i, SCORE_KILLS);			break;
+													case GM_Deathmatch:
+													case GM_Teamplay:
+													case GM_Duel:
+													case GM_Terminator:
+													case GM_LastManStanding:
+													case GM_TeamLMS:				d = GetPlayerScore(i, SCORE_FRAGS);														break;
+													case GM_Possession:
+													case GM_TeamPossession:
+													case GM_TeamGame:				d = GetPlayerScore(i, SCORE_POINTS);													break;
+													case GM_CTF:
+													case GM_OneFlagCTF:
+													case GM_Skulltag:				d = GetPlayerScore(i, SCORE_FRAGS) + GetPlayerScore(i, SCORE_POINTS)*3;					break;
+													case GM_Domination:				d = GetPlayerScore(i, SCORE_POINTS);													break;
+													}
+
+							ConsoleCommand(StrParam(s:"set DB_CurrentScore", i:i, s:" ", i:d));
+							break;
+
+							case ST_Speedrun:			d = DB_CurrentTime;			ConsoleCommand(StrParam(s:"set DB_CurrentScore", i:i, s:" ", i:DB_CurrentTime));		break;
+							case ST_Special:			d	= GetCVar(StrParam(s:"DB_CurrentScore", i:i));																	break;
+
+							}
+					}
+			}
+
+		else
+				{
+				d = -999999999;
+				ConsoleCommand(StrParam(s:"set DB_CurrentScore", i:i, s:" ", i:d));
+				}
+
+
+
+
+
+		if (ClientExist(i))
+			{
+			PlayerProperties[i] = StrParam(
+
+								s:"|", i:ClientExist(i),
+								s:"|", i:DB_PlayerStatus(i),
+								s:"|", i:PlayerIsLoggedIn(i),
+								s:"|", i:d,
+								s:"|", i:GetDecorativeScore(i),
+								s:"|", i:DB_CurrentTeam[i],
+								s:"|", i:DB_CurrentCarrier[i],
+								s:"|", i:DB_CurrentFlag[i],
+								s:"|", i:GetCVar(StrParam(s:"DB_Acc", i:counter, s:"FLAGUPDATE")),
+								s:"|", s:DB_CurrentID[i],
+								s:"|", i:DuelElo,
+								s:"|", i:DB_PlayerCredits[i]
+								);
+
+			}
+
+		}
+
+
+
+		if (Update == TRUE)
+			{
+			for (j = 1; j <= MaxWinners; j++)		ConsoleCommand(StrParam(s:"set DB_LatestResult", i:j, s:" ", s:"\"", s: GetDBEntryString ("GlobalInfo", StrParam(s:"LatestResult", i:j)), s:"\""));
+
+			CheckDoomboardVersion();
+
+			DB_LastPlayDate ();
+
+
+			if (GetCVar("DB_AccountsUpdated") != GetDBEntry("GlobalInfo", "AccountsUpdated"))			DB_ImportPlayersFromDB();
+
+
+			EndDBTransaction();			DrawDatabaseTransaction("");
+			DB_Transaction = FALSE;
+
+
+			}
+
+
+
+
+for (j = 0; j < MaxWinners ; j++)
+	{
+
+		//FOR SERVER
+		ConsoleCommand		(StrParam(s:"Set DB_SortedScore", 				i:j, 		s:" ",					i:SCS_Score[j]							));
+		ConsoleCommand		(StrParam(s:"Set DB_SortedNameID", 				i:j, 		s:" ",		s:"\"",		s:SCS_ID[j], 				s:"\""		));
+
+
+		//Adding current position
+		if (ClientExist(SCS_PlayerNum	[j]))			PlayerProperties[SCS_PlayerNum	[j]]	=	StrParam(s:PlayerProperties[SCS_PlayerNum	[j]],	 s:"|",  i:j);
+
+	}
+
+		//Send to Clients
+		for (i = 0; i < MaxPlayers; i++)	SetCVarString(StrParam(s:"DB_PlayerProperties", i:i),	PlayerProperties[i]);
+
+
+
+
+}
+
+
+function int GetDecorativeScore (int Player)
+{
+int Score;
+Switch(DB_GameTypeIs(GetCVar("DB_GameMode")))
+	{
+	case GT_Competitive:
+	Score = GetPlayerScore(Player, SCORE_FRAGS);
+	break;
+	}
+return Score;
+}
+
+
+
+
+
+
+
+
+
+//
+//	 __        __   __                 __      __   ___  __            ___  __
+//	/__` |__| /  \ |__)     |\/|  /\  |__)    |__) |__  /__` |  | |     |  /__`
+//	.__/ |  | \__/ |        |  | /~~\ |       |  \ |___ .__/ \__/ |___  |  .__/
+//
+
+
+
+
+
+function void ShowResults (int IsAdditional, bool What, bool How, bool Who, str Map, str MapName, int HoldAdd, int Alpha)	// 0 CLIENT, 1 SERVER
+{
+str StringDetails = "";
+str StringName = ""; //yeah because calculating colored and uncolored chars is a cluster fuck I'm maing it a separate str
+int PivotX, PivotY, Hold, FadeIn, Fadeout, Xoffset;
+str ServerTitle = "";
+str ServerTitleUser = "";
+str MapTitle = "";
+str Color = "";
+str FlagIMG = "";
+int BackType;
+int counter, i, d, t, x, stX, stY;
+
+
+
+
+										if (Who >= 0)
+											{
+											if (!StrToNum(MergedStringInfo ('|', PPROP_PlayerLogged, GetCVarString(StrParam(s:"DB_PlayerProperties", i:Who)))))
+												ServerTitleUser = StrParam(s:"\cg LOG IN TO LEGALIZE YOUR SCORES!\cj");
+											}
+
+Switch(What)
+	{
+	case RESULT_Map:
+										i = 64;
+
+				if (StrLen(MapName))	MapTitle = StrParam(s:": ",		s:MapName);
+										MapTitle = StrParam(s:"(",		s:GameModeAbb(GetCVar("DB_GameMode")),	s:"|", s:SkillAbb(GameSkill(), FALSE), s:") ", s:GetCVarString("DB_GameName"), s:" | ", s:Map, s:MapTitle);
+										MapTitle = StrParam(s:"\cf",	s:String_Ending( MapTitle, 37, ".."),	s:"   RANKINGS");
+
+				if (!StrLen(MergedStringInfo ('|', WI_PlayerScore, GetCVarString(StrParam(s:"DB_", s:GameModeAbb(GetCVar("DB_GameMode")), s:"|", i:GameSkill(), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:Map, s:"_WinnerInfo", s:ScoreTypeStr(), i:1)))))
+										MapTitle = StrParam(s:"BE THE FIRST ONE TO SET A SCORE ON ", s:Map, s:"!");
+
+	break;
+
+	case RESULT_Latest:
+										i = 74;
+										MapTitle	= "\cfTOP LATEST COMPLETIONS";
+
+	break;
+
+	case RESULT_Prominent:
+										i = 50;
+										MapTitle	= "\cfPROMINENT PLAYERS";
+
+	break;
+	}
+
+			//////////////////////////////SERVER TITLE
+
+
+														ServerTitle = GetServerOrClusterName(24);
+
+														ServerTitle = StrParam(s:ServerTitle, s:"   ", s:ServerTitleUser);
+														ServerTitle = String_Ending(ServerTitle, i, "..");
+														i = 0;
+
+
+// MAP TITLE
+
+
+Switch(How)
+	{
+	case RESULT_AtNormal:
+
+		PivotX		= HUDX_LARGE/2;
+		PivotY		= HUDY_LARGE/2 + HUDY_LARGE/16;
+		Hold		= 4.0;
+		FadeIn		= 0.0;
+		FadeOut		= 1.0;
+
+	break;
+
+
+	case RESULT_AtMenu:
+
+		PivotX		= HUDX_LARGE/2;
+		PivotY		= HUDY_LARGE/2 - HUDY_LARGE/3 + 8;
+		if (What == RESULT_Map)		Hold = 999.0;
+		else						Hold = 10.0;
+		FadeIn		= 0.0;
+		FadeOut		= 1.0;
+	break;
+	}
+
+Hold += HoldAdd;
+
+
+
+
+
+SetFont("DBFONT");
+SetHUDSize(HUDX_LARGE,		HUDY_LARGE,	FALSE);
+ScoreMessage		(Who, MapTitle,	HUDid_DB_HEADER + HUDid_DB_Server,						CR_WHITE,				PivotX, PivotY,			Hold, FadeIn, FadeOut,	FixedMul(0.75, Alpha));
+
+
+
+
+
+
+// Server TITLE
+Switch(How)
+	{
+	case RESULT_AtNormal:
+
+		PivotX		= HUDX_MEDIUM/2;
+		PivotY		= HUDY_MEDIUM/2;// + HUDY_MEDIUM/40;
+
+	break;
+
+
+	case RESULT_AtMenu:
+
+		PivotX		= HUDX_MEDIUM/2;
+		PivotY		= HUDY_MEDIUM/2 - HUDY_MEDIUM/3 - HUDY_MEDIUM/24;
+
+	break;
+	}
+
+
+// SERVER
+SetFont("DBFONT");
+SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+ScoreMessage		(Who, ServerTitle,		HUDid_DB_HEADER + HUDid_DB_Title,					CR_WHITE,			PivotX, PivotY,			Hold, FadeIn, FadeOut,	FixedMul(0.5, Alpha));
+
+
+
+
+
+
+
+		if (IsAdditional)
+			{
+			//   I S    A D D I T I O N A L  /////////////////////////////////////////////////////////////
+			//////////////////////////////////////////////////////////////////////////////////////////////
+			////////////////////////////////////////////////////
+
+
+
+
+
+
+			Switch (DB_GameTypeIs(GetCVar("DB_GameMode")))
+			//Switch (GetCVar("DB_GameMode"))
+				{
+				case GT_Collab:
+				break;
+
+				//////////////////////////////////////////////////////////////////////////////////////////////
+				//////////////////////////////////////////////////////////////////////////////////////////////
+				case GT_Competitive:
+
+
+				if (GetCVar("DB_GameMode") == GM_Duel)
+					{
+					i = 0;
+					while(i <= GetCVar("DB_PlayerTopIndex"))
+						{
+						//if (DB_PlayerStatus(i) == TRUE)	*/if (StrToNum(MergedStringInfo ('|', PPROP_PlayerIngame, GetCVarString(StrParam(s:"DB_PlayerProperties", i:i)))))	//Player ingame
+							{
+							Switch(GetPlayerScore(i, SCORE_RANK))
+								{
+								case 0:
+								//if (PlayerIsLoggedIn(i))					if (StrToNum(MergedStringInfo ('|', PPROP_PlayerLogged, GetCVarString(StrParam(s:"DB_PlayerProperties", i:i)))))	// if is logged in
+									{
+									SetHUDSize(HUDX_BIG,	HUDY_BIG,	FALSE);
+									SetFont(StrParam(s:"DBFLG", s: MergedStringInfo ('|', PPROP_FlagIndex, GetCVarString(StrParam(s:"DB_PlayerProperties", i:i)))));
+									HudMessageBold	(s:"A";		HUDMSG_FADEINOUT|HUDMSG_ALPHA|HUDMSG_NOWRAP, 	0, CR_UNTRANSLATED,	int2fix(HUDX_BIG/2), int2fix(HUDY_BIG/2 - HUDY_BIG/3),	Hold, FadeIn, FadeOut, FixedMul(1.0, Alpha));
+									}
+
+								break;
+
+
+
+								}
+
+							}
+						i++;
+						}
+					}
+
+				else
+					{
+					counter = 0;
+					while(counter < 3)
+						{
+
+						i = 0;
+						while(i <= GetCVar("DB_PlayerTopIndex"))
+							{
+							if (StrToNum(MergedStringInfo ('|', PPROP_PlayerIngame, GetCVarString(StrParam(s:"DB_PlayerProperties", i:i)))))	//Player ingame
+								if (StrToNum(MergedStringInfo ('|', PPROP_Place, GetCVarString(StrParam(s:"DB_PlayerProperties", i:i)))) == counter)	//Player's a winner
+									{
+
+
+
+
+										// POSITION
+										Switch(counter)
+											{
+											case 0:		PivotX = HUDX_BIG/2;					PivotY = HUDY_BIG/2 - HUDY_BIG/3 				- HUDY_BIG/10;			x = 1.0; 	break;
+											case 1:		PivotX = HUDX_BIG/2 - HUDX_BIG/4;		PivotY = HUDY_BIG/2 - HUDY_BIG/3 + HUDY_BIG/24	- HUDY_BIG/10;			x = 0.75;	break;
+											case 2:		PivotX = HUDX_BIG/2 + HUDX_BIG/4;		PivotY = HUDY_BIG/2 - HUDY_BIG/3 + HUDY_BIG/16	- HUDY_BIG/10;			x = 0.5;	break;
+											}
+										SetHUDSize(HUDX_BIG,	HUDY_BIG,	FALSE);
+										SetFont("DBFONT");
+										HudMessageBold	(i:counter + 1;		HUDMSG_FADEINOUT|HUDMSG_ALPHA|HUDMSG_NOWRAP, 	0, DB_PedestalColor(counter),	int2fix(PivotX), int2fix(PivotY),	Hold, FadeIn, FadeOut, FixedMul(x, Alpha));
+
+
+
+
+
+										// FLAG
+										if (StrToNum(MergedStringInfo ('|', PPROP_PlayerLogged, GetCVarString(StrParam(s:"DB_PlayerProperties", i:i)))))	// if is logged in
+
+													FlagIMG = MergedStringInfo ('|', PPROP_FlagIndex, GetCVarString(StrParam(s:"DB_PlayerProperties", i:i)));
+
+
+											else	FlagIMG = "998";
+
+
+												Switch(counter)
+													{
+													case 0:		PivotX = HUDX_LARGE/2;						PivotY = HUDY_LARGE/2 - HUDY_LARGE/3				 - HUDY_LARGE/64;		x = 1.0; 	break;
+													case 1:		PivotX = HUDX_LARGE/2 - HUDX_LARGE/4;		PivotY = HUDY_LARGE/2 - HUDY_LARGE/3 + HUDY_LARGE/24 - HUDY_LARGE/64;		x = 0.75;	break;
+													case 2:		PivotX = HUDX_LARGE/2 + HUDX_LARGE/4;		PivotY = HUDY_LARGE/2 - HUDY_LARGE/3 + HUDY_LARGE/16 - HUDY_LARGE/64;		x = 0.5;	break;
+													}
+												SetHUDSize(HUDX_LARGE,	HUDY_LARGE,	FALSE);
+												SetFont(StrParam(s:"DBFLG", s: FlagIMG));
+												HudMessageBold	(s:"A";		HUDMSG_FADEINOUT|HUDMSG_ALPHA|HUDMSG_NOWRAP, 	0, DB_PedestalColor(counter),	int2fix(PivotX), int2fix(PivotY),	Hold, FadeIn, FadeOut, FixedMul(x, Alpha));
+
+
+
+
+
+										// NAME
+										Switch(counter)
+											{
+											case 0:		PivotX = HUDX_MEDIUM/2;						PivotY = HUDY_MEDIUM/2 - HUDY_MEDIUM/3 					+ HUDY_MEDIUM/20;			x = 1.0; 	break;
+											case 1:		PivotX = HUDX_MEDIUM/2 - HUDX_MEDIUM/4;		PivotY = HUDY_MEDIUM/2 - HUDY_MEDIUM/3 + HUDY_MEDIUM/24	+ HUDY_MEDIUM/20;			x = 0.75;	break;
+											case 2:		PivotX = HUDX_MEDIUM/2 + HUDX_MEDIUM/4;		PivotY = HUDY_MEDIUM/2 - HUDY_MEDIUM/3 + HUDY_MEDIUM/16	+ HUDY_MEDIUM/20;			x = 0.5;	break;
+											}
+										SetHUDSize(HUDX_MEDIUM,	HUDY_MEDIUM,	FALSE);
+										SetFont("DBFONT");
+										HudMessageBold	(s:StripColors(StrParam(n:i + 1));		HUDMSG_FADEINOUT|HUDMSG_ALPHA|HUDMSG_NOWRAP, 	0, DB_PedestalColor(counter),	int2fix(PivotX), int2fix(PivotY),	Hold, FadeIn, FadeOut, FixedMul(x, Alpha));
+
+
+
+
+
+									break;
+									}
+							i++;
+							}
+						counter++;
+						}
+					}
+
+
+				break;
+
+
+				//////////////////////////////////////////////////////////////////////////////////////////////
+				//////////////////////////////////////////////////////////////////////////////////////////////
+
+				case GT_Team:
+
+
+					//find out which team has won
+
+
+					// Check which team has the most points and has won
+					counter = 0;	d = 0;	t = 0;	x = 0;
+					while(counter < 4)
+						{
+						if (GetTeamProperty(counter, TPROP_Score) > d)		{	d = GetTeamProperty(counter, TPROP_Score);	t = counter;	}
+						counter++;
+						}
+
+
+
+
+						counter = 0;
+						i = 0;
+						while(counter < MaxWinners)
+							{
+							if 	((x > GetTeamProperty(t, TPROP_NumPlayers))	  ||	(x > 4))	break;
+							i = 0;
+							while (i <= GetCVar("DB_PlayerTopIndex"))	//
+								{
+
+								if (StrToNum(MergedStringInfo ('|', PPROP_PlayerIngame, GetCVarString(StrParam(s:"DB_PlayerProperties", i:i))))					)
+								if (StrToNum(MergedStringInfo ('|', PPROP_Place, 		GetCVarString(StrParam(s:"DB_PlayerProperties", i:i))))		== counter	)
+								if (StrToNum(MergedStringInfo ('|', PPROP_Team, 		GetCVarString(StrParam(s:"DB_PlayerProperties", i:i)))) 	== t		)
+
+									{
+
+
+									StringDetails = StrParam(
+
+
+													s: StringFill_str	(StrParam(i:x + 1, s:"."),																						8,	"~"),
+													s: StringFill_str	(IfBlankThenFillWith(String_Ending(StripColors(StrParam(n:i + 1)), 24, ".."), "-----"),		24,	"~"),
+													s: StringFill_str	("", 																													2,	"~"),
+													s: StringFill_str	(IfBlankThenFillWith(MergedStringInfo ('|', PPROP_Score, 		GetCVarString(StrParam(s:"DB_PlayerProperties", i:i))), "---"),		MaxIntLetters,	"~")
+													);
+
+
+
+
+											if ((GetCVar("DB_GameMode") == GM_CTF) || (GetCVar("DB_GameMode") == GM_OneFlagCTF))			{			PivotX = HUDX_MEDIUM/2;		PivotY = HUDY_MEDIUM/2 - HUDY_MEDIUM/4 + HUDY_MEDIUM/32;		}
+											else																							{			PivotX = HUDX_MEDIUM/2;		PivotY = HUDY_MEDIUM/2 - HUDY_MEDIUM/4 - HUDY_MEDIUM/6;			}
+
+
+											SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+											SetFont("DBFONT");
+											HudMessageBold(s:StringDetails;		HUDMSG_FADEINOUT|HUDMSG_ALPHA|HUDMSG_NOWRAP,	 0, 		DB_TeamGameFontColorInt(t),  int2fix(PivotX), 		int2fix(PivotY + x*16), 	Hold, FadeIn, FadeOut,	FixedMul(1.0, Alpha));
+
+
+
+
+									if (StrToNum(MergedStringInfo ('|', PPROP_PlayerLogged, GetCVarString(StrParam(s:"DB_PlayerProperties", i:i)))))	// if is logged in
+
+											FlagIMG = MergedStringInfo ('|', PPROP_FlagIndex, GetCVarString(StrParam(s:"DB_PlayerProperties", i:i)));
+
+
+									else	FlagIMG = "998";
+
+													SetFont(StrParam(s:"DBFLG", s: FlagIMG));
+
+													if ((GetCVar("DB_GameMode") == GM_CTF) || (GetCVar("DB_GameMode") == GM_OneFlagCTF))			{			PivotX = HUDX_TINY/2  + 64;			PivotY = HUDY_TINY/2 - HUDY_TINY/4 + HUDY_TINY/32;		}
+													else																							{			PivotX = HUDX_TINY/2  + 64;			PivotY = HUDY_TINY/2 - HUDY_TINY/4 - HUDY_TINY/6;		}
+
+
+													SetHUDSize(HUDX_TINY,		HUDY_TINY,	FALSE);
+													HudMessageBold(s:StringDetails;		HUDMSG_FADEINOUT|HUDMSG_ALPHA|HUDMSG_NOWRAP,	 0, 		DB_TeamGameFontColorInt(t),  int2fix(PivotX), 		int2fix(PivotY + x*16*4), 	Hold, FadeIn, FadeOut,	FixedMul(1.0, Alpha));
+
+
+
+									x++;
+
+									break;
+									}
+
+
+
+								i++;
+								}
+							counter++;
+							}
+
+
+
+				break;
+
+				}
+
+
+
+			//BACKGROUND
+			SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+			Switch (DB_GameTypeIs(GetCVar("DB_GameMode")))
+				{
+				case GT_Collab:
+				break;
+
+				case GT_Competitive:
+
+				case GT_Team:
+
+				if ((GetCVar("DB_GameMode") == GM_CTF) || (GetCVar("DB_GameMode") == GM_OneFlagCTF))
+					{
+					SetFont(StrParam(s:"DBBACK4"));
+					HudMessageBold	(s:"A";				HUDMSG_FADEINOUT|HUDMSG_ALPHA|HUDMSG_NOWRAP, 	0, CR_UNTRANSLATED,	int2fix(HUDX_MEDIUM/2), int2fix(HUDY_MEDIUM/2 - HUDY_MEDIUM/3 + HUDY_MEDIUM/6),			Hold, FadeIn, FadeOut, FixedMul(0.5, Alpha));
+					}
+
+				else
+					{
+					SetFont(StrParam(s:"DBBACK3"));
+					HudMessageBold	(s:"A";				HUDMSG_FADEINOUT|HUDMSG_ALPHA|HUDMSG_NOWRAP, 	0, CR_UNTRANSLATED,	int2fix(HUDX_MEDIUM/2), int2fix(HUDY_MEDIUM/2 - HUDY_MEDIUM/3/* + HUDY_MEDIUM/40*/),	Hold, FadeIn, FadeOut, FixedMul(0.5, Alpha));
+					}
+
+
+
+				break;
+				}
+
+
+
+			}
+
+
+
+
+
+
+
+counter = 0;	i = 0;
+while (counter < MaxWinners)
+	{
+
+
+
+		Color			= "\cc";
+		StringDetails	= "";
+		StringName 		= "";
+
+		//color tint
+		if (counter < MaxWinners/3)		Color = "\cf";
+		else							Color = "\cc";
+
+
+
+
+
+
+
+
+
+
+		Switch(WHAT)
+			{
+
+			//   T Y P E   ///////////////////////////////////////////////////////////////////////////////
+			//////////////////////////////////////////////////////////////////////////////////////////////
+			////////////////////////////////////////////////////   M A P
+			case 	RESULT_Map:
+
+
+						if (!StrLen(GetCVarString(StrParam(s:"DB_", s:GameModeAbb(GetCVar("DB_GameMode")), s:"|", i:GameSkill(), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:Map, s:"_WinnerInfo", s:ScoreTypeStr(), i:counter + 1))		))		FlagIMG	= "999";
+						else	FlagIMG 	=		MergedStringInfo ('|', WI_PlayerFlag, GetCVarString(StrParam(s:"DB_", s:GameModeAbb(GetCVar("DB_GameMode")), s:"|", i:GameSkill(), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:Map, s:"_WinnerInfo", s:ScoreTypeStr(), i:counter + 1)));
+
+						StringDetails = StrParam(
+
+										s: "\cu",
+										s: StringFill_str	(IfBlankThenFillWith(MergedStringInfo ('|', WI_PlayerDate, GetCVarString(StrParam(s:"DB_", s:GameModeAbb(GetCVar("DB_GameMode")), s:"|", i:GameSkill(), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:Map, s:"_WinnerInfo", s:ScoreTypeStr(), i:counter + 1))), "----"), 		10,	"-"),
+										s: StringFill_str	("", 																													4,	"~"),
+										s: Color,
+										s: StringFill_str	(StrParam(i:counter + 1, s:"."),																						8,	"~"),
+
+										s: StringFill_str	(IfBlankThenFillWith(String_Ending(StripColors(MergedStringInfo ('|', WI_PlayerName, GetCVarString(StrParam(s:"DB_", s:GameModeAbb(GetCVar("DB_GameMode")), s:"|", i:GameSkill(), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:Map, s:"_WinnerInfo", s:ScoreTypeStr(), i:counter + 1)))), 24, ".."), "-----"),		24,	"~"),
+										s: Color,
+										s: StringFill_str	("", 																													4,	"~"),
+										s: StringFill_str	(IfBlankThenFillWith(DB_ScoreConvert(MergedStringInfo ('|', WI_PlayerScore, GetCVarString(StrParam(s:"DB_", s:GameModeAbb(GetCVar("DB_GameMode")), s:"|", i:GameSkill(), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:Map, s:"_WinnerInfo", s:ScoreTypeStr(), i:counter + 1)))), "---"),		MaxIntLetters,	"~")
+										);
+
+
+			break;
+
+
+
+
+
+
+
+
+
+
+
+
+			//   T Y P E   ///////////////////////////////////////////////////////////////////////////////
+			//////////////////////////////////////////////////////////////////////////////////////////////
+			////////////////////////////////////////////////////   L A T E S T     R E S U L T S
+			case 	RESULT_Latest:
+
+
+
+						if (!StrLen(GetCVarString(StrParam(s:"DB_", s:GameModeAbb(GetCVar("DB_GameMode")), s:"|", i:GameSkill(), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:Map, s:"_WinnerInfo", s:ScoreTypeStr(), i:counter + 1))		))		FlagIMG	= "999";
+						else	FlagIMG 	=		MergedStringInfo ('|', WI_PlayerFlag, GetCVarString(StrParam(s:"DB_", s:GameModeAbb(GetCVar("DB_GameMode")), s:"|", i:GameSkill(), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:Map, s:"_WinnerInfo", s:ScoreTypeStr(), i:counter + 1)));
+
+
+			//           GAMENAME      MODE    MAP     FLAG    NAME        DATEwTIME
+
+					// NOT LOGGED
+					if (GetChar (  MergedStringInfo ('|', LTRSLT_NameID, GetCVarString(StrParam(s:"DB_LatestResult", i: counter + 1))), 0	  ) == '~')
+						{
+						StringName	= RemoveChar(	MergedStringInfo ('|', LTRSLT_NameID, GetCVarString(StrParam(s:"DB_LatestResult", i: counter + 1))), 	'~');
+						FlagIMG		= "998";
+						}
+
+					else	//LOGGED
+						{
+						if (StrLen(GetCVarString(StrParam(s:"DB_LatestResult", i: counter + 1))))
+							{
+							StringName	= 	GetCVarString(StrParam(s:"DB_Acc", s:MergedStringInfo ('|', LTRSLT_NameID, GetCVarString(StrParam(s:"DB_LatestResult", i: counter + 1))), s:"PLAYERNAME"	));		//NAME by ID
+							FlagImg 	= StrParam(i:GetFlagIDbyName(	GetCVarString(StrParam(s:"DB_Acc", s:MergedStringInfo ('|', LTRSLT_NameID, GetCVarString(StrParam(s:"DB_LatestResult", i: counter + 1))), s:"FLAGNAME"	)), TRUE));
+							}
+						else
+							{
+							StringName = "";
+							FlagImg = "999";
+							}
+						}
+
+						StringDetails = StrParam(
+
+
+										s: "\cc",
+										s: StringFill_str	(IfBlankThenFillWith(MergedStringInfo ('|', LTRSLT_Mode, GetCVarString(StrParam(s:"DB_LatestResult", i: counter + 1))), "---"),		4,	"~"),
+										s: StringFill_str	("", 																													1,	"~"),
+										s: StringFill_str	(IfBlankThenFillWith(SkillAbb(StrToNum(MergedStringInfo ('|', LTRSLT_Skill, GetCVarString(StrParam(s:"DB_LatestResult", i: counter + 1)))), TRUE), "---"),		3,	"~"),
+										s: StringFill_str	("", 																													3,	"~"),
+										s: StringFill_str	(IfBlankThenFillWith(MergedStringInfo ('|', LTRSLT_Game, GetCVarString(StrParam(s:"DB_LatestResult", i: counter + 1))), "---"),		MaxMapChars,	"~"),
+										s: StringFill_str	("", 																													4,	"~"),
+										s: StringFill_str	(IfBlankThenFillWith(MergedStringInfo ('|', LTRSLT_Map, GetCVarString(StrParam(s:"DB_LatestResult", i: counter + 1))), "---"),		MaxMapChars,	"~"),
+										s: StringFill_str	("", 																													5,	"~"),
+										s: StringFill_str	(IfBlankThenFillWith(		String_Ending(		StripColors(StringName), 			24, ".."), "-----"),				24,	"~"),
+										s: StringFill_str	("", 																													2,	"~"),
+										s: StringFill_str	(IfBlankThenFillWith(MergedStringInfo ('|', LTRSLT_Date, GetCVarString(StrParam(s:"DB_LatestResult", i: counter + 1))), "----"),		MaxIntLetters,	"~"),
+										s: StringFill_str	("", 																													2,	"~"),
+										s: StringFill_str	(IfBlankThenFillWith(MergedStringInfo ('|', LTRSLT_Time, GetCVarString(StrParam(s:"DB_LatestResult", i: counter + 1))), "---"),		5,	"~")
+										);
+
+
+			break;
+
+
+
+
+			//   T Y P E   ///////////////////////////////////////////////////////////////////////////////
+			//////////////////////////////////////////////////////////////////////////////////////////////
+			////////////////////////////////////////////////////   P R O M I N E N T     P L A Y E R S
+			case 	RESULT_Prominent:
+
+
+			//           GAMENAME      MODE         FLAG    NAME        DATEwTIME
+
+						if (StrLen(MergedStringInfo ('|', PTRSLT_Flag, GetCVarString(StrParam(s:"DB_Prominent", i: counter + 1)))))
+									FlagIMG		= StrParam(i:GetFlagIDbyName(	MergedStringInfo ('|', PTRSLT_Flag, GetCVarString(StrParam(s:"DB_Prominent", i: counter + 1))), TRUE));
+						else 		FlagIMG		= "999";
+
+						StringDetails = StrParam(
+
+										s: Color,
+										s: StringFill_str	(StrParam(i:counter + 1, s:"."),																						3,	"~"),
+
+										s: StringFill_str	("", 																													3,	"~"),
+										s: StringFill_str	(IfBlankThenFillWith(String_Ending(StripColors(MergedStringInfo ('|', PTRSLT_Name, GetCVarString(StrParam(s:"DB_Prominent", i: counter + 1)))), 24, ".."),  "-----"),			24,	"~")
+										);
+
+			break;
+
+			}
+
+						///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+						// NAME AND DETAILS
+
+						Xoffset = 0;
+						Switch(How){ //Pivots
+							case RESULT_AtNormal:					PivotX = HUDX_MEDIUM/2;							PivotY = HUDY_MEDIUM/2 + HUDY_MEDIUM/8;					break;
+							case RESULT_AtMenu:						PivotX = HUDX_MEDIUM/2;							PivotY = HUDY_MEDIUM/2 - HUDY_MEDIUM/4;					break;}
+
+								SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+								SetFont("DBFONT");
+								ScoreMessage		(Who, StringDetails,	HUDid_DB_HEADER + HUDid_DB_Score + counter,					CR_GREY,			PivotX, 				PivotY + counter*16,			Hold, FadeIn, FadeOut,	FixedMul(1.0, Alpha));
+
+
+						///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+						// SCORE TYPE
+						if (WHAT != RESULT_Prominent)
+
+							{
+							x = DBicon_NONE;
+
+								Switch(How){ //Pivots
+									case RESULT_AtNormal:					PivotX = HUDX_MEDIUM/2;							PivotY = HUDY_MEDIUM/2	+ HUDY_MEDIUM/8;												break;
+									case RESULT_AtMenu:						PivotX = HUDX_MEDIUM/2;							PivotY = HUDY_MEDIUM/2	- HUDY_MEDIUM/4;												break;}
+								Switch(What){ //Pivots
+									case RESULT_Map:						Xoffset =  144;
+									if (StrLen(GetCVarString(StrParam(s:"DB_", s:GameModeAbb(GetCVar("DB_GameMode")), s:"|", i:GameSkill(), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:Map, s:"_WinnerInfo", s:ScoreTypeStr(), i:counter + 1))))
+									x = DBicon_ScoreType + GetCVar("DB_OldScoreType");
+									break;
+
+									case RESULT_Latest:		Color = "\cc";	Xoffset =  -328;
+									if (StrLen(StringName))
+									x = DBicon_ScoreType + StrToNum(MergedStringInfo ('|', LTRSLT_ScoreType, GetCVarString(StrParam(s:"DB_LatestResult", i: counter + 1))));
+									break;
+
+									}
+
+										SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+										SetFont("DBFONTS");
+										ScoreMessage		(Who, StrParam(s: Color, c:x),	HUDid_DB_HEADER + HUDid_DB_ScoreType + counter,				CR_GREY,			PivotX + Xoffset, 				PivotY + counter*16,			Hold, FadeIn, FadeOut,	FixedMul(1.0, Alpha));
+
+							}
+
+
+						///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+						// FLAG
+
+						Switch(How){ //Pivots
+							case RESULT_AtNormal:					PivotX = HUDX_TINY/2;							PivotY = HUDY_TINY/2	+ HUDY_TINY/8;												break;
+							case RESULT_AtMenu:						PivotX = HUDX_TINY/2;							PivotY = HUDY_TINY/2	- HUDY_TINY/4;												break;}
+						Switch(What){ //Pivots
+							case RESULT_Map:						Xoffset =  -HUDX_TINY/8;		break;
+							case RESULT_Latest:						Xoffset =  -HUDX_TINY/9 + 112;	break;
+							case RESULT_Prominent:					Xoffset =  -HUDX_TINY/7 + 16;	break;}
+
+
+
+								SetHUDSize(HUDX_TINY, HUDY_TINY, FALSE);
+								SetFont(StrParam(s:"DBFLG", s:FlagIMG));
+								ScoreMessage		(Who, "A",				HUDid_DB_HEADER + HUDid_DB_Score + counter + MaxWinners*2,	CR_UNTRANSLATED,	PivotX + Xoffset, 	PivotY + counter*16*4,			Hold, FadeIn, FadeOut,	FixedMul(1.0, Alpha));
+
+
+
+
+	counter++;
+	}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// BACKGROUND
+Switch(How){ //Pivots
+	case RESULT_AtNormal:					PivotX = HUDX_MEDIUM/2;							PivotY = HUDY_MEDIUM/2 + HUDY_MEDIUM/8 + HUDY_MEDIUM/12;		break;
+	case RESULT_AtMenu:						PivotX = HUDX_MEDIUM/2;							PivotY = HUDY_MEDIUM/2 - HUDY_MEDIUM/4  + HUDY_MEDIUM/12;		break;}
+
+		SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+		SetFont(StrParam(s:"DBBACK", i:What));
+		ScoreMessage		(Who, "A",				HUDid_DB_HEADER + HUDid_DB_Back, 								CR_UNTRANSLATED,	PivotX, 				PivotY,							Hold, FadeIn, FadeOut, FixedMul(0.5, Alpha));
+
+}
+
+
+
+function void ScoreMessage (bool Who, str String, int id, int Color, int HudX, int HudY, int Hold, int FadeIn, int FadeOut, int Alpha)
+{
+if (Who >= 0)	Who = 0;
+Switch(Who)
+	{
+	case 	DBclient:	HudMessage		(s:String;		HUDMSG_FADEINOUT|HUDMSG_ALPHA|HUDMSG_NOWRAP, 	id, Color,	int2fix(HudX), int2fix(HudY),	Hold, FadeIn, FadeOut, Alpha);		break;
+	case 	DBserver:	HudMessageBold	(s:String;		HUDMSG_FADEINOUT|HUDMSG_ALPHA|HUDMSG_NOWRAP, 	id, Color,	int2fix(HudX), int2fix(HudY),	Hold, FadeIn, FadeOut, Alpha);		break;
+	}
+}
+
+
+
+function str IfBlankThenFillWith (str String, str Replacement)
+{
+str Result = "";
+
+if (!StrLen(String))	Result = Replacement;
+else					Result = String;
+
+return Result;
+}
+
+
+
+
+
+
+
+
+
+
+
+function void ShowBlank		(int Who, int Type)
+{
+int i;
+Switch (Type)
+	{
+	case BLANK_Results:
+		for (i = 0; i < MaxWinners; i++)
+			{
+			ScoreMessage (Who, "", HUDid_DB_HEADER + 		HUDid_DB_Score + i, 					CR_UNTRANSLATED, 0, 0, 0, 0, 0, 0);	//STRING
+			ScoreMessage (Who, "", HUDid_DB_HEADER + 		HUDid_DB_ScoreType + i, 				CR_UNTRANSLATED, 0, 0, 0, 0, 0, 0);	//ST
+			ScoreMessage (Who, "", HUDid_DB_HEADER + 		HUDid_DB_Score + i + MaxWinners*2,		CR_UNTRANSLATED, 0, 0, 0, 0, 0, 0);	//FLAGS
+			ScoreMessage (Who, "", HUDid_DB_HEADER + 1000 + HUDid_DB_Score + i, 					CR_UNTRANSLATED, 0, 0, 0, 0, 0, 0);	//STRING
+			ScoreMessage (Who, "", HUDid_DB_HEADER + 1000 + HUDid_DB_ScoreType + i, 				CR_UNTRANSLATED, 0, 0, 0, 0, 0, 0);	//ST
+			ScoreMessage (Who, "", HUDid_DB_HEADER + 1000 + HUDid_DB_Score + i + MaxWinners*2,		CR_UNTRANSLATED, 0, 0, 0, 0, 0, 0);	//FLAGS
+			}
+
+			ScoreMessage (Who, "", HUDid_DB_HEADER + 		HUDid_DB_MapTint,						CR_UNTRANSLATED, 0, 0, 0, 0, 0, 0);	//MAP TINT
+			ScoreMessage (Who, "", HUDid_DB_HEADER + 		HUDid_DB_Back,							CR_UNTRANSLATED, 0, 0, 0, 0, 0, 0); //BACK
+			ScoreMessage (Who, "", HUDid_DB_HEADER + 		HUDid_DB_Title,							CR_UNTRANSLATED, 0, 0, 0, 0, 0, 0); //TITLE
+			ScoreMessage (Who, "", HUDid_DB_HEADER + 		HUDid_DB_Server,						CR_UNTRANSLATED, 0, 0, 0, 0, 0, 0); //DATABASE
+			ScoreMessage (Who, "", HUDid_DB_HEADER + 1000 + HUDid_DB_Back,							CR_UNTRANSLATED, 0, 0, 0, 0, 0, 0); //BACK
+			ScoreMessage (Who, "", HUDid_DB_HEADER + 1000 + HUDid_DB_Title,							CR_UNTRANSLATED, 0, 0, 0, 0, 0, 0); //TITLE
+			ScoreMessage (Who, "", HUDid_DB_HEADER + 1000 + HUDid_DB_Server,						CR_UNTRANSLATED, 0, 0, 0, 0, 0, 0); //DATABASE
+	break;
+
+
+	case BLANK_Memo:
+
+			ScoreMessage (Who, "", HUDid_DB_HEADER + 		HUDid_DB_MemoName, 						CR_UNTRANSLATED, 0, 0, 0, 0, 0, 0);	//NAME
+			ScoreMessage (Who, "", HUDid_DB_HEADER + 		HUDid_DB_MemoDate, 						CR_UNTRANSLATED, 0, 0, 0, 0, 0, 0);	//DATE
+			ScoreMessage (Who, "", HUDid_DB_HEADER + 		HUDid_DB_MemoFlag, 						CR_UNTRANSLATED, 0, 0, 0, 0, 0, 0);	//FLAG
+			for (i = 1; i <= MemoLines; i++)
+			ScoreMessage (Who, "", HUDid_DB_HEADER + 		HUDid_DB_MemoText + i, 					CR_UNTRANSLATED, 0, 0, 0, 0, 0, 0);	//TEXT
+			ScoreMessage (Who, "", HUDid_DB_HEADER + 		HUDid_DB_MemoBack, 						CR_UNTRANSLATED, 0, 0, 0, 0, 0, 0);	//BACK
+	break;
+	}
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+//Convert : 0 - keep the ID, 1 - convert bad numbers
+function int GetFlagIDbyName (str FlagString, bool Convert)
+{
+FlagString = StripColors(FlagString);
+str CmpString = "";
+int counter = 0;
+
+
+while (counter <= MaxFlags)
+	{
+	CmpString = StripColors(FlagName(counter));
+	if (!StrIcmp(FlagString, CmpString))	break;
+	counter++;
+	}
+
+if (Convert)
+	{
+	if (counter > MaxFlags)	counter = 999;
+	}
+
+return counter;
+}
+
+
+
+
+
+
+function str MergedStringInfo (int SplitterChar, int InfoType, str InputString)
+{
+str String = "";
+int counter, SplitCounter;
+
+
+
+		while (counter < StrLen(InputString))
+			{
+			if 	(GetChar(InputString, counter) == SplitterChar)
+									{
+									SplitCounter++;
+									if (SplitCounter  !=  InfoType)
+										{
+												if (SplitCounter < InfoType)		{	String = "";}
+										else	if (SplitCounter > InfoType)	break;
+										}
+									}
+
+
+			if ((GetChar(InputString, counter) != SplitterChar) 	&& 	(SplitCounter == InfoType))
+									{
+									String = StrParam(s:String, c:GetChar(InputString, counter));
+									}
+
+
+
+			counter++;
+			}
+
+
+
+
+return String;
+}
+
+
+
+
+
+
+
+function str DB_DrawSortedPlayerInfo (int ScoreIndex)
+{
+int i;
+str String = "";
+
+
+			// Name
+			String = StrParam(n: ScoreIndex + 1);
+
+			// Remove color
+			String = StripColors(String);
+
+
+
+			// Score
+			Switch (DB_GameTypeIs(GetCVar("DB_GameMode")))
+				{
+					case GT_Collab:
+					i = StrToNum(MergedStringInfo ('|', PPROP_Score, GetCVarString(StrParam(s:"DB_PlayerProperties", i:ScoreIndex))));
+					break;
+
+					case GT_Competitive:
+					i = StrToNum(MergedStringInfo ('|', PPROP_DecorativeScore, GetCVarString(StrParam(s:"DB_PlayerProperties", i:ScoreIndex))));
+					break;
+
+					case GT_Team:
+					i = StrToNum(MergedStringInfo ('|', PPROP_Score, GetCVarString(StrParam(s:"DB_PlayerProperties", i:ScoreIndex))));
+					break;
+				}
+
+//			if (i <= 0)	String = StrParam(s:"\cu", s:String);
+
+
+			// Caps it
+			if (GetUserCvar(ConsolePlayerNumber(), "DB_SortedCapped"))
+			String = StrToUpper(String);
+
+			// Add dots if too long
+			String = String_Ending(String, GetUserCVar(ConsolePlayerNumber(), "DB_SortedMaxNameChars"), "..");
+
+			//Add space because too short
+			String = StringFill_str(String, GetUserCVar(ConsolePlayerNumber(), "DB_SortedMaxNameChars"), "~");
+
+
+			String = StrParam(s:String, s:"   ",	s:DB_TeamGameFontColorStr(StrToNum(MergedStringInfo ('|', PPROP_Team, GetCVarString(StrParam(s:"DB_PlayerProperties", i:ScoreIndex))))),
+													s:StringFill_int( i, 	MaxIntLetters	, "~"));
+
+
+return String;
+}
+
+
+
+function void DrawTable (int Player, int Team)
+{
+int counter, i, d, a, r, p;
+int SortedX, SortedY, Alpha;
+int Highest;
+str String = "";
+
+		if (DB_GameTypeIs(GetCVar("DB_GameMode")) == GT_Team)	Highest = GetUserCVar(ConsolePlayerNumber(), "DB_SortedMaxPlayers")*2;
+else	if (GetCVar("DB_GameMode") == GM_Duel)					Highest = min(GetUserCVar(ConsolePlayerNumber(), "DB_SortedMaxPlayers"), MaxDuelPlayers);
+else															Highest = GetUserCVar(ConsolePlayerNumber(), "DB_SortedMaxPlayers");
+
+if (Highest > MaxWinners)	Highest = MaxWinners;
+
+Switch(GetCVar("DB_ScoreType"))
+	{
+	case ST_Standart:
+	case ST_Classic:
+	case ST_Special:
+		while(counter < Highest)
+			{
+			p = 0;
+			while (p <= GetCVar("DB_PlayerTopIndex"))	//
+				{
+				d = -1;
+				if (DB_PlayerStatus(p))
+					{
+
+						Switch(DB_GameTypeIs(GetCVar("DB_GameMode")))
+							{
+							case GT_Collab:
+							case GT_Team:
+							d = StrToNum(MergedStringInfo ('|', PPROP_Place, 			GetCVarString(StrParam(s:"DB_PlayerProperties", i:p))));
+							break;
+
+							case GT_Competitive:
+							d = GetPlayerScore(p, SCORE_RANK);
+							break;
+							}
+
+								if (d == counter)
+								{
+
+
+
+											if (StrToNum(MergedStringInfo ('|', PPROP_Team, GetCVarString(StrParam(s:"DB_PlayerProperties", i:p))))	== Team	)
+												{
+													// ALLY
+													SortedX = 	GetUserCVar(ConsolePlayerNumber(), "DB_SortedX");
+													SortedY = 	GetUserCVar(ConsolePlayerNumber(), "DB_SortedY");
+													Alpha =		GetUserCVar(ConsolePlayerNumber(), "DB_SortedAlpha");
+													i = a;
+												}
+											else
+												{
+													if (PlayerIsSpectator(ConsolePlayerNumber()))
+														{	//Player is Spectator/coop
+															SortedX = 	GetUserCVar(ConsolePlayerNumber(), "DB_SortedX");
+															SortedY = 	GetUserCVar(ConsolePlayerNumber(), "DB_SortedY");
+															Alpha =		GetUserCVar(ConsolePlayerNumber(), "DB_SortedAlpha");
+															i = a;
+														}
+													else
+														{	// RIVAL
+															SortedX = 	GetUserCVar(ConsolePlayerNumber(), "DB_SortedOpX");
+															SortedY = 	GetUserCVar(ConsolePlayerNumber(), "DB_SortedOpY");
+															Alpha =		GetUserCVar(ConsolePlayerNumber(), "DB_SortedOpAlpha");
+															i = r;
+														}
+												}
+
+
+
+
+
+												//Name, Score
+												SetHUDSize(HUDX_MEDIUM, HUDY_MEDIUM, FALSE);
+												SetFont("DBFONT");
+												HudMessage(s:DB_TeamGameFontColorStr(StrToNum(MergedStringInfo ('|', PPROP_Team, GetCVarString(StrParam(s:"DB_PlayerProperties", i:p))))), s:DB_DrawSortedPlayerInfo(p);
+												HUDMSG_PLAIN|HUDMSG_ALPHA|HUDMSG_NOWRAP,	 0, 		CR_WHITE,
+												int2fix(SortedX + i*GetUserCVar(ConsolePlayerNumber(), "DB_SortedKerning")),
+												int2fix(SortedY + i*GetUserCVar(ConsolePlayerNumber(), "DB_SortedLeading")),
+												ClientTicDelay,		Alpha);
+
+												//Carrier
+
+												if (StrToNum(MergedStringInfo ('|', PPROP_Carrier, GetCVarString(StrParam(s:"DB_PlayerProperties", i:p)))) >= 0)
+													{
+														SetHUDSize(HUDX_MEDIUM, HUDY_MEDIUM, FALSE);
+														SetFont("DBFONTS");
+														HudMessage(
+																		s:StringFill_str("", GetUserCVar(ConsolePlayerNumber(), "DB_SortedMaxNameChars"), " "),
+																		s:" ", s:DB_TeamGameFontColorStr(StrToNum(MergedStringInfo ('|', PPROP_Carrier, GetCVarString(StrParam(s:"DB_PlayerProperties", i:p))))),
+																		c: SymbolCarrier(p),
+																		s:" ", s:StringFill_str("", MaxIntLetters, " ");
+
+														HUDMSG_PLAIN|HUDMSG_ALPHA|HUDMSG_NOWRAP, 	0, 		CR_WHITE,
+														int2fix(SortedX + i*GetUserCVar(ConsolePlayerNumber(), "DB_SortedKerning")),
+														int2fix(SortedY + i*GetUserCVar(ConsolePlayerNumber(), "DB_SortedLeading")),
+														ClientTicDelay,		Alpha);
+													}
+
+
+
+
+												if (DB_GameTypeIs(GetCVar("DB_GameMode")) == GT_Team)
+													{
+													//Team tint
+													SetHUDSize(HUDX_MEDIUM, HUDY_MEDIUM, FALSE);
+													SetFont("DBFONTS");
+														{
+														HudMessage(
+
+																s:StringFill_str("", GetUserCVar(ConsolePlayerNumber(), "DB_SortedMaxNameChars") + 3 + 2	,													StrParam(c:DBicon_FILL)),
+																s:StringFill_str("",					StrLen(MergedStringInfo ('|', PPROP_Score, GetCVarString(StrParam(s:"DB_PlayerProperties", i:p)))),		StrParam(c:DBicon_FILL)),
+																s:StringFill_str("", MaxIntLetters	- 	StrLen(MergedStringInfo ('|', PPROP_Score, GetCVarString(StrParam(s:"DB_PlayerProperties", i:p)))),		StrParam(c:DBicon_FAKESPACE));
+
+														HUDMSG_PLAIN|HUDMSG_ALPHA|HUDMSG_NOWRAP, 	0, 		DB_TeamGameFontColorInt(StrToNum(MergedStringInfo ('|', PPROP_Team, GetCVarString(StrParam(s:"DB_PlayerProperties", i:p))))),
+														int2fix(SortedX + i*GetUserCVar(ConsolePlayerNumber(), "DB_SortedKerning")),
+														int2fix(SortedY + i*GetUserCVar(ConsolePlayerNumber(), "DB_SortedLeading")),
+														ClientTicDelay,	 FixedMul(Alpha, GetUserCVar(ConsolePlayerNumber(), "DB_TintAlpha")));
+														}
+													}
+
+
+												//Duel Elo
+												if (GetCVar("DB_GameMode") == GM_Duel)
+													{
+															SetHUDSize(HUDX_MEDIUM, HUDY_MEDIUM, FALSE);
+															SetFont("DBFONT");
+															HudMessage(s:"[", s:MergedStringInfo ('|', PPROP_DuelElo, GetCVarString(StrParam(s:"DB_PlayerProperties", i:p))), s:"]";
+															HUDMSG_PLAIN|HUDMSG_ALPHA|HUDMSG_NOWRAP, 	0, 		CR_GREY,
+															int2fix(SortedX + i*GetUserCVar(ConsolePlayerNumber(), "DB_SortedKerning")) 		- FixedMul(8.0, FixedMul(int2fix(StrLen(DB_DrawSortedPlayerInfo(p))), 0.5))	-	int2fix(8*5),
+															int2fix(SortedY + i*GetUserCVar(ConsolePlayerNumber(), "DB_SortedLeading")),
+															ClientTicDelay,		FixedMul(Alpha, 0.5));
+
+													}
+
+
+
+
+
+												//Flag
+												SetHUDSize(HUDX_TINY, HUDY_TINY, 0);
+
+												if ((StrToNum(MergedStringInfo ('|', PPROP_FlagIndex, GetCVarString(StrParam(s:"DB_PlayerProperties", i:p)))) >= 0)	&&	(StrToNum(MergedStringInfo ('|', PPROP_FlagIndex, GetCVarString(StrParam(s:"DB_PlayerProperties", i:p)))) <= MaxFlags))
+													{
+													SetFont(StrParam(s:"DBFLG", i:StrToNum(MergedStringInfo ('|', PPROP_FlagIndex, GetCVarString(StrParam(s:"DB_PlayerProperties", i:p))))));
+													HudMessage(s:"A";
+													HUDMSG_PLAIN|HUDMSG_ALPHA|HUDMSG_NOWRAP, 	0, 		CR_UNTRANSLATED,
+													int2fix((SortedX + i*GetUserCVar(ConsolePlayerNumber(), "DB_SortedKerning")) * 4) - FixedMul(32.0, FixedDiv(int2fix(GetCvar("DB_SortedMaxNameChars")), 2.0)) - int2fix(4*8*8),
+													int2fix((SortedY + i*GetUserCVar(ConsolePlayerNumber(), "DB_SortedLeading")) * 4),
+													ClientTicDelay,		Alpha);
+													}
+
+											if (StrToNum(MergedStringInfo ('|', PPROP_Team, GetCVarString(StrParam(s:"DB_PlayerProperties", i:p))))	== Team	)	a++;
+											else																												r++;
+
+
+
+								if (DB_GameTypeIs(GetCVar("DB_GameMode"))	!=	GT_Competitive)			break;
+
+								}
+					}
+				p++;
+				}
+			counter++;
+			}
+	break;
+
+	case ST_Speedrun:
+		SetHUDSize(HUDX_MEDIUM, HUDY_MEDIUM, FALSE);
+		SetFont("DBFONT");
+		HudMessage(s:DB_TicsToTime(DB_MaxTime - GetCVar("DB_SpecialInt1"), FALSE);
+		HUDMSG_PLAIN|HUDMSG_ALPHA|HUDMSG_NOWRAP,	 0, 		CR_WHITE,
+		int2fix(GetUserCVar(ConsolePlayerNumber(), "DB_SortedX")),
+		int2fix(GetUserCVar(ConsolePlayerNumber(), "DB_SortedY")),
+		ClientTicDelay,		GetUserCVar(ConsolePlayerNumber(), "DB_SortedAlpha"));
+
+		SetFont("DBFONTS");
+		HudMessage(c:DBicon_ScoreTime;
+		HUDMSG_PLAIN|HUDMSG_ALPHA|HUDMSG_NOWRAP,	 0, 		CR_WHITE,
+		int2fix(GetUserCVar(ConsolePlayerNumber(), "DB_SortedX")	- (StrLen(DB_TicsToTime(DB_MaxTime - GetCVar("DB_SpecialInt1"), FALSE))/2 + 2)*8			),
+		int2fix(GetUserCVar(ConsolePlayerNumber(), "DB_SortedY")),
+		ClientTicDelay,		GetUserCVar(ConsolePlayerNumber(), "DB_SortedAlpha"));
+	break;
+	}
+
+
+
+
+
+
+	if (!PlayerIsSpectator(ConsolePlayerNumber()))
+	if (DB_GameTypeIs(GetCVar("DB_GameMode")) == GT_Team)
+		if(!IsEven(PlayerCount()))
+			{
+			SetHUDSize(HUDX_MEDIUM, HUDY_MEDIUM, FALSE);
+			SetFont("DBFONT");
+							HudMessage(s:"Teams are uneven, score incrementation is lowered.";
+							HUDMSG_PLAIN|HUDMSG_ALPHA|HUDMSG_NOWRAP,	 0, 		CR_ORANGE,
+							int2fix(HUDX_MEDIUM/2),
+							int2fix(HUDY_MEDIUM/2 - HUDY_MEDIUM/3),
+							 ClientTicDelay,		GetUserCVar(ConsolePlayerNumber(), "DB_TeamsUnevenAlpha"));
+
+			}
+
+
+
+
+
+}
+
+
+
+
+function int SymbolCarrier (int ScoreIndex)
+{
+int Symbol;
+
+	Switch(GetCVar("DB_GameMode"))
+		{
+		case GM_CTF:
+		case GM_OneFlagCTF:			Symbol = DBicon_FLAG;		break;
+		case GM_Skulltag:			Symbol = DBicon_SKULL;		break;
+		case GM_Terminator:
+		case GM_Possession:
+		case GM_TeamPossession:
+		case GM_TeamGame:
+		case GM_Domination:			Symbol = DBicon_DOT;		break;
+		}
+
+
+
+return Symbol;
+}
+
+function str LogInColor (int Index)
+{str Result = "";	Switch(Index)	{CASE 0:	Result = "\ck";	break;		CASE 1:	Result = "\ci";	break;}	return Result;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
+//		  _____             _                                    __     __           ______            _____
+//		 |  __ \           | |                   /\              \ \   / /          |  ____|          |  __ \
+//		 | |__) |          | |                  /  \              \ \_/ /           | |__             | |__) |
+//		 |  ___/           | |                 / /\ \              \   /            |  __|            |  _  /
+//		 | |               | |____            / ____ \              | |             | |____           | | \ \
+//		 |_|               |______|          /_/    \_\             |_|             |______|          |_|  \_\
+//
+
+
+
+
+
+script 	"DB_DISCONNECT" (int gone) DISCONNECT
+{
+if (!IsNetworkGame())		Terminate;
+if (!DB_CorrectDatabase())	Terminate;
+	if (GetCvar("Compat_Dont_Stop_Player_Scripts_On_Disconnect"))
+	ACS_NamedTerminate("DB_Clientside", 0);
+}
+
+
+
+
+Script "DB_ENTER"		ENTER
+{
+if (!IsNetworkGame())	Terminate;
+ConsoleCommand(StrParam(s:"set DB_CurrentScore",	i:PlayerNumber(), s:" ", i:0));
+//ConsoleCommand(StrParam(s:"set DB_DecorativeScore", i:PlayerNumber(), s:" ", i:0));
+if (!DB_CorrectDatabase())										{ 	print(s:DB_WrongDatabase());
+																	while  (!DB_CorrectDatabase())	delay(1);
+																}
+
+
+delay(1);
+int h = -1.5;
+int a = 0.5;
+
+	Switch(GetCVar("DB_GameMode"))
+		{
+		case GM_Cooperative:																ShowResults(FALSE, RESULT_Map, RESULT_AtNormal, PlayerNumber(),StrParam(n:PRINTNAME_LEVEL), StrParam(n:PRINTNAME_LEVELNAME), h, a);		break;
+		case GM_Survival:																																																			break;
+		case GM_Invasion:																																																			break;
+		case GM_Deathmatch:																	ShowBlank(PlayerNumber(), BLANK_Results);																								break;
+		case GM_Teamplay:																	ShowBlank(PlayerNumber(), BLANK_Results);																								break;
+		case GM_Duel:																																																				break;
+		case GM_Terminator:																	ShowBlank(PlayerNumber(), BLANK_Results);																								break;
+		case GM_LastManStanding:																																																	break;
+		case GM_TeamLMS:																																																			break;
+		case GM_Possession:																	ShowBlank(PlayerNumber(), BLANK_Results);																								break;
+		case GM_TeamPossession:																ShowBlank(PlayerNumber(), BLANK_Results);																								break;
+		case GM_TeamGame:																	ShowBlank(PlayerNumber(), BLANK_Results);																								break;
+		case GM_CTF:																		ShowBlank(PlayerNumber(), BLANK_Results);																								break;
+		case GM_OneFlagCTF:																	ShowBlank(PlayerNumber(), BLANK_Results);																								break;
+		case GM_Skulltag:																	ShowBlank(PlayerNumber(), BLANK_Results);																								break;
+		case GM_Domination:																	ShowBlank(PlayerNumber(), BLANK_Results);																								break;
+		}
+}
+
+
+Script "DB_ENTERCLIENTSIDE"		ENTER	CLIENTSIDE
+{
+if (GetCVar("DB_GameMode") == GM_Duel)
+if (!StrToNum(MergedStringInfo ('|', PPROP_PlayerLogged, GetCVarString(StrParam(s:"DB_PlayerProperties", i:ConsolePlayerNumber())))))
+log(s:"Log in to progress your elo ranking! Higher ranking allows to earn more scores in duels.");
+}
+
+
+
+Script "ShowResultsCLIENT" (int Type, int Where, int CurrentMapNum, int MapStack ) NET
+{
+if (!IsNetworkGame())	Terminate;
+
+str Map = ""; int Alpha;
+if (Where == RESULT_AtNormal)	Alpha = 0.65;
+else							Alpha = 1.0;
+
+if (!DB_CorrectDatabase())	{print(s:DB_WrongDatabase());		Terminate;			}
+
+if (Type == RESULT_Map)
+Map = MergedStringInfo ('#', CurrentMapNum, 	GetCVarString(StrParam(s:"DB_Maps", i:MapStack)));
+
+
+
+
+
+if (Type == RESULT_Latest)
+if (!StrLen(GetCVarString("DB_LatestResult1")))
+				{
+				//////////////////////////////SERVER TITLE
+
+				str ServerTitle = GetServerOrClusterName(24);
+
+
+				SetFont("DBFONT");
+				SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+				HudMessage(s:"Noone ever completed any map w/DoomBoard \n\n in  ", s:ServerTitle, s:"  servers. Be the first to do some!";			HUDMSG_FADEOUT,	 0, 	CR_ORANGE,  		int2fix(HUDX_MEDIUM/2), 		int2fix(HUDY_MEDIUM/2),		int2fix(6), 	int2fix(2));
+				Terminate;
+				}
+
+
+
+
+
+ShowResults(FALSE, Type, Where, PlayerNumber(), Map, "", 0, Alpha);
+}
+
+
+
+
+
+
+
+Script "DB_Result" (int Type, int Where) NET CLIENTSIDE
+{
+if (!IsNetworkGame())	Terminate;
+if (!DB_CorrectDatabase())	{log(s:DB_WrongDatabase());		Terminate;			}
+
+NamedRequestScriptPuke("ShowResultsCLIENT", Type,  Where, 1, 1);	// this here won't be called for map results
+ConsoleCommand("CloseMenu");
+}
+
+
+
+
+
+Script "DB_Clientside"	OPEN CLIENTSIDE
+
+{
+if (!IsNetworkGame())	Terminate;
+if (StrLen(GetCVarString("DB_VersionWarning")))		log(s:GetCVarString("DB_VersionWarning"));
+if (!DB_CorrectDatabase())										{ log(s:DB_WrongDatabase());
+																	while  (!DB_CorrectDatabase())	delay(1);
+																}
+
+
+bool flip;
+int i, Sorted, Team;
+int EverySec = SEC;
+int EveryFiveSec = SEC*5;
+int SortedX, SortedY, Alpha;
+int Memo, Frags, DuelCooldown;
+bool FoundMemo;
+int Today = StrToNum(Strftime (SystemTime(), "%y", true)) * 365 + StrToNum(Strftime (SystemTime(), "%j", true));
+str String = "";
+bool Launched;
+str Name = "";
+str OldName = "";
+
+while(TRUE)
+	{
+if (!DB_CorrectDatabase())											{ log(s:DB_WrongDatabase());
+																	while  (!DB_CorrectDatabase())	delay(1);
+																	}
+
+
+
+	Name = StrParam(n:ConsolePlayerNumber() + 1);
+
+	if(GetUserCVar(ConsolePlayerNumber(),"DB_SortedMaxPlayers") 		> MaxWinners)	SetUserCVar(ConsolePlayerNumber(),"DB_SortedMaxPlayers", MaxWinners);
+	if(GetUserCVar(ConsolePlayerNumber(),"DB_FlagIndex") 				< 0)			SetUserCVar(ConsolePlayerNumber(),"DB_FlagIndex", 0);
+	if(GetUserCVar(ConsolePlayerNumber(),"DB_FlagIndex") 				> MaxFlags)		SetUserCVar(ConsolePlayerNumber(),"DB_FlagIndex", MaxFlags);
+
+
+
+
+	Sorted	= StrToNum(MergedStringInfo ('|', PPROP_Place,	GetCVarString(StrParam(s:"DB_PlayerProperties", i:ConsolePlayerNumber()))));
+	Team	= StrToNum(MergedStringInfo ('|', PPROP_Team,	GetCVarString(StrParam(s:"DB_PlayerProperties", i:ConsolePlayerNumber()))));
+
+
+	//SPAWNFRAGGING IN DUELS GIVES LESS POINTS
+	if (DB_GameTypeIs(GetCVar("DB_GameMode")) == GT_Competitive)
+		if (GetCVar("DB_ScoreType") == ST_Standart)
+		if (GetPlayerScore(ConsolePlayerNumber(), SCORE_FRAGS) >	Frags)
+		{
+		Frags =	GetPlayerScore(ConsolePlayerNumber(), SCORE_FRAGS);
+		if (GetCVar("DB_GameMode") == GM_Duel)		if (Frags < GetCVar("FragLimit"))		if (DuelCooldown)	NamedRequestScriptPuke("DB_DSFB", PasswordIs(), DuelCooldown);
+		DuelCooldown = SEC*4;
+		}
+
+	if 	(GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) & 	BT_SHOWSCORES)
+		{
+		SetFont("SMALLFONT");
+		SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+		HudMessage(s:MergedStringInfo ('|', PPROP_Credits, GetCVarString(StrParam(s:"DB_PlayerProperties", i:ConsolePlayerNumber()))), s: " DBCREDITS";			HUDMSG_PLAIN|HUDMSG_ALPHA|HUDMSG_NOWRAP,	 0, 	CR_GREEN,  		int2fix(HUDX_MEDIUM/2), 		int2fix(HUDY_MEDIUM/2 + HUDY_MEDIUM/3 + HUDY_MEDIUM/8),		ClientTicDelay, 	FixedMul(0.5, GetUserCVar(ConsolePlayerNumber(), "DB_SortedAlpha")));
+		}
+
+
+
+
+	for (i = 1; i <= GetCVar("DB_MaxMemos"); i++)
+		{
+		if (IsTIDUsed(DB_MemoSpot + i))		SetActorProperty(DB_MemoSpot + i, APROP_Alpha, GetUserCVar(ConsolePlayerNumber(), "DB_MemoAlpha"));
+		}
+
+
+	//MEMO
+	if (StrLen(GetUserCVarString(ConsolePlayerNumber(), "post")))
+		{
+		SetUserCVarString(ConsolePlayerNumber(), "post", "");
+		if (!DB_MemoAllowedOnThisMap())
+										{
+										if (!StrLen(GetCVar("DB_MemoMaps")))		log(s:"Memos are not allowed.");
+										else										log(s:"Memos are not allowed on this map.");
+										}
+		else
+			{
+		if (!PlayerIsSpectator(ConsolePlayerNumber()))
+			if (StrToNum(MergedStringInfo ('|', PPROP_Credits, GetCVarString(StrParam(s:"DB_PlayerProperties", i:ConsolePlayerNumber()))))	>= GetCVar("DB_MemoCost")	)
+				{
+				SetActivatorToPlayer(ConsolePlayerNumber());
+				i = 1;
+					while(i <= GetCVar("DB_MaxMemos"))
+						{
+						if (IsTIDUsed(DB_MemoSpot + i))
+							{
+							if (CheckActorPosition (0, MemoRadius*3, DB_MemoSpot + i))
+									{
+									break;
+									}
+							}
+						i++;
+						}
+
+				SetActivator (0, AAPTR_NULL);
+
+						if (i > GetCVar("DB_MaxMemos"))		NamedRequestScriptPuke("DB_SendMemo", PasswordIs());
+						else 								log(s:"You can't leave a post near another memo!");
+
+				}
+
+			else
+					{
+					String = StrParam(s:"Not enough DoomBoardCredits to post a memo. ", i: GetCVar("DB_MemoCost") - StrToNum(MergedStringInfo ('|', PPROP_Credits, GetCVarString(StrParam(s:"DB_PlayerProperties", i:ConsolePlayerNumber())))), s:" more DBC required. DBC are given each minute.");
+					if (!StrToNum(MergedStringInfo ('|', PPROP_PlayerLogged, GetCVarString(StrParam(s:"DB_PlayerProperties", i:ConsolePlayerNumber())))))
+					String = StrParam(s:String, s:" Log in to gather DBC from ingame account bank.");
+					log(s:String);
+					}
+			}
+
+		}
+
+
+
+	// READING DOOMBOARD TUTORIAL
+
+
+	// STANDART MEMOS READING
+	i = 1;
+	FoundMemo = FALSE;
+	SetActivatorToPlayer(ConsolePlayerNumber());
+	if (!PlayerIsSpectator(ConsolePlayerNumber()))
+	while(i <= GetCVar("DB_MaxMemos"))
+		{
+
+		if (IsTIDUsed(DB_MemoSpot + i))
+			{
+
+
+				if (CheckActorPosition (0, MemoRadius*2, DB_MemoSpot + i))
+						{
+						if (Memo != i)
+							{
+							NamedRequestScriptPuke("DB_ReadMemo", PasswordIs(), i, GetUserCVar(ConsolePlayerNumber(), "DB_MemoAlpha"), GetUserCVar(ConsolePlayerNumber(), "DB_MemoHoldTime"));
+							Memo = i;
+							}
+						FoundMemo = TRUE;
+						}
+
+			}
+
+
+			if (FoundMemo)	break;
+
+
+		i++;
+
+
+			if (i > GetCVar("DB_MaxMemos"))
+				//if (Memo)
+					{
+					ShowBlank(ConsolePlayerNumber(), BLANK_Memo);
+					Memo = 0;
+					}
+
+
+
+
+
+		}
+
+
+
+
+	SetActivator (0, AAPTR_NULL);
+
+
+	if (!EverySec)
+		{
+		if (!Launched)
+			{
+					i = FALSE;
+
+
+					//CLUSTER WARNING
+					if (StrLen(GetUserCVarString(ConsolePlayerNumber(), "DB_LastClusterName")))
+						if (!StrIcmp(StripColors(GetUserCVarString(ConsolePlayerNumber(), "DB_LastClusterName")), 	GetServerOrClusterName(13)))
+							if (GetUserCVar(ConsolePlayerNumber(), "DB_LastClusterID") != GetCVar("DB_ServerClusterID"))
+								{
+								String = StrParam(	s:"\crUnfortunatelly, it looks like server cluster \cg", s:GetServerOrClusterName(13), s:"\n\n",
+													s:"\crdoesn't support a mutual database between their servers.~~~~~\n\n",
+													s:"Which means that data of this server(scores, your settings)~~\n\n",
+													s:"won't be spread to other servers of this network and~~~~~~~~~\n\n",
+													s:"vice-versa. If you want this server to be a global thing~~~~~\n\n",
+													s:"please let cluster host know about his issue!~~~~~~~~~~~~~~~~"
+													);
+								i = TRUE;
+								}
+
+
+
+						// TRIAL WARNING
+						if (!i)
+						if (GetUserCvar(ConsolePlayerNumber(), "DB_Today") !=	Today)
+						if (Today < 8545)
+							{
+							i = TRUE;
+							String = StrParam(	s:"\crWarning! DooMBoard mod is in trial state, significant changes\n\n",
+												s:"still might occur! Because of that those scores that you'll~~\n\n",
+												s:"gather during walkthrough  MAY not be canon!~~~~~~~~~~~~~~~~~\n\n",
+												s:"Estimated proper release date of DooMBoard is \cgMay 31, 2023~~~\n\n",
+												s:"\crThis message will go off at the same date. If there are bugs~\n\n",
+												s:"please look for/host a new version, they could be fixed now.~"
+												);
+
+							}
+
+							if (i)
+								{
+								SetHUDSize(HUDX_MEDIUM, HUDY_MEDIUM, FALSE);
+								SetFont("DBFONT");
+								HudMessage(	s:String;
+								HUDMSG_FADEOUT|HUDMSG_ALPHA|HUDMSG_NOWRAP|HUDMSG_LOG,	 0, 		CR_DARKRED,
+								int2fix(HUDX_MEDIUM/2),
+								int2fix(HUDY_MEDIUM/2 - HUDY_MEDIUM/3),
+								 16.0, 3.0, 		0.75);
+
+								SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+								SetFont("DBBACK5");
+								HudMessage(s:"A";	HUDMSG_FADEOUT|HUDMSG_ALPHA,	 0, 		CR_UNTRANSLATED,	int2fix(HUDX_MEDIUM/2), 	int2fix(HUDY_MEDIUM/2 - HUDY_MEDIUM/3 + HUDY_MEDIUM/16),  16.0, 3.0, 0.75);
+								}
+
+
+						// SHOW LATEST; PROMINENTS
+						if (GetUserCvar(ConsolePlayerNumber(), "DB_Today") !=	Today)
+							{
+							if (!random(0,3))	i = RESULT_Prominent;
+							else				i = RESULT_Latest;
+							NamedRequestScriptPuke("ShowResultsCLIENT", i, RESULT_AtNormal, 1337, 666);
+							}
+
+
+
+			i = 0;
+
+			Launched = TRUE;
+			}
+
+		SetUserCVarString	(ConsolePlayerNumber(),"DB_LastClusterName", 	StrParam(s:"\cf", s:GetServerOrClusterName(13), s:"\cc"));
+		SetUserCVar			(ConsolePlayerNumber(),"DB_LastClusterID", 		GetCVar("DB_ServerClusterID"));
+		SetUserCvar			(ConsolePlayerNumber(),"DB_Today", 				Today);
+
+
+		EverySec = Sec;
+		}
+
+	if (!EveryFiveSec)
+		{
+
+		if (StrICmp(OldName, Name))
+			{
+			OldName = StrParam(n:ConsolePlayerNumber() + 1);
+			if (StrToNum(MergedStringInfo ('|', PPROP_PlayerLogged, GetCVarString(StrParam(s:"DB_PlayerProperties", i:ConsolePlayerNumber())))))
+					NamedRequestScriptPuke("DB_Account", PasswordIs(),  -1);
+			}
+
+
+		EveryFiveSec = Sec*5;
+		}
+
+	if (GetGameModeState() != GAMESTATE_COUNTDOWN)
+	if (GetGameModeState() != GAMESTATE_INRESULTSEQUENCE)
+		if (!GetCVar("DB_HideCurrentScores"))
+			DrawTable(Sorted, Team);
+
+
+
+
+
+
+
+
+
+	Switch(IsNetworkGame())
+		{
+		case FALSE:
+		SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning1", "You cannot set flag");
+		SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning2", "in offline mode.");
+		SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning3", ".....................");
+		SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning4", ".....................");
+		SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning5", ".....................");
+		SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning6", ".....................");
+		SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning7", ".....................");
+		break;
+
+		case TRUE:
+
+
+		if (!StrToNum(MergedStringInfo ('|', PPROP_PlayerLogged, GetCVarString(StrParam(s:"DB_PlayerProperties", i:ConsolePlayerNumber())))))		// Player is not logged in
+			{
+			SetUserCVarString(ConsolePlayerNumber(), "DB_FlagName", 	StrParam(s:LogInColor(Flip), s:"YOU ARE NOT LOGGED IN!"));
+			SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning1", StrParam(s:LogInColor(Flip), s:"Log in your zandronum"));
+			SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning2", StrParam(s:LogInColor(Flip), s:"account to be able to"));
+			SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning3", StrParam(s:LogInColor(Flip), s:"legalize your scores"));
+			SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning4", StrParam(s:LogInColor(Flip), s:"and set your flag."));
+			SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning5", ".....................");
+			SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning6", ".....................");
+			SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning7", ".....................");
+			}
+
+		else	// Player is logged in
+			{
+
+
+
+			// SHOW FLAG
+			SetUserCVarString(ConsolePlayerNumber(), "DB_FlagName", 		FlagName(GetUserCVar(ConsolePlayerNumber(), "DB_FlagIndex")));
+			if ((GetUserCVar(ConsolePlayerNumber(), "DB_FlagIndexTEMP")) != (GetUserCVar(ConsolePlayerNumber(), "DB_FlagIndex")))
+				{
+				SetUserCVar(ConsolePlayerNumber(), "DB_FlagIndexTEMP", GetCVar("DB_FlagIndex"));
+				SetFont(StrParam(s:"DBFLG", i:GetCVar("DB_FlagIndex")));
+				SetHUDSize(HUDX_BIG, HUDY_BIG, 0);
+				HudMessage(s:"A"; HUDMSG_FADEOUT, 					HUDid_DB_HEADER + HUDid_DB_FlagSmall, 	CR_UNTRANSLATED, 	int2fix(HUDX_BIG/2 + HUDX_BIG/8),	int2fix(HUDY_BIG/2 - HUDY_BIG/5),	3.0, 2.0);
+				SetHUDSize(HUDX_TOOBIG, HUDY_TOOBIG, 0);
+				HudMessage(s:"A"; HUDMSG_FADEOUT|HUDMSG_ALPHA, 		HUDid_DB_HEADER + HUDid_DB_FlagBig,		CR_UNTRANSLATED, 	int2fix(HUDX_TOOBIG/2),				int2fix(HUDY_TOOBIG/2), 			3.0, 2.0, 0.1);
+				}
+
+
+
+			//FLAGRESET
+			if (!StrCmp(MergedStringInfo ('|', PPROP_FlagIndex, GetCVarString(StrParam(s:"DB_PlayerProperties", i:ConsolePlayerNumber()))), "-2"))
+				NamedRequestScriptPuke("DB_Account", PasswordIs(),  -2);
+
+
+
+			if (StrToNum(MergedStringInfo ('|', PPROP_FlagUpdate, GetCVarString(StrParam(s:"DB_PlayerProperties", i:ConsolePlayerNumber())))) > Today)
+				{
+				if (GetUserCVar(ConsolePlayerNumber(), "DB_FlagIndex") == 0)
+					{
+					SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning1",					StrParam(s:"You can remove your flag"));
+					SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning2", 				StrParam(s:"anytime. However, to"));
+					SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning3", 				StrParam(s:"apply a new one you still"));
+					SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning4", 				StrParam(s:"have to wait for ", s:"\co", i:StrToNum(MergedStringInfo ('|', PPROP_FlagUpdate, GetCVarString(StrParam(s:"DB_PlayerProperties", i:ConsolePlayerNumber())))) - Today , s:"\cj days."));
+					SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning5", ".....................");
+					SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning6", ".....................");
+					SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning7", ".....................");
+					}
+				else
+					{
+					SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning1",					StrParam(s:"You'll have to Wait for"));
+					SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning2", 				StrParam(s:"\co", i:StrToNum(MergedStringInfo ('|', PPROP_FlagUpdate, GetCVarString(StrParam(s:"DB_PlayerProperties", i:ConsolePlayerNumber())))) - Today , s:"\cj days to be able to"));
+					SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning3", 				StrParam(s:"change your flag again."));
+					SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning4", String_Ending(	StrParam(s:"Your current is \"\co", s:StripColors(FlagName(StrToNum(MergedStringInfo ('|', PPROP_FlagIndex, GetCVarString(StrParam(s:"DB_PlayerProperties", i:ConsolePlayerNumber()))		)))), s:"\cj\""), 24, ".."));
+					SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning5", ".....................");
+					SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning6", ".....................");
+					SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning7", ".....................");
+					}
+
+
+
+				}
+			else
+				{
+				SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning1", 				StrParam(s:"Click \coAPPLY FLAG\cj button"));
+				SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning2", 				StrParam(s:"to reset your current"));
+				SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning3", 				StrParam(s:"flag. Once it applied,"));
+				SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning4", 				StrParam(s:"you'll have to wait for"));
+				SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning5", 				StrParam(s:"\co", i: GetCvar("DB_ClientFlagResetIn"), s:"\cj days to be able to"));
+				SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning6", 				StrParam(s:"reset again. Current is" ));
+				SetUserCVarString(ConsolePlayerNumber(), "DB_FlagWarning7", String_Ending(	StrParam(s:"\"\co", s:StripColors(FlagName(StrToNum(MergedStringInfo ('|', PPROP_FlagIndex, GetCVarString(StrParam(s:"DB_PlayerProperties", i:ConsolePlayerNumber()))		)))), s:"\cj\""), 24, ".."));
+				}
+
+
+			}
+		break;
+		}
+
+
+	Flip = !Flip;
+
+	if (DuelCooldown	> 0)		DuelCooldown--;
+	if (EverySec		> 0)		EverySec--;
+	if (EveryFiveSec	> 0)		EveryFiveSec--;
+	delay(1);
+
+
+
+
+
+	}
+}
+
+
+
+script "DB_DEATH" DEATH
+{
+if (!IsNetworkGame())	Terminate;
+if (!DB_GameSim)		Terminate;
+//if (StrLen(GetCVarString("DB_VersionWarning")))						Terminate;
+if (!DB_CorrectDatabase())	Terminate;
+delay(1);
+if (DB_GameTypeIs(GetCVar("DB_GameMode")) == GT_Competitive)
+ConsoleCommand(StrParam(s:"set DB_CurrentScore", i:PlayerNumber(), s:" ", i:GetCVar(StrParam(s:"DB_CurrentScore", i:PlayerNumber())) - DeathPenalty));
+}
+
+
+
+
+
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////   Player send  his account info to server
+
+
+
+//	1       2           3          4
+//	~account~currentname~flagstring~flagupdatedate
+// int FLAG INDEX codes:
+// 0 player just created account and didn't choose flag before that.
+// -1 don't update flag
+// -2 Player's flag had a change in a name or was removed, so making it default for him
+Script "DB_Account" (int Password, int FlagIndex) NET
+{
+if (!IsNetworkGame())						Terminate;
+if (!DB_GameSim)							Terminate;
+if (!PasswordMatch(Password))				Terminate;
+if (!PlayerIsLoggedIn(PlayerNumber()))		Terminate;
+if (!DB_CorrectDatabase())					Terminate;
+
+str String1 = "";
+str String2 = "";
+str FlagIs = "";
+int i, counter, ClientFlagUpDate;
+bool UpdateFlag, UpdateName, NewAccount;
+int Date =  StrToNum(Strftime (SystemTime(), "%y", true)) * 365 + StrToNum(Strftime (SystemTime(), "%j", true));
+while(counter < GetCVar("DB_RegisteredPlayers"))
+	{
+		// check if account already exists
+
+		String1 = 	GetCVarString(StrParam(s:"DB_Acc", i:counter, s:"ACCOUNT"));
+		if (!StrIcmp(String1, GetPlayerAccountName(PlayerNumber())))	// FOUND AN ACCOUNT
+			{
+				ClientFlagUpDate	=	GetCVar(StrParam(s:"DB_Acc", i:counter, s:"FLAGUPDATE"));
+
+				// check if player has changed his name
+
+				String1 = 	StrParam(n: PlayerNumber() + 1);
+				String2 =	GetCVarString(StrParam(s:"DB_Acc", i:counter, s:"PLAYERNAME"));
+
+
+				if (StrCmp(String1, String2)) // and he did chanchged his name
+					UpdateName = TRUE;
+
+
+
+
+				if (FlagIndex >= 0)		//if script puke was directly to update flag
+				{
+						// server flag cvar string
+						String1 =			StripColors(FlagName(FlagIndex));
+						String2 = 			GetCVarString(StrParam(s:"DB_Acc", i:counter, s:"FLAGNAME"));
+
+
+						if (StrIcmp(String1, String2))	//if Flag name is not the same
+							{
+
+							// if versions are cool, check the dates
+
+							if ((ClientFlagUpDate <= Date) || (FlagIndex == 0))						// if N days passed and flag can be changed now or player wants to reset flag to default.
+								{
+								if (FlagIndex > 0)	ClientFlagUpDate = Date + GetCvar("DB_FlagResetIn");
+								UpdateFlag = TRUE;
+								FlagIs = StripColors(FlagName(FlagIndex));
+								}
+
+
+							}
+
+
+
+				}
+
+
+
+				else if (FlagIndex == -1)		//Don't need to reset flag( but we keep the name for CCMD)
+				{
+
+					ClientFlagUpDate =	GetCVar			(StrParam(s:"DB_Acc", i:counter, s:"FLAGUPDATE"));
+					FlagIs = 			GetCVarString	(StrParam(s:"DB_Acc", i:counter, s:"FLAGNAME"));
+					UpdateFlag = FALSE;
+
+				}
+
+
+
+
+
+
+				else if (FlagIndex == -2)		//Reset Flag and date
+				{
+
+					ClientFlagUpDate = Date;
+					FlagIs = StripColors(FlagName(0));
+					UpdateFlag = TRUE;
+
+				}
+
+
+			break;
+
+			}
+
+
+		counter++;
+	}
+
+
+//No account has been found at this point, creating one.
+
+	if (counter >= GetCVar("DB_RegisteredPlayers"))		//if that is a new account
+			{
+
+			// Synchronize Ingame cvar amount of registered accounts with database's
+			while (DB_Transaction)		delay(1);
+			DB_Transaction = TRUE;
+			BeginDBTransaction();		DrawDatabaseTransaction("A");
+			if (GetCVar("DB_RegisteredPlayers")		!= 			GetDBEntry	("GlobalInfo", "RegisteredPlayers")		)
+					{
+					counter 	= GetDBEntry("GlobalInfo", "RegisteredPlayers");
+					DB_ImportPlayersFromDB();
+					}
+			EndDBTransaction();			DrawDatabaseTransaction("");
+			DB_Transaction = FALSE;
+
+			UpdateName = TRUE;	//ofcourse update Current Name
+			UpdateFlag = TRUE;	//ofcourse update Flag
+			ClientFlagUpDate = Date;
+			FlagIs = StripColors(FlagName(0));
+			}
+
+
+
+		if ((!UpdateName) && (!UpdateFlag))		Terminate;
+
+
+		while (DB_Transaction)		delay(1);
+
+		DB_Transaction = TRUE;
+		BeginDBTransaction();		DrawDatabaseTransaction("A");
+
+		//Update in Database
+
+		if (UpdateName)
+			{
+				String1 = StrParam(n:PlayerNumber() + 1);
+				SetDBEntryString("AccountInfo",	StrParam(s:"id.", i:counter, s:"___ACCOUNT"),		GetPlayerAccountName(PlayerNumber()));
+				SetDBEntryString("AccountInfo", StrParam(s:"id.", i:counter, s:"___CURRENTNAME"),	String1);
+			}
+
+
+
+
+		if (UpdateFlag)
+			{
+				SetDBEntryString("AccountInfo", StrParam(s:"id.", i:counter, s:"___FLAGNAME"), 			FlagIs);
+				SetDBEntry		("AccountInfo", StrParam(s:"id.", i:counter, s:"___FLAGUPDATE"), 		ClientFlagUpDate);
+			}
+
+
+
+
+		// immediatelly show it ingame
+		ConsoleCommand(StrParam(s:"set DB_Acc", i:counter, 	s:"ACCOUNT", 		s:" ", 	s:"\"",			s:GetPlayerAccountName(PlayerNumber()),											s:"\""));
+		ConsoleCommand(StrParam(s:"set DB_Acc", i:counter, 	s:"PLAYERNAME", 	s:" ", 	s:"\"",			n:PlayerNumber() + 1,															s:"\""));
+		ConsoleCommand(StrParam(s:"set DB_Acc", i:counter, 	s:"FLAGNAME", 		s:" ", 	s:"\"",			s:FlagIs,																		s:"\""));
+		ConsoleCommand(StrParam(s:"set DB_Acc", i:counter, 	s:"FLAGUPDATE", 	s:" ", 					i:ClientFlagUpDate																		));
+		ConsoleCommand(StrParam(s:"set DB_Acc", i:counter, 	s:"DUELELO", 		s:" ", 					i:GetDBEntry	("AccountInfo", StrParam(s:"id.", i:counter, s:"___DUELELO"))			));
+
+
+
+	String1 = "";
+
+
+	if (counter >= GetCVar("DB_RegisteredPlayers"))		//if that is a new account
+			{
+
+			//add final accounts amount
+			SetDBEntry		("GlobalInfo", "RegisteredPlayers", counter + 1);
+			ConsoleCommand(StrParam(s:"set DB_RegisteredPlayers ", i:counter + 1));
+			String1 = "REGISTERED NEW ACCOUNT, ";
+			}
+
+	if (UpdateName || UpdateFlag)
+			{
+			SetDBEntry("GlobalInfo", "AccountsUpdated",	random(1000000, 9999999));
+			ConsoleCommand(StrParam(s:"set DB_AccountsUpdated ", i:GetDBEntry("GlobalInfo", "AccountsUpdated")));
+
+			String2 = "";
+
+
+			if (UpdateName)											String2 = StrParam(				s:"Name Updated(", n:PlayerNumber() + 1,	s:"),");
+			if (UpdateFlag)											String2 = StrParam(s:String2, 	s:"Flag Updated(", s:FlagIs,				s:")");
+			log(s:"DOOMBOARD ACCOUNT: ",  s:GetPlayerAccountName(PlayerNumber()), s:": ", s:String1, s:String2);
+			}
+
+
+		EndDBTransaction();		DrawDatabaseTransaction("");
+		DB_Transaction = FALSE;
+
+}
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////   Flag Apply
+
+Script "DB_ApplyFlag" (void) NET CLIENTSIDE
+{
+if (!IsNetworkGame())		Terminate;
+if (!DB_GameSim)			Terminate;
+if (!DB_CorrectDatabase())	{ log(s:DB_WrongDatabase());		Terminate;	}
+if (!StrToNum(MergedStringInfo ('|', PPROP_PlayerLogged, GetCVarString(StrParam(s:"DB_PlayerProperties", i:ConsolePlayerNumber())))))	Terminate;
+
+int Today = StrToNum(Strftime (SystemTime(), "%y", true)) * 365 + StrToNum(Strftime (SystemTime(), "%j", true));
+NamedRequestScriptPuke("DB_Account", PasswordIs(), GetUserCVar(ConsolePlayerNumber(),"DB_FlagIndex"));
+}
+
+
+
+Script "DB_ReadMemo" (int Password, int MemoNum, int Alpha, int HoldTime) NET
+{
+if (!IsNetworkGame())			Terminate;
+if (!DB_GameSim)				Terminate;
+if (!PasswordMatch(Password))	Terminate;
+if (!DB_CorrectDatabase())		{ print(s:DB_WrongDatabase());		Terminate;	}
+
+str String1 = "";
+int FadeOut = 2;
+//MESSAGE
+
+SplitText (StripColors(GetCVarString(StrParam(s:"DB_Memo", i:MemoNum))), MemoCharsInLine, MemoLines, 12, HUDX_MEDIUM, HUDY_MEDIUM, HUDX_MEDIUM/2, HUDY_MEDIUM/2 + 32, HoldTime ,  0.75, Alpha, FadeOut, HUDid_DB_HEADER + HUDid_DB_MemoText, "DBFONT");
+
+//NAME
+//Not Logged in
+if (GetChar(MergedStringInfo ('|', 1, GetCVarString(StrParam(s:"DB_MemoProperties", i: MemoNum))), 0) == '~')
+		String1	=	RemoveChar(	MergedStringInfo ('|', 1, GetCVarString(StrParam(s:"DB_MemoProperties", i: MemoNum))), 	'~');
+else	//is logged in
+		String1 = 				GetCVarString(StrParam(s:"DB_Acc", s:MergedStringInfo ('|', 1, GetCVarString(StrParam(s:"DB_MemoProperties", i: MemoNum))), s:"PLAYERNAME"));
+
+String1 = String_Ending(StripColors(String1), 			22, "..");
+SetFont("DBFONT");
+SetHUDSize(HUDX_LARGE,		HUDY_LARGE,	FALSE);
+HudMessage(s:	StringFill_str	(String1, 	MaxNameChars,	"~");			HUDMSG_FADEOUT|HUDMSG_ALPHA|HUDMSG_NOWRAP,	 HUDid_DB_HEADER + HUDid_DB_MemoName, 		CR_ORANGE,			int2fix(HUDX_LARGE/2		- 56), 		int2fix(HUDY_LARGE/2),				int2fix(HoldTime), int2fix(Fadeout), FixedMul(0.5, Alpha));
+
+//DATE
+String1 = MergedStringInfo ('|', 2, GetCVarString(StrParam(s:"DB_MemoProperties", i: MemoNum)));
+SetFont("DBFONT");
+SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+HudMessage(s:"posted on ", s:String1;										HUDMSG_FADEOUT|HUDMSG_ALPHA|HUDMSG_NOWRAP,	 HUDid_DB_HEADER + HUDid_DB_MemoDate, 	CR_ORANGE,  		int2fix(HUDX_MEDIUM/2		+ 128), 		int2fix(HUDY_MEDIUM/2),				int2fix(HoldTime), int2fix(Fadeout), FixedMul(0.5, Alpha));
+
+
+//FLAG
+//Not Logged in
+if (GetChar(MergedStringInfo ('|', 1, GetCVarString(StrParam(s:"DB_MemoProperties", i: MemoNum))), 0) == '~')
+		String1	=		"998";
+else	//is logged in
+		String1 = 		StrParam(i:GetFlagIDbyName(	GetCVarString(StrParam(s:"DB_Acc", s:MergedStringInfo ('|', 1, GetCVarString(StrParam(s:"DB_MemoProperties", i: MemoNum))), s:"FLAGNAME")), TRUE));
+
+
+SetHUDSize(HUDX_SUPERSMALL, HUDY_SUPERSMALL, FALSE);
+SetFont(StrParam(s:"DBFLG", s:String1));
+HudMessage(s:"A";															HUDMSG_FADEOUT|HUDMSG_ALPHA|HUDMSG_NOWRAP,	 HUDid_DB_HEADER + HUDid_DB_MemoFlag, 		CR_UNTRANSLATED,	int2fix(HUDX_SUPERSMALL/2	- 796), 	int2fix(HUDY_SUPERSMALL/2),			int2fix(HoldTime), int2fix(Fadeout), FixedMul(0.5, Alpha));
+
+SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+SetFont("DBBACK5");
+HudMessage(s:"A";															HUDMSG_FADEOUT|HUDMSG_ALPHA|HUDMSG_NOWRAP,	 HUDid_DB_HEADER + HUDid_DB_MemoBack, 		CR_UNTRANSLATED,	int2fix(HUDX_MEDIUM/2), 				int2fix(HUDY_MEDIUM/2 + 64), 		int2fix(HoldTime), int2fix(Fadeout), FixedMul(0.75, Alpha));
+
+}
+
+
+
+function void SplitText (str Text, int CharsPerLine, int Lines, int Leading, int Xsize, int Ysize, int X, int Y, int Hold, int BasicAlpha, int Alpha, int Fadeout, int id, str Font)
+{
+str Result = "";
+int CharCounter, CharInLine, LineCounter;
+SetHUDSize(Xsize,		Ysize,	FALSE);
+SetFont(Font);
+LineCounter = 1;
+while (LineCounter <= Lines)
+	{
+	CharInLine = 0;
+	Result = "";
+	while (CharCounter < StrLen(Text))
+		{
+		Result = StrParam(s:Result, c:GetChar(Text, CharCounter));
+		CharCounter++;
+		CharInLine++;
+		if (CharInLine >= CharsPerLine)
+							{
+									if ((CharInLine >= 32)	&&	(CharInLine <= 47))		Result = StrParam(s:Result, s:" ");
+							else	if ((CharInLine >= 58)	&&	(CharInLine <= 64))		Result = StrParam(s:Result, s:" ");
+							else	if ((CharInLine >= 91)	&&	(CharInLine <= 96))		Result = StrParam(s:Result, s:" ");
+							else	if  (CharInLine >= 123)								Result = StrParam(s:Result, s:" ");
+							else														Result = StrParam(s:Result, s:"-");
+							break;
+							}
+		}
+
+	if (CharInLine < CharsPerLine)
+		{
+		Result = StrParam(s:StringFill_str	(Result, 	CharsPerLine,	"~"));
+		}
+
+	HudMessage(s:Result;		HUDMSG_FADEOUT|HUDMSG_ALPHA|HUDMSG_NOWRAP,	 id + LineCounter, 		CR_WHITE,  int2fix(X), 		int2fix(Y + LineCounter*Leading), 	int2fix(Hold), 	int2fix(Fadeout), FixedMul(BasicAlpha, Alpha));
+	LineCounter++;
+	}
+
+
+}
+
+
+
+
+
+
+
+Script "DB_SendMemo" (int Password) NET
+{
+if (!IsNetworkGame())			Terminate;
+if (!DB_GameSim)				Terminate;
+if (!PasswordMatch(Password))	Terminate;
+if (!DB_CorrectDatabase())	{ print(s:DB_WrongDatabase());		Terminate;	}
+str StringIs = GetUserCVarString(PlayerNumber(), "post");
+int i;
+
+str CurrentMap 		= StrToUpper(StrParam(n:PRINTNAME_LEVEL));
+int CurrentMode 	= GetCVar("DB_GameMode");
+int CurrentSkill 	= GameSkill();
+
+
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+
+
+for (i = GetCVar("DB_MaxMemos") - 1; i >= 1; i--)
+		{
+
+		//SHIFT OLD MEMOS
+		if (GetCVarString(StrParam(s:"DB_MemoProperties", i:i)))
+			{
+			ConsoleCommand(StrParam(s:"set DB_Memo",			i:i + 1,	s:" ",	s:"\"",
+																					s:GetCVarString(StrParam(s:"DB_Memo", i:i)),
+																					s:"\""
+																					));
+
+			ConsoleCommand(StrParam(s:"set DB_MemoProperties",	i:i + 1,	s:" ",	s:"\"",
+																					s:GetCVarString(StrParam(s:"DB_MemoProperties", i:i)),
+																					s:"\""
+																					));
+
+
+
+
+			}
+
+
+
+		// CREATE NEW
+		if (i == 1)
+			{
+
+			ConsoleCommand(StrParam(s:"set DB_Memo",			i:i,				 s:" ",	s:"\"",
+																							s:StringIs,
+																							s:"\""
+																							));
+
+
+			ConsoleCommand(StrParam(s:"set DB_MemoProperties",	i:i,				s:" ",	s:"\"",
+																							s:"|", s:MergedStringInfo ('|', PPROP_NameID, 		GetCVarString(StrParam(s:"DB_PlayerProperties", i:PlayerNumber()))),
+																							s:"|", s: Strftime (SystemTime(), "%F  %T", true),
+																							s:"|", i: GetActorX(0) >> 16,
+																							s:"|", i: GetActorY(0) >> 16,
+																							s:"|", i: GetActorZ(0) >> 16,
+																							s:"|", i: GetActorAngle(0) >> 8,
+																							s:"\""
+																							));
+			}
+
+
+
+		}
+
+
+
+
+
+
+while(DB_Transaction)	delay(1);
+DB_Transaction = TRUE;
+BeginDBTransaction();	DrawDatabaseTransaction("A");
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+
+for (i = 1; i <= MaxMemos; i++)
+		{
+		Thing_Remove(DB_MemoSpot + i);
+		if (StrLen(GetCVarString(StrParam(s:"DB_MemoProperties", i:i))))
+			{
+
+				// ALSO IMPORT IT TO DATABASE
+				SetDBEntryString	(StrParam(s:GameModeAbb(CurrentMode), s:"|", i:CurrentSkill, s:"|", s:GetCVarString("DB_GameName"), s:"|", s:CurrentMap), StrParam(s:"Memo", i:i, s:"Props"),	GetCVarString(StrParam(s:"DB_MemoProperties",	i: i)));
+				SetDBEntryString	(StrParam(s:GameModeAbb(CurrentMode), s:"|", i:CurrentSkill, s:"|", s:GetCVarString("DB_GameName"), s:"|", s:CurrentMap), StrParam(s:"Memo", i:i),				GetCVarString(StrParam(s:"DB_Memo", 			i: i)));
+
+				//SPAWN AN ACTOR
+				SpawnMemo(i);
+			}
+
+
+		}
+
+
+
+
+// LOGGED IN
+//if (GetChar(MergedStringInfo ('|', PPROP_NameID, GetCVarString(StrParam(s:"DB_PlayerProperties", i: PlayerNumber()))), 0) != '~')
+if (GetCVar(StrParam(s:"DB_PlayerIsLoggedAcc", i:PlayerNumber())) >= 0)
+		{
+
+		//StringIs = 	MergedStringInfo ('|', PPROP_NameID, GetCVarString(StrParam(s:"DB_PlayerProperties", i: PlayerNumber())));
+		StringIs = 	StrParam(i:GetCVar(StrParam(s:"DB_PlayerIsLoggedAcc", i:PlayerNumber())));
+		SetDBEntry("AccountInfo",	StrParam(s:"id.", s:StringIs, s:"___DBCREDITS"), 		GetDBEntry("AccountInfo",	StrParam(s:"id.", s:StringIs, s:"___DBCREDITS")) - GetCVar("DB_MemoCost"));
+		DB_PlayerCredits[i] = GetDBEntry("AccountInfo",	StrParam(s:"id.", s:StringIs, s:"___DBCREDITS"));
+
+
+		}
+else	//is logged in
+		DB_PlayerCredits[PlayerNumber()] -= GetCVar("DB_MemoCost");
+
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+EndDBTransaction();		DrawDatabaseTransaction("");
+DB_Transaction = FALSE;
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+DB_MemosUpdated = TRUE;
+}
+
+
+
+
+
+
+
+function void DB_UpdateMemos (void)
+{
+str CurrentMap 		= StrToUpper(StrParam(n:PRINTNAME_LEVEL));
+int CurrentMode 	= GetCVar("DB_GameMode");
+int CurrentSkill 	= GameSkill();
+int i;
+for (i = 1; i <= MaxMemos; i++)
+
+			{
+			// We import current mode, map's memos from database to cvars
+			Thing_Remove(DB_MemoSpot + i);
+
+				if (StrLen(GetDBEntryString	(StrParam(s:GameModeAbb(CurrentMode), s:"|", i:CurrentSkill, s:"|", s:GetCVarString("DB_GameName"), s:"|", s:CurrentMap), StrParam(s:"Memo", i:i, s:"Props"))))
+					{
+					ConsoleCommand(StrParam(s:"set DB_Memo",			i: i,		 s:" ",	s:"\"",
+																							s:GetDBEntryString	(StrParam(s:GameModeAbb(CurrentMode), s:"|", i:CurrentSkill, s:"|", s:GetCVarString("DB_GameName"), s:"|", s:CurrentMap), StrParam(s:"Memo", i:i)),
+																							s:"\"" ));
+					ConsoleCommand(StrParam(s:"set DB_MemoProperties",	i: i,		 s:" ",	s:"\"",
+																							s:GetDBEntryString	(StrParam(s:GameModeAbb(CurrentMode), s:"|", i:CurrentSkill, s:"|", s:GetCVarString("DB_GameName"), s:"|", s:CurrentMap), StrParam(s:"Memo", i:i, s:"Props")),
+																							s:"\"" ));
+
+					SpawnMemo(i);
+
+					}
+
+				else
+					{
+					ConsoleCommand(StrParam(s:"set DB_Memo",				i: i,		 s:" ",	s:"\"",	s:"\"" ));
+					ConsoleCommand(StrParam(s:"set DB_MemoProperties",		i: i,		 s:" ",	s:"\"",	s:"\"" ));
+					}
+
+			}
+
+
+}
+
+
+
+function void SpawnMemo (int Num)
+{
+	SpawnForced("DB_Memo", 	int2fix(StrToNum(MergedStringInfo ('|', 3, GetCVarString(StrParam(s:"DB_MemoProperties", i: Num))))),
+							int2fix(StrToNum(MergedStringInfo ('|', 4, GetCVarString(StrParam(s:"DB_MemoProperties", i: Num))))),
+							int2fix(StrToNum(MergedStringInfo ('|', 5, GetCVarString(StrParam(s:"DB_MemoProperties", i: Num))))),
+							DB_MemoSpot + Num,
+							int2fix(StrToNum(MergedStringInfo ('|', 6, GetCVarString(StrParam(s:"DB_MemoProperties", i: Num)))))
+				);
+
+}
+
+
+
+
+
+
+
+//
+//		   _____            ______            _____            __      __           ______            _____
+//		  / ____|          |  ____|          |  __ \           \ \    / /          |  ____|          |  __ \
+//		 | (___            | |__             | |__) |           \ \  / /           | |__             | |__) |
+//		  \___ \           |  __|            |  _  /             \ \/ /            |  __|            |  _  /
+//		  ____) |          | |____           | | \ \              \  /             | |____           | | \ \
+//		 |_____/           |______|          |_|  \_\              \/              |______|          |_|  \_\
+//
+
+/*
+Script "DB_PRECAUTION" OPEN		// OKAY APPARANTLY DB TERMINATES ON COMPLEX MAPS, MAYBE THIS'LL FIX IT.
+{
+int TicsPassed;
+int LocalSync;
+int Attempts;
+delay(1);
+//log(s:"DBSync = ", i:DB_Sync, s:",  LocalSync = ", i:LocalSync);
+while(TRUE)
+	{
+	//log(s:"DBSync = ", i:DB_Sync, s:",  LocalSync = ", i:LocalSync);
+	while (!DB_GameSim)			delay(1);
+	if (LocalSync == DB_Sync)
+			{
+			Attempts += 2;
+			EndDBTransaction();
+			DrawDatabaseTransaction("");		DB_Transaction = FALSE;
+			if (GetCVar("DB_DebugLog"))			log(s:"\cgWARNING! Doomboard loop has been terminated! Attempting to launch it again!");
+			SetCVar("DB_SafeMode", 1);
+			ACS_NamedTerminate("DB_LOOP", 0);
+			ACS_NamedExecute("DB_LOOP", 0);
+			delay(1);
+			}
+
+	LocalSync = DB_Sync;
+
+	if (attempts > 10)
+		{
+		log(s:"\cgWARNING! Terminating Doomboard for good on this map :(");
+		Terminate;
+		}
+	if (attempts > 0)	Attempts--;
+
+
+	delay(1);
+	}
+}
+
+*/
+
+
+
+
+
+
+Script "DB_OPEN" OPEN
+{
+int i;
+if (!IsNetworkGame())	Terminate;
+
+
+SetCvarString("DB_ClientDatabase", GetCVarString("databasefile"));
+if (!DB_CorrectDatabase())	{ log(s:DB_WrongDatabase());		Terminate;			}
+
+SetCVar("DB_PlayerTopIndex", GetPlayerTopIndex());
+
+
+DB_CheckLaunchConditions(TRUE);
+
+if (!GetCVar("DB_FlagResetIn"))		ConsoleCommand(StrParam(s:"set DB_FlagResetIn ", i:60));
+SetCVar("DB_ClientFlagResetIn", GetCVar("DB_FlagResetIn"));
+
+
+
+SetCVar("DB_GameMode", DB_GameMode());
+
+
+Switch(DB_GameTypeIs(GetCVar("DB_GameMode")))
+	{
+	case GT_Collab:
+
+	ModeBonus	= 0.125;
+
+	break;
+	}
+
+
+DB_MinutesPlayed 	= 	MinutesPlayed();
+
+
+if (GetCVar("DB_SafeMode"))		SetCVar("DB_SafeMode", abs(GetCVar("DB_SafeMode")) - 1);
+
+//
+//
+//	 __   ___  __        ___  __                          __
+//	/__` |__  |__) \  / |__  |__)    |     /\  |  | |\ | /  ` |__|
+//	.__/ |___ |  \  \/  |___ |  \    |___ /~~\ \__/ | \| \__, |  |
+//
+//
+//
+
+SetNETpassword();
+
+if (!GetCVar("DB_Session"))
+	{
+	ConsoleCommand(StrParam(s:"set DB_Session ",		i:random(10000000, 99999999)));
+	ConsoleCommand(StrParam(s:"set DB_OldMap ",			s:"\"", n:PRINTNAME_LEVEL,	s:"\""	));
+	ConsoleCommand(StrParam(s:"set DB_OldMode ",		i:GetCVar("DB_GameMode")			));
+	ConsoleCommand(StrParam(s:"set DB_KickFromGame ",	s:"\"", n:PRINTNAME_LEVEL,	s:"\""	));
+	ConsoleCommand(StrParam(s:"set DB_OldScoreType ",	i:GetCVar("DB_ScoreType")	));
+	ConsoleCommand(StrParam(s:"set DB_OldSkill ",		i:GameSkill()	));
+	//for(i = 0; i < MaxPlayers; i++)
+	//ConsoleCommand(StrParam(s:"set DB_PlayerIsLoggedAcc", i:i, s:" ", i:-1));
+
+
+
+	{	DB_GameSim = FALSE;		ACS_NamedExecute ("DB_UpdateMapScores", 0, PasswordIs(), TRUE, None);	}
+	}
+
+
+	for(i = 0; i < MaxPlayers; i++)
+	ConsoleCommand(StrParam(s:"set DB_PlayerIsLoggedAcc", i:i, s:" ", i:-1));
+
+
+
+ACS_NamedExecute("DB_LOOP", 0, PasswordIs());
+}
+
+
+
+
+
+
+	//
+	//
+	//		 __        __   __   ___      ___                __           __   __   __
+	//		/  ` |  | |__) |__) |__  |\ |  |      |\/|  /\  |__)    |    /  \ /  \ |__)
+	//		\__, \__/ |  \ |  \ |___ | \|  |      |  | /~~\ |       |___ \__/ \__/ |
+	//
+	//
+	//
+
+
+
+Script "DB_LOOP" (int Password)
+{
+if (!PasswordMatch(Password))	Terminate;
+int counter, i, DB_GAMESTATE;
+bool ResetException;
+str String1			= 	"";
+int EveryBit		=	5;
+int EverySec		=	SEC;
+int EveryFourSec	=	SEC*4;
+int EveryTenSec		=	SEC*10;
+int EveryThirtySec	=	SEC*30;
+int EveryMinute		=	SEC*60;
+int SafeMode, OldSync, SafetyTime;
+DB_Aborted = FALSE;
+
+while(TRUE)
+	{
+	while(DB_Sync == OldSync)	DB_Sync = random(1000000, 9999999);
+	OldSync = DB_Sync;
+
+	SetCVar("DB_PlayerTopIndex", GetPlayerTopIndex());
+
+	if (GetCVar("DB_MaxMemos") > MaxMemos)		{	SetCVar("DB_MaxMemos", MaxMemos);		log(s:"Max. memos are limited to ", i:MaxMemos);	}
+	if (GetCVar("DB_MemoCost") < MemoMinCost)	{	SetCVar("DB_MemoCost", MemoMinCost);	log(s:"Min. memo cost is ", i:MemoMinCost);			}
+
+	SetCvarString("DB_ClientDatabase", GetCVarString("databasefile"));
+	if (!DB_CorrectDatabase())	{	log(s:DB_WrongDatabase());		Terminate;		}
+
+
+
+
+		if (StrLen(GetCVarString("DB_GameName")) > 8)
+			{
+				log(s:"\cg", s:"Admin! GameName is too long, shorting it to 8 chars!");
+				SetCVarString("DB_GameName", String_Ending(GetCVarString("DB_GameName"), 8, ""));
+			}
+
+		SetCVarString("DB_GameName", DB_RemoveBadChars(GetCVarString("DB_GameName")));
+
+
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////// S T A T E S ////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+	//STATES
+
+	//mode was switched during the game
+	if  (GetCVar("DB_GameMode") != DB_GameMode())
+					{
+					SetCVar("DB_GameMode", DB_GameMode());
+					{	DB_GameSim = FALSE;		ACS_NamedExecute ("DB_UpdateMapScores", 0, PasswordIs(), FALSE, None);	}
+					}
+
+
+	if ((GetGameModeState() == GAMESTATE_WAITFORPLAYERS)	&& (DB_GAMESTATE != GAMESTATE_WAITFORPLAYERS))
+		{
+			DB_GAMESTATE = GAMESTATE_WAITFORPLAYERS;
+			if (!DB_UpdatedAtStart)
+			if (DB_ShouldUpdateNow())		{	DB_GameSim = FALSE;		ACS_NamedExecute ("DB_UpdateMapScores", 0, PasswordIs(), FALSE, None);	}
+		}
+
+
+	if ((GetGameModeState() == GAMESTATE_COUNTDOWN)	&& (DB_GAMESTATE == GAMESTATE_COUNTDOWN))
+		{
+		ClearScores();			//CLEAR SORTED SCORES
+		}
+
+	if ((GetGameModeState() == GAMESTATE_COUNTDOWN)	&& (DB_GAMESTATE != GAMESTATE_COUNTDOWN))
+		{
+			//delay(3);	// 1st tic for death,  2nd tic for custom mods calculation, 3rd tic is DoomBoard conclusion
+			DB_GAMESTATE = GAMESTATE_COUNTDOWN;
+			if (!DB_UpdatedAtStart)
+			if (DB_ShouldUpdateNow())		{	DB_GameSim = FALSE;		ACS_NamedExecute ("DB_UpdateMapScores", 0, PasswordIs(), FALSE, None);	}
+
+
+
+		i = 0.75;
+		Switch(GetCVar("DB_GameMode"))
+			{
+			case GM_Cooperative:																																				break;
+			case GM_Survival:				ShowResults(FALSE,	RESULT_Map, RESULT_AtNormal, DBserver, StrParam(n:PRINTNAME_LEVEL), StrParam(n:PRINTNAME_LEVELNAME), 0, i);		break;
+			case GM_Invasion:				ShowResults(FALSE,	RESULT_Map, RESULT_AtNormal, DBserver, StrParam(n:PRINTNAME_LEVEL), StrParam(n:PRINTNAME_LEVELNAME), 0, i);		break;
+			case GM_Deathmatch:																																					break;
+			case GM_Teamplay:																																					break;
+			case GM_Duel:					ShowResults(FALSE,	RESULT_Map, RESULT_AtNormal, DBserver, StrParam(n:PRINTNAME_LEVEL), StrParam(n:PRINTNAME_LEVELNAME), 0, i);		break;
+			case GM_Terminator:																																					break;
+			case GM_LastManStanding:		ShowResults(FALSE,	RESULT_Map, RESULT_AtNormal, DBserver, StrParam(n:PRINTNAME_LEVEL), StrParam(n:PRINTNAME_LEVELNAME), 0, i);		break;
+			case GM_TeamLMS:				ShowResults(FALSE,	RESULT_Map, RESULT_AtNormal, DBserver, StrParam(n:PRINTNAME_LEVEL), StrParam(n:PRINTNAME_LEVELNAME), 0, i);		break;
+			case GM_Possession:																																					break;
+			case GM_TeamPossession:																																				break;
+			case GM_TeamGame:																																					break;
+			case GM_CTF:																																						break;
+			case GM_OneFlagCTF:																																					break;
+			case GM_Skulltag:																																					break;
+			case GM_Domination:																																					break;
+			}
+		}
+
+	if ((GetGameModeState() == GAMESTATE_INPROGRESS)	&& (DB_GAMESTATE != GAMESTATE_INPROGRESS))
+		{
+			DB_GAMESTATE = GAMESTATE_INPROGRESS;
+			if (!DB_UpdatedAtStart)
+			if (DB_ShouldUpdateNow())		{	DB_GameSim = FALSE;		ACS_NamedExecute ("DB_UpdateMapScores", 0, PasswordIs(), FALSE, None);	}
+		}
+
+
+
+	if ((GetGameModeState() == GAMESTATE_INRESULTSEQUENCE)	&& (DB_GAMESTATE != GAMESTATE_INRESULTSEQUENCE))
+		{
+		ACS_NamedTerminate("DB_PRECAUTION", 0);
+			delay(1);	// delay for DEATH/SCORE
+			delay(1);	// delay for CUSTOM MODS CONCLUSION/CALCULATION
+			delay(1);	// delay for DOOMBOARD CONCLUSION
+			SortClientScores(FALSE, FALSE);
+			DB_GAMESTATE = GAMESTATE_INRESULTSEQUENCE;
+
+			if (GetCVar("DB_GameMode") == GM_Survival)		ClearScores();	//CLEAR SORTED SCORES in Survival, other modes do it automatically
+
+			if (DB_ShouldUpdateNow())		{	DB_GameSim = FALSE;		ACS_NamedExecute ("DB_UpdateMapScores", 0, PasswordIs(), FALSE, None);	}
+
+		}
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////   E V E R Y     6 0     S E C O N D S
+
+	if (!EveryMinute)
+		{
+		EveryMinute = Sec*60;
+		MinuteDBupdate = TRUE;
+		}
+
+
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////   E V E R Y     3 0     S E C O N D S
+
+	if (!EveryThirtySec)
+		{
+		EveryThirtySec = Sec*30;
+		}
+
+
+
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////   E V E R Y     1 0     S E C O N D S
+
+	if (!EveryTenSec)
+		{
+
+		EveryTenSec = Sec*10;
+		}
+
+
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////   E V E R Y     4     S E C O N D S
+
+	if (!EveryFourSec)
+		{
+		if (GetCVar("sv_cheats"))
+									{
+									PrintBold(s:"Cheats are not allowed, turn sv_cheats off!");
+									Exit_Normal(0);
+									}
+
+			SetNETpassword();
+
+
+			if(abs(GetCVAR("DB_MapReloadAfterHours")))
+			if(	DB_MinutesPlayed + (abs(GetCVAR("DB_MapReloadAfterHours")) * 60)		<			(MinutesPlayed()))
+
+						{
+							DB_MapReload[0] = StrParam(n:PRINTNAME_LEVEL);
+							DB_MapReload[1] = StrParam(s:"Map has not been played for ", i:abs(GetCVAR("DB_MapReloadAfterHours")), s:" or more hours, restarting it!");
+						}
+
+			DB_MinutesPlayed	=	 MinutesPlayed();
+
+
+			EveryFourSec = Sec*4;
+
+		if (DB_MemoAllowedOnThisMap())
+			if (!DB_MemosUpdated)	{	BeginDBTransaction();	DB_UpdateMemos();	DB_MemosUpdated = TRUE;		EndDBTransaction();	}
+
+
+		}
+
+
+
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////   E V E R Y     1     S E C O N D
+
+
+	if (!EverySec)
+		{
+		if (DB_GameTypeIs(GetCVar("DB_GameMode")) == GT_Collab)
+			if (PlayerCount())
+				if (GetCVar("DB_OldScoreType") == ST_Standart)
+					{
+
+					ModeBonus -= 0.001;
+					if (ModeBonus < 0)		ModeBonus = 0;
+
+					}
+
+
+		if (GetCVar("DB_GameMode") == GM_Duel)
+				if (PlayerCount() == 2)
+					SetDuelBonus();
+
+
+
+		EverySec = Sec;
+		}
+
+
+	if (!EveryBit)
+		{
+		EveryBit = 5;
+		}
+
+
+
+	if (DB_UpdatedOnce)
+		{
+			if (GetCVar("DB_OldScoreType") != GetCVar("DB_ScoreType"))
+					{
+					ClearScores();
+					DB_MapReload[0] = StrParam(n:PRINTNAME_LEVEL);
+					DB_MapReload[1] = StrParam(s:"Changed Scoretype, Restarting...");
+					}
+
+			else if (GetCVar("DB_OldSkill") != GameSkill())
+					{
+					ClearScores();
+					DB_MapReload[0] = StrParam(n:PRINTNAME_LEVEL);
+					DB_MapReload[1] = StrParam(s:"Changed difficulty, Restarting...");
+					}
+		}
+
+
+
+
+	//FORCE KICK TO RESET INVENTORY FOR EQUALIZER		PART 1
+
+
+if (GetCVar("DB_CoopResetInventory"))
+	{
+	String1 = StrParam(n:PRINTNAME_LEVEL);
+	if (StrICmp(GetCVARString("DB_KickFromGame"), String1))
+			if (DB_GameTypeIs(GetCVar("DB_GameMode")) == GT_Collab)
+				{
+				if (GetCVar("DB_DebugLog"))		log(s:"PrevKick ", s:GetCVarString("DB_KickFromGame"), s:"   CurrKick ", s:String1);
+				ConsoleCommand(StrParam(s:"set DB_KickFromGame ", s:"\"", n:PRINTNAME_LEVEL, s:"\""));
+				// Calculating the amount of exception maps
+				counter = 0;	i = 0;	//ResetException = FALSE;
+				while (counter < StrLen(GetCVarString("DB_DontResetAfter")))
+					{
+					if (GetChar(GetCVarString("DB_DontResetAfter"), counter) == '#')
+							{
+							i++;
+							String1 = MergedStringInfo ('#', i, 	GetCVarString("DB_DontResetAfter")		);
+							if(!StrIcmp(String1, GetCvarString("DB_OldMap")))	{ ResetException = TRUE;		break;}
+							}
+					counter++;
+					}
+
+
+				if (!ResetException)
+					{
+
+						DB_Kicked[MaxPlayers] = TRUE;
+						for(i = 0; i <= GetCVar("DB_PlayerTopIndex"); i++)
+							{
+							if (DB_PlayerStatus(i))
+								{
+								KickFromGame(i, "\ckFAIRPLAY: \cfRESET INVENTORY");
+								DB_Kicked[i] = TRUE;
+								}
+
+							}
+					}
+
+
+				}
+	}
+
+
+
+
+
+	if 	(!SafeMode)
+		{
+		while (!DB_GameSim)	delay(1);
+		SortClientScores(EverySec, MinuteDBupdate);
+		}
+
+
+	if (!SafeMode)				SafeMode = abs(GetCVar("DB_SafeMode"))*SEC;	//SafeMode = Sec;
+
+	if (GetCVar("DB_OldScoreType") == ST_Speedrun)						if (!DB_TimeStarted)	{
+
+
+																								if (PlayerCount())
+																										DB_TimeStarted = TRUE;
+																							}
+
+																	else					{
+																								if (!PlayerCount())
+																									if (SafetyTime >= SafetyTimeMax)
+																												{
+																												ClearScores();
+																												DB_MapReload[0] = StrParam(n:PRINTNAME_LEVEL);
+																												DB_MapReload[1] = StrParam(s:"Restarting speedrun...");
+																												}
+																								if (DB_CurrentTime > 0)		DB_CurrentTime--;
+
+																							}
+
+
+
+
+	SetCVar("DB_SpecialInt1", DB_CurrentTime);
+	if (DB_TimeStarted)		if (PlayerCount())		if (SafetyTime < SafetyTimeMax)		SafetyTime++;
+	if (EveryMinute > 0)				EveryMinute--;
+	if (EveryThirtySec > 0)				EveryThirtySec--;
+	if (EveryTenSec > 0)				EveryTenSec--;
+	if (EveryFourSec > 0)				EveryFourSec--;
+	if (EverySec > 0)					EverySec--;
+	if (EveryBit > 0)					EveryBit--;
+	if (SafeMode > 0)					SafeMode--;
+	delay(1);
+
+
+	//FORCE KICK TO RESET INVENTORY FOR EQUALIZER		PART 2
+
+	if (DB_Kicked[MaxPlayers])
+	if (!ResetException)
+		{
+		DB_Kicked[MaxPlayers] = FALSE;
+		if (DB_GameTypeIs(GetCVar("DB_GameMode")) == GT_Collab)
+			{
+
+				for(i = 0; i <= GetCVar("DB_PlayerTopIndex"); i++)
+					{
+					if (DB_Kicked[i])
+						{
+						NamedExecuteClientScript("DB_ForceJoin", i, PasswordIs());
+						DB_Kicked[i] = FALSE;
+						}
+
+					}
+			}
+
+		}
+
+
+	if (StrLen(DB_MapReload[0]))
+			{
+			DB_GameSim = FALSE;
+			SetFont("BIGFONT");
+			SetHUDSize(HUDX_LARGE,		HUDY_LARGE,	FALSE);
+			log(s:DB_MapReload[1]);
+			HudMessageBold(s:DB_MapReload[1];			HUDMSG_PLAIN,	 0, 	CR_ORANGE,  		int2fix(HUDX_LARGE/2), 		int2fix(HUDY_LARGE/2),		int2fix(5));
+			BeginDBTransaction();
+			delay(SEC*5);
+			EndDBTransaction();
+			ConsoleCommand(StrParam(s:"map ", s:DB_MapReload[0]));
+			}
+
+
+
+	}
+}
+
+
+
+
+
+Script "DB_ForceJoin" (int Password) CLIENTSIDE
+{
+if (!IsNetworkGame())						Terminate;
+if (!PasswordMatch(Password))				Terminate;
+
+int Attempts;
+while (PlayerIsSpectator(ConsolePlayerNumber()))
+	{
+	ConsoleCommand("join");
+	Attempts++;
+	delay(15);
+	if (Attempts >= 5)	Terminate;
+	}
+
+}
+
+
+
+
+
+
+
+
+function void SetDuelBonus (void)
+{
+int counter, d, tmp;
+int p[MaxDuelPlayers];
+
+
+	counter = 0;
+	while(counter <= GetCVar("DB_PlayerTopIndex"))
+		{
+		if (DB_PlayerStatus(counter))			//if (StrToNum(MergedStringInfo ('|', PPROP_PlayerIngame, GetCVarString(StrParam(s:"DB_PlayerProperties", i:counter)))))
+			{
+			DuelPlayers[d]		=	counter;													//PlayerNum
+			DuelPlayers[d + 2]	=	GetCVar(StrParam(s:"DB_PlayerIsLoggedAcc", i:counter));		//accountNum
+			p[d] = 	StrToNum(MergedStringInfo ('|', PPROP_DuelElo, 		GetCVarString(StrParam(s:"DB_PlayerProperties", i:counter))));
+			d++;
+
+			if (d >= MaxDuelPlayers)	break;
+
+			}
+
+		counter++;
+		}
+
+
+if (p[1] > p[0] )	//switching
+		{
+		tmp 	=	p[1];
+		p[1]	=	p[0];
+		p[0]	=	tmp;
+		}
+
+
+//ModeBonus = FixedMul(					FixedMul(		int2fix(	FixedMul(int2fix(p[0] - p[1]), 0.5) + p[1])		,			0.5				),			0.5);
+ModeBonus = FixedMul(					FixedMul(		FixedMul(int2fix(p[0] - p[1]), 0.5) + int2fix(p[1])		,			0.5				),			0.5);
+}
+
+
+
+
+
+
+
+
+function void CheckDoomboardVersion (void)
+{
+str Changes = "";
+		if (DB_Version > GetDBEntry("GlobalInfo", "LatestVersion"))		{	SetDBEntry("GlobalInfo", "LatestVersion", DB_Version);			SetDBEntryString("GlobalInfo", "LatestFile", DB_File);	SetCVarString("DB_VersionWarning", "");	}
+
+else	if (DB_Version < GetDBEntry("GlobalInfo", "LatestVersion"))
+				{
+				for (int i = DB_Version + 1; i <= GetDBEntry("GlobalInfo", "LatestVersion"); i++)	{	Changes = StrParam(s:Changes, s:"+", s:GetDBEntryString("GlobalInfo", StrParam(s:"Changelog", i:i)), s:";  ");}
+
+				//Changes = StrParam(s:"(", s:Changes, s:")");
+
+
+
+				SetCVarString("DB_VersionWarning", StrParam(s:"\crThis Doomboard version is outdated! Please host a recent \cg", s:GetDBEntryString("GlobalInfo", "LatestFile"), s:" :    \cr(( ", s:Changes, s:"))."));
+				log(s:GetCvarString("DB_VersionWarning"));
+				}
+
+else		SetCVarString("DB_VersionWarning", "");
+}
+
+
+
+
+int DB_WinnerSCORE[MaxWinners*2];
+int SMS_Score[MaxWinners*2];
+str DB_WinnerID[MaxWinners*2];
+str DB_WinnerDATE[MaxWinners*2];
+str SMS_ID[MaxWinners*2];
+str SMS_Date[MaxWinners*2];
+
+
+/*
+		  __   __       ___  ___                   __      __   __   __   __   ___  __
+	|  | |__) |  \  /\   |  |__         |\/|  /\  |__)    /__` /  ` /  \ |__) |__  /__`
+	\__/ |    |__/ /~~\  |  |___        |  | /~~\ |       .__/ \__, \__/ |  \ |___ .__/
+
+*/
+
+Script  "DB_UpdateMapScores" (int Password, int FirstLaunch, int Zpecial)
+{
+if (!PasswordMatch(Password))	Terminate;
+int Amount;
+int counter, i, j, k, p, t;
+bool FoundAScore;
+str String1 = "";
+str String2 = "";
+
+for (i = 0; i < MaxWinners*2; i++)
+	{
+	DB_WinnerSCORE[i]			= 0;
+	DB_WinnerSCORE[i]			= 0;
+	DB_WinnerID[i]				= "";
+	DB_WinnerDATE[i] 			= "";
+	SMS_ID[i]					= "";
+	SMS_Date[i] 				= "";
+	}
+
+DB_Transaction = TRUE;
+BeginDBTransaction();		DrawDatabaseTransaction("A");
+
+
+if (!GetDBEntry	("GlobalInfo", "DoomboardID"))		SetDBEntry("GlobalInfo", "DoomboardID", random(1000000, 9999999));
+	SetCVar		("DB_ServerClusterID",				GetDBEntry("GlobalInfo", "DoomboardID"));
+
+
+
+// CHECK IF THIS IS THE LATEST DOOMBOARD VERSION
+/////////////////////////////////////////////////////////////
+
+CheckDoomboardVersion();
+
+/////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
+
+
+if (GetCVar("DB_DebugLog"))
+log(s:"DOOMBOARD SAVE: ", s: Strftime (SystemTime(), "%F %T", true));
+
+
+//		 __              ___  __        __   __
+//		/ _`  /\   |\/| |__  |__)  /\  /__` /__`
+//		\__> /~~\  |  | |___ |    /~~\ .__/ .__/
+//
+
+
+// CONVERT NEW PASSWORD TO ANNONYMOUS CVAR
+if (StrLen(GetCVarString("DB_GamePass")))	// if Host inputed a password
+		{
+		ConsoleCommand(StrParam(s:"set DB_ServerGamePass ", s:"\"", s:GetCVarString("DB_GamePass"), s:"\""));
+		SetCVarString("DB_GamePass", "");
+		}
+
+
+
+// IMPORT PASSWORD TO DATABASE
+if (!StrLen(GetDBEntryString(StrParam(s:GetCVarString("DB_GameName"), s:"|", s:"INFO"), "PASSWORD")))		// server doesn't use password yet, first time
+	if (StrLen(GetCVarString("DB_ServerGamePass")))
+
+		SetDBEntryString(StrParam(s:GetCVarString("DB_GameName"), s:"|", s:"INFO"), "PASSWORD", GetCVarString("DB_ServerGamePass"));	//detect if there is one to remember
+
+
+
+
+// IF PASSWORD DOESN'T MATCH WITH DATABASE's
+if (StrCmp(GetCVarString("DB_ServerGamePass"),  	GetDBEntryString 	(StrParam(s:GetCVarString("DB_GameName"), s:"|", s:"INFO"), "PASSWORD")		  ))
+		{
+		counter = 0;
+		while (counter < MaxMapChars)
+			{
+			String1 = StrParam(s:String1, c:random(48,57));
+			counter++;
+			}
+
+		SetCVarString("DB_GameName", String1);
+		ConsoleCommand(StrParam(s:"set DB_ServerGamePass ", s:"\"",  s:"\""));
+		log(s:"\cg ADMIN! Your password for this game was incorrect! Changed your game name to a random name!");
+		}
+
+
+
+
+for (i = 1; i <= DB_Version; i++)
+		{
+		if (!StrLen(GetDBEntryString("GlobalInfo", StrParam(s:"Changelog", i:i))))		SetDBEntryString("GlobalInfo", StrParam(s:"Changelog", i:i), DB_Changelog[i]);
+		}
+
+
+
+//		         __   __   __  ___     __                 ___  __   __
+//		|  |\/| |__) /  \ |__)  |     |__) |     /\  \ / |__  |__) /__`
+//		|  |  | |    \__/ |  \  |     |    |___ /~~\  |  |___ |  \ .__/
+//
+//
+
+
+
+
+	// Retrieving a whole number of registered players in Database
+	DB_ImportPlayersFromDB();
+
+
+
+
+
+
+
+//
+//		         __   __   __  ___     ___  __   __            __   __   ___         __        __                 __
+//		|  |\/| |__) /  \ |__)  |     |__  |__) /  \  |\/|    |__) |__) |__  \  / | /  \ |  | /__`     |\/|  /\  |__)
+//		|  |  | |    \__/ |  \  |     |    |  \ \__/  |  |    |    |  \ |___  \/  | \__/ \__/ .__/     |  | /~~\ |
+//
+//
+
+
+
+
+
+
+counter = 0;
+i = 0;
+j = 0;
+k = 0;
+p = 0;
+t = 0;
+String1 = "";
+String2 = "";
+
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////   import old results of previous map  FROM DATABASE
+	counter = 0;
+	while(counter < MaxWinners)
+		{
+		i = GetDBEntry(StrParam(s:GameModeAbb(GetCVar("DB_OldMode")), s:"|", i:GetCVar("DB_OldSkill"), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:GetCvarString("DB_OldMap")), StrParam(s:"Winner", s:ScoreTypeStr(), i:counter + 1, s:"Score"));
+		if (i > 0)
+			{
+			DB_WinnerSCORE[Amount]		=	i;	// there is a score, add it up
+			DB_WinnerID[Amount]			=	GetDBEntryString	(StrParam(s:GameModeAbb(GetCVar("DB_OldMode")), s:"|", i:GetCVar("DB_OldSkill"), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:GetCvarString("DB_OldMap")), StrParam(s:"Winner", s:ScoreTypeStr(), i:counter + 1, s:"NameID"));
+			DB_WinnerDATE[Amount]		=	GetDBEntryString	(StrParam(s:GameModeAbb(GetCVar("DB_OldMode")), s:"|", i:GetCVar("DB_OldSkill"), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:GetCvarString("DB_OldMap")), StrParam(s:"Winner", s:ScoreTypeStr(), i:counter + 1, s:"Date"));
+			Amount++;
+			}
+		counter++;
+		}
+
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////   import new results of previous map FROM RECENT CVARS
+	counter = 0;
+	while(counter < MaxWinners)
+		{
+
+			i = GetCVar(StrParam(s:"DB_SortedScore", i:counter));
+		if (i > 0)
+			{
+			FoundAScore 				=	TRUE;
+			DB_WinnerSCORE[Amount] 		=	i;					// there is a score, add it up
+			DB_WinnerID[Amount]			=	GetCVarString	(StrParam(s:"DB_SortedNameID", i:counter));
+			DB_WinnerDATE[Amount]		=	Strftime (SystemTime(), "%F", true);
+			// Sort and add the best one to RECENT RESULTS ;
+			if (!counter)	//best result right now
+				{
+
+				for (k = MaxWinners - 1; k >= 1; k--)		SetDBEntryString		("GlobalInfo", StrParam(s:"LatestResult", i:k + 1), 		GetDBEntryString("GlobalInfo", StrParam(s:"LatestResult", i:k)));
+
+
+
+
+
+
+
+					// import new LATEST RESULT to database
+					String1 = StrParam(
+								s:"|", s:Strftime (SystemTime(), "%F", true),
+								s:"|", s:Strftime (SystemTime(), "%R", true),
+								s:"|", s:GameModeAbb(GetCVar("DB_OldMode")),
+								s:"|", s:GetCVarString	("DB_GameName"),
+								s:"|", s:GetCvarString	("DB_OldMap"),
+								s:"|", s:GetCVarString	(StrParam(s:"DB_SortedNameID",i:0)),
+								s:"|", i:GetCVar		("DB_OldScoreType"),
+								s:"|", i:GetCVar		("DB_OldSkill")
+									);
+
+					SetDBEntryString		("GlobalInfo", "LatestResult1", String1);
+
+
+				}
+
+
+
+
+
+
+			Amount++;
+
+			if (GetCVar("DB_GameMode") == GM_Duel)		break;
+			}
+		counter++;
+		}
+
+
+
+
+
+	for (j = 1; j <= MaxWinners; j++)		ConsoleCommand(StrParam(s:"set DB_LatestResult", i:j, s:" ", s:"\"", s: GetDBEntryString ("GlobalInfo", StrParam(s:"LatestResult", i:j)), s:"\""));
+
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////   Sort it out
+
+
+
+
+
+
+
+		// Check all players
+	i = 0;	counter = 0;
+	while(i < Amount)
+		{
+
+
+			for (j = 0; j < MaxWinners; j++)	// check ranks from highest to lowest
+				{
+				if (DB_WinnerSCORE[i]  >  SMS_Score[j])
+					{
+					for (k = MaxWinners - 1; k >= j; k--)
+						{
+						if (k < MaxWinners - 1)	// Don't shift last rank
+							{// Shift down
+							SMS_ID[k + 1]		=	SMS_ID[k];
+							SMS_Score[k + 1]	=	SMS_Score[k];
+							SMS_Date[k + 1]		=	SMS_Date[k];
+							}
+						}
+					// Set current points and index
+					SMS_ID[j]		=	DB_WinnerID[i];
+					SMS_Score[j]	=	DB_WinnerSCORE[i];
+					SMS_Date[j]		=	DB_WinnerDATE[i];
+					break;
+					}
+				}
+		i++;
+		}
+
+
+
+
+for (j = 0; j < MaxWinners ; j++)
+	{
+	//SET FINAL DATABASE SCORE FOR MAP
+	if 		(	(SMS_Score[j] > 0)	&& (StrLen(SMS_ID[j]))	)		//if there is at least one score for a map exists
+	{
+
+	SetDBEntryString	(StrParam(s:GameModeAbb(GetCVar("DB_OldMode")), s:"|", i:GetCVar("DB_OldSkill"), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:GetCvarString("DB_OldMap")), StrParam(s:"Winner", s:ScoreTypeStr(), i:j + 1, s:"NameID"),		SMS_ID[j]		);
+	SetDBEntry			(StrParam(s:GameModeAbb(GetCVar("DB_OldMode")), s:"|", i:GetCVar("DB_OldSkill"), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:GetCvarString("DB_OldMap")), StrParam(s:"Winner", s:ScoreTypeStr(), i:j + 1, s:"Score"),		SMS_Score[j]	);
+	SetDBEntryString	(StrParam(s:GameModeAbb(GetCVar("DB_OldMode")), s:"|", i:GetCVar("DB_OldSkill"), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:GetCvarString("DB_OldMap")), StrParam(s:"Winner", s:ScoreTypeStr(), i:j + 1, s:"Date"),			SMS_Date[j]		);
+	}
+	}
+
+
+
+for (j = 0; j < GetCVar("DB_RegisteredPlayers") ; j++)
+	{
+	if (GetCVar(StrParam(s:"DB_TimeSpent", i:j)))
+	SetDBEntryString("AccountInfo", StrParam(	s:"id.", i:j, s:"___TOTALTIME"),		PrintClock(GetCVar(StrParam(s:"DB_TimeSpent", i:j))	 +  ClockToInt(GetDBEntryString("AccountInfo", StrParam(s:"id.", i:j, s:"___TOTALTIME")))));
+	}
+
+
+
+
+
+	//SET PROMINENT PLAYERS
+
+	p = 0;
+	t = 0;
+	i = 999999999;			//j is a max
+	counter = 0;
+while (counter < MaxWinners )
+	{
+		k = 0;
+		p = 0;
+		while (p < GetCVar("DB_RegisteredPlayers"))
+			{
+			if 	((ClockToInt(GetDBEntryString("AccountInfo", StrParam(s:"id.", i:p, s:"___TOTALTIME"))) > t)	 &&
+				 (ClockToInt(GetDBEntryString("AccountInfo", StrParam(s:"id.", i:p, s:"___TOTALTIME"))) < i))
+					{
+					t = ClockToInt(GetDBEntryString("AccountInfo", StrParam(s:"id.", i:p, s:"___TOTALTIME")));
+					k = p;
+					}
+			p++;
+			}
+
+		if (t)
+			{
+
+			ConsoleCommand(StrParam(s:"set DB_Prominent", i:counter + 1, s:" ", s:"\"",
+
+													s:"|",  	s:  							GetDBEntryString("AccountInfo", StrParam(s:"id.", i:k, s:"___CURRENTNAME")),
+													s:"|",  	s:  							GetDBEntryString("AccountInfo", StrParam(s:"id.", i:k, s:"___FLAGNAME")),
+													s:"|",		i:  t,
+
+													 s:"\""));
+
+			i = t;
+			t = 0;
+			}
+
+
+
+		counter++;
+	}
+
+
+	//clear time spent
+	for (j = 0; j < GetCVar("DB_RegisteredPlayers") ; j++)
+	ConsoleCommand(StrParam(s:"set DB_TimeSpent", i:j, s:" ", i:0));
+
+
+
+
+
+
+
+
+
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////   Duel ELO Ranking
+
+
+
+
+
+if (FoundAScore)
+if (GetGameModeState() == GAMESTATE_INRESULTSEQUENCE)
+	if (GetCVar("DB_GameMode") == GM_Duel)
+		{
+			counter = 0;
+			k = 0;	// DUEL ELO
+			p = -1;	// Player's Account ID
+			while(counter <= GetCVar("DB_PlayerTopIndex"))
+			{
+				if (DB_PlayerStatus(counter))		//GETTING A HIGHER SCORE ACCOUNT
+				if (PlayerIsLoggedIn(counter))
+					{
+					//if player's rank is above i
+
+					if (GetDBEntry("AccountInfo", StrParam(s:"id.", i:GetCVar(StrParam(s:"DB_PlayerIsLoggedAcc", i:counter)), s:"___DUELELO")) > k)
+						{
+						k = GetDBEntry("AccountInfo", StrParam(s:"id.", i:GetCVar(StrParam(s:"DB_PlayerIsLoggedAcc", i:counter)), s:"___DUELELO"));	//Highest Elo rank
+						p = GetCVar(StrParam(s:"DB_PlayerIsLoggedAcc", i:counter));	//Highest rank of current duelers account ID
+						}
+
+					}
+			counter++;
+			}
+
+
+
+
+			counter = 0;
+			while(counter <= GetCVar("DB_PlayerTopIndex"))
+				{
+				i = 0;
+				if (DB_PlayerStatus(counter))
+				if (PlayerIsLoggedIn(counter))
+					{
+					i = GetCVar(StrParam(s:"DB_PlayerIsLoggedAcc", i:counter));
+					Switch(GetPlayerScore(counter, SCORE_RANK))
+						{
+
+						//1ST PLACE
+						case 0:
+								if (p > -1)	//if winner have won at least one duel before (being logged in)
+									{
+
+											//if Highest rank out of current duelers account ID !=  Current Winners's account ID, then raise current's to other's level
+											if (i != p)
+												{
+												if (GetDBEntry("AccountInfo", StrParam(s:"id.", i:i, s:"___DUELELO")) < k)		{
+																																	t = k -	GetDBEntry("AccountInfo", StrParam(s:"id.", i:i, s:"___DUELELO"));
+																																	j = GetDBEntry("AccountInfo", StrParam(s:"id.", i:p, s:"___DUELELO"));
+																																}
+
+												else																			{
+																																	t = 1;
+																																	j = GetDBEntry("AccountInfo", StrParam(s:"id.", i:i, s:"___DUELELO")) + 1;
+																																}
+												}
+
+
+
+											else
+															{
+															t = 1;
+															j = GetDBEntry("AccountInfo", StrParam(s:"id.", i:i, s:"___DUELELO")) + 1;
+															}
+
+
+									SetDBEntry("AccountInfo", StrParam(s:"id.", i:i, s:"___DUELELO"),  j);
+									}
+
+								else		SetDBEntry("AccountInfo", StrParam(s:"id.", i:i, s:"___DUELELO"),     1		);
+
+
+
+						break;
+
+						//2ND
+						case 1: if (GetDBEntry("AccountInfo", StrParam(s:"id.", i:i, s:"___DUELELO")) > 0)
+								{	SetDBEntry("AccountInfo", StrParam(s:"id.", i:i, s:"___DUELELO"),     GetDBEntry("AccountInfo", StrParam(s:"id.", i:i, s:"___DUELELO")) - 1		);	t = 1;	}
+
+								else t = 0;
+
+
+						break;
+						}
+
+
+					DB_DuelRankShowChange(GetPlayerScore(counter, SCORE_RANK), t, counter);
+
+					ConsoleCommand(StrParam(s:"set DB_Acc", i:i, 	s:"DUELELO", 		s:" ", 		i:GetDBEntry	("AccountInfo", StrParam(s:"id.", i:i, s:"___DUELELO"))	));
+					}
+
+				counter++;
+				}
+
+
+		//RAGEQUIT DUELER
+		i = -1;
+		if (Zpecial == UMS_DuelRagequit)
+			{
+
+
+
+			//who ragequited?
+
+					if (!DB_PlayerStatus(DuelPlayers[0]))		{	i = DuelPlayers[0];		p = DuelPlayers[0 + 2];	}
+			else	if (!DB_PlayerStatus(DuelPlayers[1]))		{	i = DuelPlayers[1];		p = DuelPlayers[1 + 2];	}
+
+			if (i >= 0)	//if not longer in game
+			if (p >= 0) //if had an account
+				{
+
+
+			DB_DuelRankShowChange(GetPlayerScore(counter, SCORE_RANK), t, i);	//ragequit message
+
+
+				SetDBEntry("AccountInfo", StrParam(s:"id.", i:p, s:"___DUELELO"),    GetDBEntry("AccountInfo", StrParam(s:"id.", i:p, s:"___DUELELO")) - 2		);
+
+				if (GetDBEntry("AccountInfo", StrParam(s:"id.", i:p, s:"___DUELELO")) < 0)		SetDBEntry("AccountInfo", StrParam(s:"id.", i:p, s:"___DUELELO"), 0);
+
+
+				ConsoleCommand(StrParam(s:"set DB_Acc", i:p, 	s:"DUELELO", 		s:" ", 		i:GetDBEntry	("AccountInfo", StrParam(s:"id.", i:p, s:"___DUELELO"))	));
+				}
+
+
+			}
+
+		DuelPlayers[0] = -1;
+		DuelPlayers[1] = -1;
+		DuelPlayers[2] = -1;
+		DuelPlayers[3] = -1;
+		}
+
+
+
+//
+//	      __   __       ___  ___                __
+//	|  | |__) |  \  /\   |  |__      |\/|  /\  |__)
+//	\__/ |    |__/ /~~\  |  |___     |  | /~~\ |
+//
+
+
+
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////   Add previous map to map stack
+
+counter = 0;
+i = 0;
+j = 0;
+p = 0;
+t = 0;
+bool UpdateMap;
+
+
+
+String1 = "";
+String2 = "";
+p = 0;
+
+// Calculating the amount of maps
+if (FoundAScore)
+	{
+
+				counter = 0;
+				While(counter <= GetDBEntry 	(StrParam(s:GameModeAbb(GetCVar("DB_OldMode")), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:"INFO"), "RegisteredMaps"))
+					{
+					counter++;
+					String1 = GetDBEntryString(StrParam(s:GameModeAbb(GetCVar("DB_OldMode")), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:"MAPS"), StrParam(s:"MapID", i:counter));
+					String2 = GetCvarString("DB_OldMap");
+
+					if (!StrIcmp(String1, String2))	{	UpdateMap = FALSE;	break;		}			//if strings dont match go to another
+					else
+							{
+							if (counter 	<=		MapsPerStack*MapsStacks)
+							UpdateMap = TRUE;
+							}
+
+					}
+
+
+
+		// New map was not found, adding it
+		if (UpdateMap)
+			{
+			SetDBEntry 	(StrParam(s:GameModeAbb(GetCVar("DB_OldMode")), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:"INFO"), "RegisteredMaps",  counter);
+			String1 = StrToUpper(GetCvarString("DB_OldMap"));
+			SetDBEntryString(StrParam(s:GameModeAbb(GetCVar("DB_OldMode")), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:"MAPS"), StrParam(s:"MapID", i:counter), String1);
+			}
+	}
+
+
+
+//spliting maps to various cvars
+counter = 0;	j = 0;	p = 1;	String2 = "";	t = 1;
+
+if 	(GetDBEntry (StrParam(s:GameModeAbb(GetCVar("DB_OldMode")), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:"INFO"), "RegisteredMaps") > 0)
+while(counter <= GetDBEntry 	(StrParam(s:GameModeAbb(GetCVar("DB_OldMode")), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:"INFO"), "RegisteredMaps"))	//going through all maps
+	{
+		counter++;		j++;
+		String1 = GetDBEntryString(StrParam(s:GameModeAbb(GetCVar("DB_OldMode")), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:"MAPS"), StrParam(s:"MapID", i:counter));
+
+		if (StrLen(String1))
+		String2 = StrParam(s:String2,	 s:"#", s:String1);
+
+		if 		((counter >= GetDBEntry (StrParam(s:GameModeAbb(GetCVar("DB_OldMode")), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:"INFO"), "RegisteredMaps")) | (j >= MapsPerStack))
+				{
+					//if  (j >= MapsPerStack)		delay(1);
+					SetCVarString(StrParam(s:"DB_Maps", i:p), String2);
+					String2 = "";
+					j = 0;	// reset maps in a stack counter
+					p++;	//switch to next "DB_MAPS" cvar
+					if (p > MapsStacks)	break;	//hitting a limit here
+				}
+
+
+
+	}
+
+
+counter = 1;	t = 0;
+While(counter <= GetDBEntry 	(StrParam(s:GameModeAbb(GetCVar("DB_OldMode")), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:"INFO"), "RegisteredMaps"))
+	{
+
+
+	String1 = GetDBEntryString(StrParam(s:GameModeAbb(GetCVar("DB_OldMode")), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:"MAPS"), StrParam(s:"MapID", i:counter));
+
+
+
+	for (j = 1; j <= MaxWinners ; j++)
+		{
+			//Set CVAR MAP SCORES
+
+				if (StrLen(GetDBEntryString 	(StrParam(s:GameModeAbb(GetCVar("DB_OldMode")), s:"|", i:GetCVar("DB_OldSkill"), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:String1), StrParam(s:"Winner", s:ScoreTypeStr(), i:j, s:"NameID"))))
+
+
+
+
+					{
+
+					//Unlogged Player
+					if (GetChar(GetDBEntryString 	(StrParam(s:GameModeAbb(GetCVar("DB_OldMode")), s:"|", i:GetCVar("DB_OldSkill"), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:String1), StrParam(s:"Winner", s:ScoreTypeStr(), i:j, s:"NameID")), 0) == '~' )
+							{
+								String2 = 	RemoveChar(	GetDBEntryString(StrParam(s:GameModeAbb(GetCVar("DB_OldMode")), s:"|", i:GetCVar("DB_OldSkill"), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:String1), StrParam(s:"Winner", s:ScoreTypeStr(), i:j, s:"NameID")), 	'~');
+								p		=	998;
+							}
+
+					else //Logged Player
+							{
+
+								String2 = 													GetDBEntryString("AccountInfo", StrParam(s:"id.", i:		StrToNum(GetDBEntryString(StrParam(s:GameModeAbb(GetCVar("DB_OldMode")), s:"|", i:GetCVar("DB_OldSkill"), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:String1), StrParam(s:"Winner", s:ScoreTypeStr(), i:j, s:"NameID")))					, s:"___CURRENTNAME"));
+								p 		=	GetFlagIDbyName(								GetDBEntryString("AccountInfo", StrParam(s:"id.", i:		StrToNum(GetDBEntryString(StrParam(s:GameModeAbb(GetCVar("DB_OldMode")), s:"|", i:GetCVar("DB_OldSkill"), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:String1), StrParam(s:"Winner", s:ScoreTypeStr(), i:j, s:"NameID")))					, s:"___FLAGNAME"))	, 		TRUE);
+							}
+
+							// |1 IDname
+							// |2 FLAG
+							// |3 SCORE
+							// |4 DATE
+							ConsoleCommand(StrParam(s:"set DB_", s:GameModeAbb(GetCVar("DB_OldMode")), s:"|", i:GetCVar("DB_OldSkill"), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:String1, s:"_WinnerInfo",	s:ScoreTypeStr(), i:j, s:" ",
+							s:"\"",
+
+
+							s:"|",
+							s:String2,
+
+							s:"|",
+							i:p,
+
+							s:"|",
+							i:GetDBEntry		(StrParam(s:GameModeAbb(GetCVar("DB_OldMode")), s:"|", i:GetCVar("DB_OldSkill"), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:String1), StrParam(s:"Winner", s:ScoreTypeStr(), i:j, s:"Score")),
+
+
+
+							s:"|",
+							s:GetDBEntryString 	(StrParam(s:GameModeAbb(GetCVar("DB_OldMode")), s:"|", i:GetCVar("DB_OldSkill"), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:String1), StrParam(s:"Winner", s:ScoreTypeStr(), i:j, s:"Date")),
+
+							s:"\""
+
+
+
+							));
+
+					}
+
+				else		ConsoleCommand(StrParam(s:"set DB_", s:GameModeAbb(GetCVar("DB_OldMode")), s:"|", i:GetCVar("DB_OldSkill"), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:String1, s:"_WinnerInfo",	s:ScoreTypeStr(), i:j, s:" ",		s:"\"",		s:"\""));	//blank CVar
+
+		}
+
+	t++;	if (t >= MapsPerStack)	{	t = 0;}
+	counter++;
+	}
+
+
+
+
+if (GetGameModeState() == GAMESTATE_INRESULTSEQUENCE)
+	{
+
+		i = 0.75;
+		Switch(GetCVar("DB_GameMode"))
+			{
+			case GM_Cooperative:																																				break;
+			case GM_Survival:				ShowResults(FALSE,	RESULT_Map, RESULT_AtNormal, DBserver, StrParam(n:PRINTNAME_LEVEL), StrParam(n:PRINTNAME_LEVELNAME), 0, i);		break;
+			case GM_Invasion:				ShowResults(TRUE,	RESULT_Map, RESULT_AtNormal, DBserver, StrParam(n:PRINTNAME_LEVEL), StrParam(n:PRINTNAME_LEVELNAME), 0, i);		break;
+			case GM_Deathmatch:				ShowResults(TRUE, 	RESULT_Map, RESULT_AtNormal, DBserver, StrParam(n:PRINTNAME_LEVEL), StrParam(n:PRINTNAME_LEVELNAME), 0, i);		break;
+			case GM_Teamplay:				ShowResults(TRUE, 	RESULT_Map, RESULT_AtNormal, DBserver, StrParam(n:PRINTNAME_LEVEL), StrParam(n:PRINTNAME_LEVELNAME), 0, i);		break;
+			case GM_Duel:					ShowResults(TRUE, 	RESULT_Map, RESULT_AtNormal, DBserver, StrParam(n:PRINTNAME_LEVEL), StrParam(n:PRINTNAME_LEVELNAME), 0, i);		break;
+			case GM_Terminator:				ShowResults(TRUE, 	RESULT_Map, RESULT_AtNormal, DBserver, StrParam(n:PRINTNAME_LEVEL), StrParam(n:PRINTNAME_LEVELNAME), 0, i);		break;
+			case GM_LastManStanding:		ShowResults(TRUE, 	RESULT_Map, RESULT_AtNormal, DBserver, StrParam(n:PRINTNAME_LEVEL), StrParam(n:PRINTNAME_LEVELNAME), 0, i);		break;
+			case GM_TeamLMS:				ShowResults(TRUE, 	RESULT_Map, RESULT_AtNormal, DBserver, StrParam(n:PRINTNAME_LEVEL), StrParam(n:PRINTNAME_LEVELNAME), 0, i);		break;
+			case GM_Possession:				ShowResults(TRUE, 	RESULT_Map, RESULT_AtNormal, DBserver, StrParam(n:PRINTNAME_LEVEL), StrParam(n:PRINTNAME_LEVELNAME), 0, i);		break;
+			case GM_TeamPossession:			ShowResults(TRUE, 	RESULT_Map, RESULT_AtNormal, DBserver, StrParam(n:PRINTNAME_LEVEL), StrParam(n:PRINTNAME_LEVELNAME), 0, i);		break;
+			case GM_TeamGame:				ShowResults(TRUE, 	RESULT_Map, RESULT_AtNormal, DBserver, StrParam(n:PRINTNAME_LEVEL), StrParam(n:PRINTNAME_LEVELNAME), 0, i);		break;
+			case GM_CTF:					ShowResults(TRUE, 	RESULT_Map, RESULT_AtNormal, DBserver, StrParam(n:PRINTNAME_LEVEL), StrParam(n:PRINTNAME_LEVELNAME), 0, i);		break;
+			case GM_OneFlagCTF:				ShowResults(TRUE, 	RESULT_Map, RESULT_AtNormal, DBserver, StrParam(n:PRINTNAME_LEVEL), StrParam(n:PRINTNAME_LEVELNAME), 0, i);		break;
+			case GM_Skulltag:				ShowResults(TRUE, 	RESULT_Map, RESULT_AtNormal, DBserver, StrParam(n:PRINTNAME_LEVEL), StrParam(n:PRINTNAME_LEVELNAME), 0, i);		break;
+			case GM_Domination:				ShowResults(TRUE, 	RESULT_Map, RESULT_AtNormal, DBserver, StrParam(n:PRINTNAME_LEVEL), StrParam(n:PRINTNAME_LEVELNAME), 0, i);		break;
+			}
+	}
+
+
+
+
+
+
+
+// START SERVER FROM LAST PLAYED MAP
+if (FirstLaunch)
+if (GetCVar("DB_LaunchFromLastMap"))
+		{
+
+		String1 = GetDBEntryString 	(StrParam(s:GameModeAbb(GetCVar("DB_GameMode")), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:"INFO"), "LastMap");
+		String2 = StrParam(n:PRINTNAME_LEVEL);
+		if (	(!StrLen(String1))		|		(!StrICmp(String1, String2))	)		{	DB_MapReload[0] = "";		DB_MapReload[1] = "";	}
+		else																			{	DB_MapReload[0] = String1;	DB_MapReload[1] = StrParam(s:"Going to a map which server was shut down on (", s:DB_MapReload[0], s:")");	}
+
+		}
+// Remember last map day played on
+SetDBEntryString 	(StrParam(s:GameModeAbb(GetCVar("DB_GameMode")), s:"|", s:GetCVarString("DB_GameName"), s:"|", s:"INFO"), "LastMap", 		StrToUpper(StrParam(n:PRINTNAME_LEVEL)));
+
+
+
+DB_LastPlayDate();
+
+
+
+
+// IMPORT MAPS MEMOS
+if (DB_MemoAllowedOnThisMap())		{	DB_UpdateMemos();	DB_MemosUpdated = TRUE;	}
+
+
+
+
+
+
+
+EndDBTransaction();		DrawDatabaseTransaction("");
+DB_Transaction = FALSE;
+DB_UpdatedAtStart = TRUE;
+
+
+
+
+//after sorting previous map scores
+ConsoleCommand(StrParam(s:"set DB_OldMap ",			s:"\"", s:StrToUpper(StrParam(n:PRINTNAME_LEVEL)), s:"\""	));		// set "oldmap" as current map
+ConsoleCommand(StrParam(s:"set DB_OldMode ",				i:GetCVar("DB_GameMode")							));		// set "oldmode" as current mode
+
+
+
+
+//CLEAR SORTED SCORES
+ClearScores();
+DB_GameSim = TRUE;
+DB_UpdatedOnce = TRUE;
+ConsoleCommand(StrParam(s:"set DB_OldScoreType ",	i:GetCVar("DB_ScoreType")	));
+ConsoleCommand(StrParam(s:"set DB_OldSkill ",		i:GameSkill()	));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Importing registered Accounts from Database to anonymous cvars. Requires Database transaction active
+function void DB_ImportPlayersFromDB (void)
+{
+ConsoleCommand(StrParam(s:"set DB_RegisteredPlayers ", i:GetDBEntry("GlobalInfo", "RegisteredPlayers")));
+int counter;
+while(counter < GetDBEntry	("GlobalInfo", "RegisteredPlayers"))
+	{
+	ConsoleCommand(StrParam(s:"set DB_Acc", i:counter, 	s:"ACCOUNT", 		s:" ", 	s:"\"",			s:GetDBEntryString	("AccountInfo", StrParam(s:"id.", i:counter, s:"___ACCOUNT")),			s:"\""));
+	ConsoleCommand(StrParam(s:"set DB_Acc", i:counter, 	s:"PLAYERNAME", 	s:" ", 	s:"\"",			s:GetDBEntryString	("AccountInfo", StrParam(s:"id.", i:counter, s:"___CURRENTNAME")),		s:"\""));
+	ConsoleCommand(StrParam(s:"set DB_Acc", i:counter, 	s:"FLAGNAME", 		s:" ", 	s:"\"",			s:GetDBEntryString	("AccountInfo", StrParam(s:"id.", i:counter, s:"___FLAGNAME")),			s:"\""));
+	ConsoleCommand(StrParam(s:"set DB_Acc", i:counter, 	s:"FLAGUPDATE", 	s:" ", 					i:GetDBEntry		("AccountInfo", StrParam(s:"id.", i:counter, s:"___FLAGUPDATE"))				));
+	ConsoleCommand(StrParam(s:"set DB_Acc", i:counter, 	s:"DUELELO", 		s:" ", 					i:GetDBEntry		("AccountInfo", StrParam(s:"id.", i:counter, s:"___DUELELO"))					));
+	counter++;
+	}
+ConsoleCommand(StrParam(s:"set DB_AccountsUpdated ", i:GetDBEntry("GlobalInfo", "AccountsUpdated")));
+}
+
+
+
+
+
+
+
+
+
+
+
+//CLEAR SORTED SCORES
+function void ClearScores (void)
+{
+int j;
+for (j = 0; j < MaxWinners ; j++)
+	{
+	ConsoleCommand(StrParam(s:"set DB_SortedScore",			i:j, s:" ", 					i:0));
+	ConsoleCommand(StrParam(s:"set DB_SortedNameID",		i:j, s:" ", s:"\"",		s:"",	s:"\""));
+	}
+for (j = 0; j < MaxPlayers ; j++)
+	{
+	ConsoleCommand(StrParam(s:"set DB_CurrentScore",		i:j, s:" ", 					i:0));
+	//ConsoleCommand(StrParam(s:"set DB_DecorativeScore", 	i:j, s:" ", 					i:0));
+	}
+
+}
+
+
+
+function int GivePTS (int StandartPTS, int BonusPTS)
+{
+int Result = FixedMul(	int2fix(StandartPTS), 	1.0 + BonusPTS) >> 16;
+return Result;
+}
+
+
+
+
+
+function bool DB_MemoAllowedOnThisMap (void)
+{
+bool Result;
+str String1 = "";
+str String2 = "";
+int counter, i;
+
+Switch(DB_GameTypeIs(GetCVar("DB_GameMode")))
+	{
+	case GT_Collab:			Result = TRUE;	break;
+	case GT_Competitive:	Result = FALSE;	break;
+	case GT_Team:			Result = FALSE;	break;
+	}
+
+
+
+if (StrLen(GetCVarString("DB_MemoMaps")))		// if there are exceptions for Memos
+	{
+		counter = 0;	i = 0;
+		// Calculating the amount of maps
+		while (counter < StrLen(GetCVarString("DB_MemoMaps")))
+			{
+			if (GetChar(GetCVarString("DB_MemoMaps"), counter) == '#')	i++;
+			counter++;
+			}
+
+
+		counter = 0;		//checking if map is okay to memoing on
+		While(counter < i)
+			{
+			String1 = MergedStringInfo ('#', counter + 1, 	GetCVarString("DB_MemoMaps")	);
+			String2 = StrParam(n:PRINTNAME_LEVEL);
+			if (!StrIcmp(String1, String2))	{	Result = TRUE;		break;		}			//if strings dont match go to another
+			else 								Result = FALSE;
+			counter++;
+			}
+
+	}
+
+return Result;
+
+}
+
+
+
+
+
+script "DB_EventScript" (int EventType, int Arg1, int Arg2) EVENT
+{
+if ((ClassifyActor(0) & ACTOR_BOT))					Terminate;
+if (!IsNetworkGame())								Terminate;
+if (GetCVar("DB_OldScoreType") != ST_Standart)		Terminate;
+
+
+
+	int BonusPTS, MinusPTS;
+
+	Switch(GetCVar("DB_GameMode"))
+		{
+			// COOPERATIVE MODES
+			case GM_Cooperative:
+			case GM_Survival:
+			case GM_Invasion:				BonusPTS = ModeBonus;	//replaced with
+											break;
+
+			// COMPETITIVE MODES
+			case GM_Duel:					BonusPTS = ModeBonus;
+											break;
+			case GM_Deathmatch:
+			case GM_Teamplay:
+			case GM_Terminator:
+			case GM_LastManStanding:
+			case GM_TeamLMS:
+			case GM_Possession:
+			case GM_TeamPossession:			if (PlayerCount() > 2)			BonusPTS =	FixedMul(0.03, int2fix(PlayerCount() - 2));
+											break;
+
+
+			case GM_TeamGame:				if(!IsEven(PlayerCount()))
+																		{
+																		if (BonusPTS == 0)		BonusPTS = - 0.25;
+																		else					BonusPTS = BonusPTS - abs(FixedMul(BonusPTS, 0.25));	// if teams are uneven lower score
+																		}
+
+
+
+
+											break; //Team game is usually custom mods, they're all different in gameplay, let em decide.
+
+
+			// TEAM EFFORT COMPETITIVE MODES
+
+
+
+
+
+
+
+			case GM_CTF:
+			case GM_OneFlagCTF:
+			case GM_Skulltag:				//Skulltag is almost the same as CTF, apply for it as well
+
+
+											if (GetTeamProperty (0, TPROP_NumPlayers)	==	GetTeamProperty (1, TPROP_NumPlayers))
+												Switch(IsEven(PlayerCount()))
+													{
+														case 1:	BonusPTS = -0.75;	break;		//1's is not a competitive CTF
+														case 2:	BonusPTS = -0.5;	break;		//2's is not a competitive CTF
+														case 3:	BonusPTS = 0.125;	break;		//3's is considered to be a true CTF, add bonus to ~equal with 4s results
+														case 4:						break;		//4's is considered to be a true CTF, use standart formula, much is going on in 4s
+													}
+
+
+													if(!IsEven(PlayerCount()))
+																		{
+																		if (BonusPTS == 0)		BonusPTS = - 0.25;
+																		else					BonusPTS = BonusPTS - abs(FixedMul(BonusPTS, 0.25));	// if teams are uneven lower score
+																		}
+
+											break;
+			case GM_Domination:				break;
+		}
+
+
+
+		////////////////////////////////////////////////////////////////
+		int TeamPlayer	= DB_CurrentTeam[PlayerNumber()];
+		int PlayerNum	= PlayerNumber();
+		int HealthLeft;
+		////////////////////////////////////////////////////////////////
+
+
+			if (EventType == GAMEEVENT_PLAYERFRAGS)
+				{
+					if (!PlayerIsBot(Arg1))
+						{
+
+							if (DB_GameTypeIs(GetCVar("DB_GameMode")) == GT_Team)
+								{
+								if (TeamPlayer != DB_CurrentTeam[Arg1])
+									{
+									if (DB_CurrentCarrier[Arg1] >= 0)						ConsoleCommand(StrParam(s:"set DB_CurrentScore", i:PlayerNumber(), s:" ", i:GetCVar(StrParam(s:"DB_CurrentScore", i:PlayerNumber())) + GivePTS(300, BonusPTS)));
+									}
+								else														ConsoleCommand(StrParam(s:"set DB_CurrentScore", i:PlayerNumber(), s:" ", i:GetCVar(StrParam(s:"DB_CurrentScore", i:PlayerNumber())) - 100));
+								}
+
+							if (DB_GameTypeIs(GetCVar("DB_GameMode")) == GT_Competitive)
+									{
+										ConsoleCommand(StrParam(s:"set DB_CurrentScore", 	i:PlayerNumber(),	s:" ", 	i:GetCVar(StrParam(s:"DB_CurrentScore", 	i:PlayerNumber())) + GivePTS(100, BonusPTS)));
+
+									}
+						}
+
+
+
+				}
+
+
+
+    else	if (EventType == GAMEEVENT_ACTOR_DAMAGED)
+				{
+
+
+
+					if (Arg1 > 0)
+						{
+
+
+							if (DB_GameTypeIs(GetCVar("DB_GameMode")) == GT_Collab)
+								{
+									MinusPTS = Arg1;		HealthLeft = GetActorProperty(0,APROP_Health);
+									if (!(ClassifyActor(0) & ACTOR_GENERIC ))
+									if (!(ClassifyActor(0) & ACTOR_BOT))
+									if (SetActivator(0, AAPTR_DAMAGE_SOURCE))
+										{
+
+														if (ClassifyActor(0) & ACTOR_PLAYER )
+															{
+															if (PlayerNumber()	== PlayerNum)		ConsoleCommand(StrParam(s:"set DB_CurrentScore", i:PlayerNumber(), s:" ", i:GetCVar(StrParam(s:"DB_CurrentScore", i:PlayerNumber())) - min(HealthLeft, MinusPTS)));
+															else									ConsoleCommand(StrParam(s:"set DB_CurrentScore", i:PlayerNumber(), s:" ", i:GetCVar(StrParam(s:"DB_CurrentScore", i:PlayerNumber())) + min(GetActorProperty(0,APROP_Health), GivePTS(arg1, BonusPTS))));
+															}
+
+
+
+
+												else	if (ClassifyActor(0) & ACTOR_MONSTER )		{
+																									ConsoleCommand(StrParam(s:"set DB_CurrentScore", i:PlayerNum, s:" ", i:GetCVar(StrParam(s:"DB_CurrentScore", i:PlayerNum)) - min( HealthLeft, MinusPTS)   ));
+																									}
+
+
+										}
+
+								}
+
+
+
+
+							else	if (DB_GameTypeIs(GetCVar("DB_GameMode")) == GT_Team)
+									{
+									if (SetActivator(0, AAPTR_DAMAGE_SOURCE))
+										{
+										if ((DB_CurrentTeam[PlayerNumber()] != TeamPlayer)	&& 	 (ClassifyActor(0) & ACTOR_PLAYER ))
+											if (PlayerNumber() != PlayerNum)					ConsoleCommand(StrParam(s:"set DB_CurrentScore", i:PlayerNumber(), s:" ", i:GetCVar(StrParam(s:"DB_CurrentScore", i:PlayerNumber())) + min(GetActorProperty(0,APROP_Health), GivePTS(arg1, BonusPTS))));
+										}
+									}
+
+						}
+
+
+
+				}
+
+
+    else	if (EventType == GAMEEVENT_CAPTURES)
+				{
+								ConsoleCommand(StrParam(s:"set DB_CurrentScore", i:PlayerNumber(), s:" ", i:GetCVar(StrParam(s:"DB_CurrentScore", i:PlayerNumber())) + GivePTS(500, BonusPTS)));
+								DB_CurrentCarrier[PlayerNumber()] = -1;
+				if (Arg1 >= 0)	ConsoleCommand(StrParam(s:"set DB_CurrentScore", i:Arg1, s:" ", i:GetCVar(StrParam(s:"DB_CurrentScore", i:Arg1)) + GivePTS(200, BonusPTS)));
+				}
+
+    else	if (EventType == GAMEEVENT_TOUCHES)
+				{
+								DB_CurrentCarrier[PlayerNumber()]	= Arg1;
+								ConsoleCommand(StrParam(s:"set DB_CurrentScore", i:PlayerNumber(), s:" ", i:GetCVar(StrParam(s:"DB_CurrentScore", i:PlayerNumber())) + GivePTS(100, BonusPTS)));
+				}
+
+    else	if (EventType == GAMEEVENT_RETURNS)
+				{
+								ConsoleCommand(StrParam(s:"set DB_CurrentScore", i:PlayerNumber(), s:" ", i:GetCVar(StrParam(s:"DB_CurrentScore", i:PlayerNumber())) + GivePTS(100, BonusPTS)));
+				}
+
+    else	if (EventType == GAMEEVENT_ROUND_ENDS)
+				{
+				}
+
+    else	if (EventType == GAMEEVENT_ROUND_STARTS)
+				{
+				}
+
+    else	if (EventType == GAMEEVENT_ROUND_ABORTED)
+				{
+				if (GetCVar("DB_GameMode") == GM_Duel)			{	DB_GameSim = FALSE;		DB_Aborted = TRUE;	/*log(s:"RQ"); doesn't work, why? who the fuck knows ACS_NamedExecute ("DB_UpdateMapScores", 0, PasswordIs(), FALSE, UMS_DuelRagequit);*/	}
+				}
+
+    else	if (EventType == 13	/*GAMEEVENT_DOMINATION_CONTROL*/)
+				{
+				ConsoleCommand(StrParam(s:"set DB_CurrentScore", i:PlayerNumber(), s:" ", i:GetCVar(StrParam(s:"DB_CurrentScore", i:PlayerNumber())) + GivePTS(100, BonusPTS)));
+				}
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function str FlagName (int Index)
+{
+str Result = "";
+
+if (Index < 64)
+	{
+	Switch(Index)
+		{
+		CASE -2:	Result	=	"RESET"; 						break;
+
+		CASE 0:		Result	=	"None"; 						break;
+		CASE 1: 	Result	=	"Afghanistan"; 					break;
+		CASE 2: 	Result	=	"Albania"; 						break;
+		CASE 3: 	Result	=	"Algeria"; 						break;
+		CASE 4: 	Result	=	"Andorra"; 						break;
+		CASE 5: 	Result	=	"Angola"; 						break;
+		CASE 6: 	Result	=	"Antigua and Barbuda"; 			break;
+		CASE 7: 	Result	=	"Argentina"; 					break;
+		CASE 8: 	Result	=	"Armenia"; 						break;
+		CASE 9: 	Result	=	"Australia"; 					break;
+		CASE 10: 	Result	=	"Austria"; 						break;
+		CASE 11: 	Result	=	"Azerbaijan"; 					break;
+		CASE 12: 	Result	=	"Bahamas"; 						break;
+		CASE 13: 	Result	=	"Bahrain"; 						break;
+		CASE 14: 	Result	=	"Bangladesh"; 					break;
+		CASE 15: 	Result	=	"Barbados"; 					break;
+		CASE 16: 	Result	=	"Belarus"; 						break;
+		CASE 17: 	Result	=	"Belgium"; 						break;
+		CASE 18: 	Result	=	"Belize"; 						break;
+		CASE 19: 	Result	=	"Benin"; 						break;
+		CASE 20: 	Result	=	"Bhutan"; 						break;
+		CASE 21: 	Result	=	"Bolivia"; 						break;
+		CASE 22: 	Result	=	"Bosnia & Herzegovina"; 		break;
+		CASE 23: 	Result	=	"Botswana"; 					break;
+		CASE 24: 	Result	=	"Brazil"; 						break;
+		CASE 25: 	Result	=	"Brunei"; 						break;
+		CASE 26: 	Result	=	"Bulgaria"; 					break;
+		CASE 27: 	Result	=	"Burkina Faso"; 				break;
+		CASE 28: 	Result	=	"Burundi"; 						break;
+		CASE 29: 	Result	=	"Cabo Verde"; 					break;
+		CASE 30: 	Result	=	"Cambodia"; 					break;
+		CASE 31: 	Result	=	"Cameroon"; 					break;
+		CASE 32: 	Result	=	"Canada"; 						break;
+		CASE 33: 	Result	=	"Central African Republic"; 	break;
+		CASE 34: 	Result	=	"Chad"; 						break;
+		CASE 35: 	Result	=	"Chile"; 						break;
+		CASE 36: 	Result	=	"China"; 						break;
+		CASE 37: 	Result	=	"Colombia"; 					break;
+		CASE 38: 	Result	=	"Comoros"; 						break;
+		CASE 39: 	Result	=	"Congo"; 						break;
+		CASE 40: 	Result	=	"Congo, Dem. Republic"; 		break;
+		CASE 41: 	Result	=	"Costa Rica"; 					break;
+		CASE 42: 	Result	=	"Cote d'Ivoire"; 				break;
+		CASE 43: 	Result	=	"Croatia"; 						break;
+		CASE 44: 	Result	=	"Cuba"; 						break;
+		CASE 45: 	Result	=	"Cyprus"; 						break;
+		CASE 46: 	Result	=	"Czechia"; 						break;
+		CASE 47: 	Result	=	"Denmark"; 						break;
+		CASE 48: 	Result	=	"Djibouti"; 					break;
+		CASE 49: 	Result	=	"Dominica"; 					break;
+		CASE 50: 	Result	=	"Dominican Republic"; 			break;
+		CASE 51: 	Result	=	"East Timor"; 					break;
+		CASE 52: 	Result	=	"Ecuador"; 						break;
+		CASE 53: 	Result	=	"Egypt"; 						break;
+		CASE 54: 	Result	=	"El Salvador"; 					break;
+		CASE 55: 	Result	=	"Equatorial Guinea"; 			break;
+		CASE 56: 	Result	=	"Eritrea"; 						break;
+		CASE 57: 	Result	=	"Estonia"; 						break;
+		CASE 58: 	Result	=	"Eswatini"; 					break;
+		CASE 59: 	Result	=	"Ethiopia"; 					break;
+		CASE 60: 	Result	=	"Fiji"; 						break;
+		CASE 61: 	Result	=	"Finland"; 						break;
+		CASE 62: 	Result	=	"France"; 						break;
+		CASE 63: 	Result	=	"Gabon"; 						break;
+		}
+	}
+
+else if ((Index >= 64)	&&	(Index < 128))
+	{
+	Switch(Index)
+		{
+
+		CASE 64: 	Result	=	"Gambia"; 						break;
+		CASE 65: 	Result	=	"Georgia"; 						break;
+		CASE 66: 	Result	=	"Germany"; 						break;
+		CASE 67: 	Result	=	"Ghana"; 						break;
+		CASE 68: 	Result	=	"Greece"; 						break;
+		CASE 69: 	Result	=	"Grenada"; 						break;
+		CASE 70: 	Result	=	"Guatemala"; 					break;
+		CASE 71: 	Result	=	"Guinea"; 						break;
+		CASE 72: 	Result	=	"Guinea-Bissau"; 				break;
+		CASE 73: 	Result	=	"Guyana"; 						break;
+		CASE 74: 	Result	=	"Haiti"; 						break;
+		CASE 75: 	Result	=	"Honduras"; 					break;
+		CASE 76: 	Result	=	"Hong Kong"; 					break;
+		CASE 77: 	Result	=	"Hungary"; 						break;
+		CASE 78: 	Result	=	"Iceland"; 						break;
+		CASE 79: 	Result	=	"India"; 						break;
+		CASE 80: 	Result	=	"Indonesia"; 					break;
+		CASE 81: 	Result	=	"Iran"; 						break;
+		CASE 82: 	Result	=	"Iraq"; 						break;
+		CASE 83: 	Result	=	"Ireland"; 						break;
+		CASE 84: 	Result	=	"Israel"; 						break;
+		CASE 85: 	Result	=	"Italy"; 						break;
+		CASE 86: 	Result	=	"Jamaica"; 						break;
+		CASE 87: 	Result	=	"Japan"; 						break;
+		CASE 88: 	Result	=	"Jordan"; 						break;
+		CASE 89: 	Result	=	"Kazakhstan"; 					break;
+		CASE 90: 	Result	=	"Kenya"; 						break;
+		CASE 91: 	Result	=	"Kiribati"; 					break;
+		CASE 92: 	Result	=	"Kuwait"; 						break;
+		CASE 93: 	Result	=	"Kyrgyzstan"; 					break;
+		CASE 94: 	Result	=	"Laos"; 						break;
+		CASE 95: 	Result	=	"Latvia"; 						break;
+		CASE 96: 	Result	=	"Lebanon"; 						break;
+		CASE 97: 	Result	=	"Lesotho"; 						break;
+		CASE 98: 	Result	=	"Liberia"; 						break;
+		CASE 99: 	Result	=	"Libya"; 						break;
+		CASE 100: 	Result	=	"Liechtenstein"; 				break;
+		CASE 101: 	Result	=	"Lithuania"; 					break;
+		CASE 102: 	Result	=	"Luxembourg"; 					break;
+		CASE 103: 	Result	=	"Macau"; 						break;
+		CASE 104: 	Result	=	"Madagascar"; 					break;
+		CASE 105: 	Result	=	"Malawi"; 						break;
+		CASE 106: 	Result	=	"Malaysia"; 					break;
+		CASE 107: 	Result	=	"Maldives"; 					break;
+		CASE 108: 	Result	=	"Mali"; 						break;
+		CASE 109: 	Result	=	"Malta"; 						break;
+		CASE 110: 	Result	=	"Marshall Islands"; 			break;
+		CASE 111: 	Result	=	"Mauritania"; 					break;
+		CASE 112: 	Result	=	"Mauritius"; 					break;
+		CASE 113: 	Result	=	"Mexico"; 						break;
+		CASE 114: 	Result	=	"Micronesia, Fed. States"; 		break;
+		CASE 115: 	Result	=	"Moldova"; 						break;
+		CASE 116: 	Result	=	"Monaco"; 						break;
+		CASE 117: 	Result	=	"Mongolia"; 					break;
+		CASE 118: 	Result	=	"Montenegro"; 					break;
+		CASE 119: 	Result	=	"Morocco"; 						break;
+		CASE 120: 	Result	=	"Mozambique"; 					break;
+		CASE 121: 	Result	=	"Myanmar"; 						break;
+		CASE 122: 	Result	=	"Namibia"; 						break;
+		CASE 123: 	Result	=	"Nauru"; 						break;
+		CASE 124: 	Result	=	"Nepal"; 						break;
+		CASE 125: 	Result	=	"Netherlands"; 					break;
+		CASE 126: 	Result	=	"New Zealand"; 					break;
+		CASE 127: 	Result	=	"Nicaragua"; 					break;
+		}
+	}
+
+else if ((Index >= 128)	&&	(Index < 192))
+	{
+	Switch(Index)
+		{
+
+	CASE 128: 	Result	=	"Niger"; 						break;
+	CASE 129: 	Result	=	"Nigeria"; 						break;
+	CASE 130: 	Result	=	"North Korea"; 					break;
+	CASE 131: 	Result	=	"North Macedonia"; 				break;
+	CASE 132: 	Result	=	"Norway"; 						break;
+	CASE 133: 	Result	=	"Oman"; 						break;
+	CASE 134: 	Result	=	"Pakistan"; 					break;
+	CASE 135: 	Result	=	"Palau"; 						break;
+	CASE 136: 	Result	=	"Palestine"; 					break;
+	CASE 137: 	Result	=	"Panama"; 						break;
+	CASE 138: 	Result	=	"Papua New Guinea"; 			break;
+	CASE 139: 	Result	=	"Paraguay"; 					break;
+	CASE 140: 	Result	=	"Peru"; 						break;
+	CASE 141: 	Result	=	"Philippines"; 					break;
+	CASE 142: 	Result	=	"Poland"; 						break;
+	CASE 143: 	Result	=	"Portugal"; 					break;
+	CASE 144: 	Result	=	"Qatar"; 						break;
+	CASE 145: 	Result	=	"Romania"; 						break;
+	CASE 146: 	Result	=	"Russia"; 						break;
+	CASE 147: 	Result	=	"Rwanda"; 						break;
+	CASE 148: 	Result	=	"Saint Kitts and Nevis"; 		break;
+	CASE 149: 	Result	=	"Saint Lucia"; 					break;
+	CASE 150: 	Result	=	"St. Vincent. & Grenadines"; 	break;
+	CASE 151: 	Result	=	"Samoa"; 						break;
+	CASE 152: 	Result	=	"San Marino"; 					break;
+	CASE 153: 	Result	=	"Sao Tome & Principe"; 			break;
+	CASE 154: 	Result	=	"Saudi Arabia"; 				break;
+	CASE 155: 	Result	=	"Senegal"; 						break;
+	CASE 156: 	Result	=	"Serbia"; 						break;
+	CASE 157: 	Result	=	"Seychelles"; 					break;
+	CASE 158: 	Result	=	"Sierra Leone"; 				break;
+	CASE 159: 	Result	=	"Singapore"; 					break;
+	CASE 160: 	Result	=	"Slovakia"; 					break;
+	CASE 161: 	Result	=	"Slovenia"; 					break;
+	CASE 162: 	Result	=	"Solomon Islands"; 				break;
+	CASE 163: 	Result	=	"Somalia"; 						break;
+	CASE 164: 	Result	=	"South Africa"; 				break;
+	CASE 165: 	Result	=	"South Korea"; 					break;
+	CASE 166: 	Result	=	"South Sudan"; 					break;
+	CASE 167: 	Result	=	"Spain"; 						break;
+	CASE 168: 	Result	=	"Sri Lanka"; 					break;
+	CASE 169: 	Result	=	"Sudan"; 						break;
+	CASE 170: 	Result	=	"Suriname"; 					break;
+	CASE 171: 	Result	=	"Sweden"; 						break;
+	CASE 172: 	Result	=	"Switzerland"; 					break;
+	CASE 173: 	Result	=	"Syria"; 						break;
+	CASE 174: 	Result	=	"Tajikistan"; 					break;
+	CASE 175: 	Result	=	"Taiwan (Rep. of China)"; 		break;
+	CASE 176: 	Result	=	"Thailand"; 					break;
+	CASE 177: 	Result	=	"Togo"; 						break;
+	CASE 178: 	Result	=	"Tonga"; 						break;
+	CASE 179: 	Result	=	"Trinidad and Tobago"; 			break;
+	CASE 180: 	Result	=	"Tunisia"; 						break;
+	CASE 181: 	Result	=	"Turkey"; 						break;
+	CASE 182: 	Result	=	"Turkmenistan"; 				break;
+	CASE 183: 	Result	=	"Tuvalu"; 						break;
+	CASE 184: 	Result	=	"Uganda"; 						break;
+	CASE 185: 	Result	=	"Ukraine"; 						break;
+	CASE 186: 	Result	=	"United Arab Emirates"; 		break;
+	CASE 187: 	Result	=	"United Kingdom"; 				break;
+	CASE 188: 	Result	=	"United Rep. of Tanzania"; 		break;
+	CASE 189: 	Result	=	"United States"; 				break;
+	CASE 190: 	Result	=	"Uruguay"; 						break;
+	CASE 191: 	Result	=	"Uzbekistan"; 					break;
+		}
+	}
+
+else
+	{
+	Switch(Index)
+		{
+
+	CASE 192: 	Result	=	"Vanuatu"; 						break;
+	CASE 193: 	Result	=	"Venezuela"; 					break;
+	CASE 194: 	Result	=	"Vietnam"; 						break;
+	CASE 195: 	Result	=	"Yemen"; 						break;
+	CASE 196: 	Result	=	"Zambia"; 						break;
+	CASE 197: 	Result	=	"Zimbabwe"; 					break;
+
+	CASE 999: 	Result	=	"Null"; 						break;
+
+		}
+	}
+
+
+str Color = "";
+		if (!Index)								Color	=	"\cu";
+else	if ((Index >= 1)	&&	(Index < 198))	Color	=	"\cj";
+else											Color	=	"\cb";
+
+Result = StrParam(s:Color, s:Result);
+
+
+
+
+return Result;
+}
+
+
+
+
+
+
+Script "DB_MAPSRESULTS"	(void)  NET CLIENTSIDE
+{
+if (!IsNetworkGame())	Terminate;
+if (!DB_CorrectDatabase())	{ log(s:DB_WrongDatabase());		Terminate;	}
+ACS_NamedTerminate	("DB_DAMRCLIENT", 0);
+ACS_NamedExecute	("DB_DAMRCLIENT", 0);
+}
+
+
+
+
+function int HowManyMapsInStack (int StackNum)
+{
+int counter, MapsCount;
+while (counter < StrLen(GetCVarString(StrParam(s:"DB_Maps", i:StackNum))))
+{
+if (GetChar(GetCVarString(StrParam(s:"DB_Maps", i:StackNum)), counter) == '#')		MapsCount++;
+counter++;
+}
+return MapsCount;
+}
+
+
+
+
+
+Script "DB_DAMRCLIENT" (void) NET CLIENTSIDE
+{
+if (!IsNetworkGame())	Terminate;
+if (!DB_CorrectDatabase())	{ log(s:DB_WrongDatabase());		Terminate;	}
+int FPS_width = HUDX_MEDIUM;
+int counter, DeltaX, FPS_X, Interval, MapsCount, OldCurrentMapNum, MapsCountInLocalStack;
+str CurrentMapString = StrParam(n:PRINTNAME_LEVEL);
+int CurrHP = GetActorProperty(0, APROP_Health);
+int OldHp = CurrHP;
+ConsoleCommand("CloseMenu");
+
+//counting all maps
+
+
+
+int CurrentMapNum = 1;
+int StackNum = 1;
+int CurrentMapInStack = 1;
+int LatestStackMapsCount;
+bool FoundCurrentMap;
+int MapsCountInFoundStack;
+
+
+while (StackNum <= MapsStacks)
+	{
+
+
+			if (!StrLen(GetCVarString(StrParam(s:"DB_Maps", i:StackNum))))	break;		//This MapStack doesn't exist, abort checking
+
+			while (counter < StrLen(GetCVarString(StrParam(s:"DB_Maps", i:StackNum))))
+			{
+			if (GetChar(GetCVarString(StrParam(s:"DB_Maps", i:StackNum)), counter) == '#')
+				{
+				MapsCount++;
+				MapsCountInLocalStack++;  // <- not breaking, to count local maps to the end
+				//also check if there is current map in this stack
+				if (CurrentMapNum <= 1)
+				if (!StrIcmp(CurrentMapString, 	MergedStringInfo ('#', MapsCountInLocalStack, 	GetCVarString(StrParam(s:"DB_Maps", i:StackNum)))	))
+					{
+					FoundCurrentMap = TRUE;
+					CurrentMapNum = MapsCountInLocalStack;	// remember current map's num in a stack
+					CurrentMapInStack = StackNum;		//remember stack current map is in
+					//break;
+					}
+
+				}
+
+			counter++;
+			}
+		if (FoundCurrentMap)	{ MapsCountInFoundStack = 	MapsCountInLocalStack;	FoundCurrentMap = FALSE;	}
+		StackNum++;
+		LatestStackMapsCount = MapsCountInLocalStack;
+		MapsCountInLocalStack = 0;
+		counter = 0;
+
+		}
+
+
+if (MapsCountInFoundStack)		MapsCountInLocalStack = MapsCountInFoundStack;
+else							MapsCountInLocalStack = LatestStackMapsCount;
+
+
+	if (!MapsCount)
+					{
+					SetFont("DBFONT");
+					SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+					HudMessage(s:"No maps were beaten yet! Be the first one to complete some!";			HUDMSG_FADEOUT,	 0, 	CR_ORANGE,  		int2fix(HUDX_MEDIUM/2), 		int2fix(HUDY_MEDIUM/2),		int2fix(4), 	int2fix(2));
+					Terminate;
+					}
+
+
+
+	if (PlayerIsSpectator(ConsolePlayerNumber()))
+			{
+			Thing_Remove(DB_ClientSpot);
+			SetActivatorToPlayer(ConsolePlayerNumber());
+			SpawnForced("DB_ClientMapViewSpot", GetActorX(0), GetActorY(0), GetActorZ(0) + GetActorViewHeight(0), DB_ClientSpot, GetActorAngle(0) >> 8);
+			SetActorPitch(DB_ClientSpot, GetActorPitch(0));
+			SetActivator (0, AAPTR_NULL);
+			}
+	else
+			{
+			Thing_Remove(DB_ClientSpot);
+			SpawnForced("DB_ClientMapViewSpot", GetActorX(0), GetActorY(0), GetActorZ(0) + GetActorViewHeight(0), DB_ClientSpot, GetActorAngle(0) >> 8);
+			SetActorPitch(DB_ClientSpot, GetActorPitch(0));
+			}
+
+
+
+
+
+Interval = HUDX_MEDIUM/MapsCountInLocalStack;
+FPS_X = CurrentMapNum * interval - interval/2;
+while(TRUE)
+	{
+	CurrHP = GetActorProperty(0, APROP_Health);
+	if  ((
+		((GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) & 	BT_ATTACK) 		&& 		(!(GetPlayerInput(ConsolePlayerNumber(), INPUT_OLDBUTTONS) & BT_ATTACK))) 		||
+		((GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) & 	BT_ALTATTACK) 	&& 		(!(GetPlayerInput(ConsolePlayerNumber(), INPUT_OLDBUTTONS) & BT_ALTATTACK)))	||
+		((GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) & 	BT_JUMP) 		&& 		(!(GetPlayerInput(ConsolePlayerNumber(), INPUT_OLDBUTTONS) & BT_JUMP)))			||
+		((GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) & 	BT_USE) 		&& 		(!(GetPlayerInput(ConsolePlayerNumber(), INPUT_OLDBUTTONS) & BT_USE)))
+		)
+
+		|
+
+		(
+		(!PlayerIsSpectator(ConsolePlayerNumber()))		&&
+		(
+		(
+		GetActorVelocity(0) > 0.01
+		)
+
+		|
+
+		(OldHP > CurrHP)
+		)
+		))
+
+
+
+			{
+			if (PlayerIsSpectator(ConsolePlayerNumber()))
+				{
+				SetActivatorToPlayer(ConsolePlayerNumber());
+				SetActorPitch(0, GetActorPitch(DB_ClientSpot));
+				Teleport(DB_ClientSpot, 0, 0);
+				SetActivator (0, AAPTR_NULL);
+				}
+			else
+				{
+				NamedRequestScriptPuke("DB_BackToAngle", PasswordIs(), GetACtorAngle(DB_ClientSpot));
+				SetFont("DBFADEYW");
+				SetHUDSize(HUDX_FULLSCREEN,		HUDY_FULLSCREEN,	FALSE);
+				HudMessage(s:"A";		HUDMSG_FADEOUT|HUDMSG_ALPHA, 0, CR_UNTRANSLATED, 		int2fix(HUDX_FULLSCREEN/2), 	int2fix(HUDY_FULLSCREEN/2), 	0.0,	0.5,	0.25);
+				}
+
+			ShowBlank(ConsolePlayerNumber(), BLANK_Results);
+			LocalAmbientSound("menu/backup", GetCVar("snd_sfxvolume") >> 8);
+			ChangeCamera(0, 0, 0);
+			Terminate;
+			}
+
+
+
+
+
+
+	ChangeCamera(DB_ClientSpot, 0, 0);
+
+	if (CurrentMapInStack > 1)														DrawNextStack(0, CurrentMapInStack - 1);
+	if (GetCVarString(StrParam(s:"DB_Maps", i:CurrentMapInStack + 1)))
+	if (StrLen(GetCVarString(StrParam(s:"DB_Maps", i:CurrentMapInStack + 1))))				DrawNextStack(1, CurrentMapInStack + 1);
+
+
+	DeltaX = FixedDiv(-GetPlayerInput(ConsolePlayerNumber(), INPUT_YAW), 	GetCVarFixed("M_YAW"));
+	FPS_X += DeltaX/100;
+
+
+	if (FPS_X < 0)
+			{
+			if (CurrentMapInStack > 1)		//shift left
+					{
+					CurrentMapInStack--;
+					MapsCountInLocalStack = HowManyMapsInStack(CurrentMapInStack);
+					Interval = HUDX_MEDIUM/MapsCountInLocalStack;
+					CurrentMapNum = MapsPerStack;
+					OldCurrentMapNum = CurrentMapNum;
+					FPS_X = CurrentMapNum * interval - interval/2;
+					//FPS_X = FPS_width;
+					}
+
+			else
+			FPS_X = 0;
+			}
+
+
+else	if (FPS_X > FPS_width)
+			{
+			if (GetCVarString(StrParam(s:"DB_Maps", i:CurrentMapInStack + 1)))		//shift Right
+				{
+				if (StrLen(GetCVarString(StrParam(s:"DB_Maps", i:CurrentMapInStack + 1))))
+						{
+						CurrentMapInStack++;
+						MapsCountInLocalStack = HowManyMapsInStack(CurrentMapInStack);
+						Interval = HUDX_MEDIUM/MapsCountInLocalStack;
+						CurrentMapNum = 1;
+						OldCurrentMapNum = CurrentMapNum;
+						FPS_X = CurrentMapNum * interval - interval/2;
+						//FPS_X = 0;
+						}
+
+				else
+				FPS_X = FPS_width;
+				}
+			else
+			FPS_X = FPS_width;
+			}
+
+	counter = 1;
+	while(counter <= MapsCountInLocalStack)
+		{
+		if ((FPS_X > counter*interval - interval/2 - interval/2)	&&  (FPS_X < counter*interval - interval/2 + interval/2))
+				{
+				CurrentMapNum = counter;
+				if (OldCurrentMapNum != CurrentMapNum)
+					{
+					OldCurrentMapNum = CurrentMapNum;
+					NamedRequestScriptPuke("ShowResultsCLIENT", RESULT_Map,  RESULT_AtMenu, CurrentMapNum, CurrentMapInStack);
+					LocalAmbientSound("menu/cursor", GetCVar("snd_sfxvolume") >> 8);
+					}
+				break;
+				}
+		counter++;
+		}
+	DrawAllMapsResults (CurrentMapNum, FPS_X, MapsCountInLocalStack, CurrentMapInStack);
+
+	oldHP = CurrHP;
+	delay(1);
+	}
+
+}
+
+
+
+function void DrawNextStack(int Direction, int Num)
+{
+str String = "";	int X;
+Switch(Direction)
+	{
+	case 0:	String = StrParam(s:"<< ",	i:Num);			X = 0			- 32;	break;
+	case 1:	String = StrParam(i:Num,	s:" >>");		X = HUDX_MEDIUM + 32;	break;
+	}
+
+		SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+		SetFont("DBFONT");
+		HudMessage(s:String;			HUDMSG_PLAIN|HUDMSG_ALPHA,  0,	CR_GREY, 		int2fix(X), 			int2fix(HUDY_MEDIUM/2 + HUDY_MEDIUM/4 + 12),			ClientTicDelay, 0.5);
+}
+
+
+function void DrawAllMapsResults (int CurrentMapNum, int FPS_X, int MapsCount, int MapStack)
+{
+str String = "";	str EdgeImg = "";
+int MapCounter, counter, i, interval, EdgeAlpha;
+int StringColor;
+bool CurrMap;
+
+
+
+
+
+SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+
+interval = HUDX_MEDIUM/MapsCount;
+
+MapCounter = 1;
+
+
+
+while(MapCounter <= MapsCount)
+	{
+		String = "";
+		counter = 	MaxMapChars;
+
+		while (counter > 0)
+			{
+			counter--;
+
+			if	(!GetChar(MergedStringInfo ('#', MapCounter, 	GetCVarString(StrParam(s:"DB_Maps", i:MapStack))), counter))			String = StrParam(s:String, s:" ", s:"\n");
+			else				String = StrParam(s:String, c:GetChar(MergedStringInfo ('#', MapCounter, 	GetCVarString(StrParam(s:"DB_Maps", i:MapStack))), counter), s:"\n");
+
+			}
+
+
+
+		if ((FPS_X > MapCounter*interval - interval/2 - interval/2)	&&  (FPS_X < MapCounter*interval - interval/2 + interval/2))			CurrMap = TRUE;
+		else																																CurrMap = FALSE;
+
+		Switch(CurrMap)
+			{
+			case FALSE:		StringColor = CR_WHITE;			break;
+
+			case TRUE:		StringColor = CR_GOLD;			break;
+			}
+
+
+		SetFont("DBFONTV");
+		HudMessage(s:StrToUpper(String);			HUDMSG_PLAIN|HUDMSG_ALPHA,  0,	StringColor, 		int2fix(MapCounter*interval - interval/2), 			int2fix(HUDY_MEDIUM/2 + HUDY_MEDIUM/4 + 12),			ClientTicDelay, 1.0);
+
+
+
+
+		if ((CurrentMapNum - MapCounter <= 1)	&& 	(CurrentMapNum - MapCounter > -1))	{	EdgeImg = "DBDAMR2";	EdgeAlpha = 0.35;	}
+		else																			{	EdgeImg = "DBDAMR1";	EdgeAlpha = 0.15;	}
+
+		// MAP Border
+		if (MapCounter < MapsCount)
+			{
+			SetFont(EdgeImg);
+			HudMessage(s:"A";		HUDMSG_PLAIN|HUDMSG_ALPHA,  0,					CR_UNTRANSLATED, 		int2fix(MapCounter*interval), 		int2fix(HUDY_MEDIUM/2 + 96),	ClientTicDelay, EdgeAlpha);
+
+			}
+
+	if (MapCounter == CurrentMapNum)
+			{
+			counter = MapCounter*interval - interval/2 - interval/2 + 2;
+			while (counter < MapCounter*interval - interval/2 + interval/2)
+				{
+
+				SetFont("DBDAMR3");
+				HudMessage(s:"A";	HUDMSG_PLAIN|HUDMSG_ALPHA,  0,					CR_UNTRANSLATED, 		int2fix(counter), 					int2fix(HUDY_MEDIUM/2 + 96),	ClientTicDelay, HUDBAR_SelMapAlpha);
+				counter++;
+				}
+			}
+
+	MapCounter++;
+	}
+
+		// cursor
+		SetFont("DBFONT");
+		HudMessage(s:"^";			HUDMSG_PLAIN|HUDMSG_ALPHA,  HUDid_DB_HEADER + HUDid_DB_MapCursor,	CR_GOLD, 				int2fix(FPS_X), 					int2fix(HUDY_MEDIUM/2 + 200),	ClientTicDelay, 1.0);
+
+
+		// tint
+		SetFont("DBDAMR0");
+		HudMessage(s:"A";			HUDMSG_PLAIN|HUDMSG_ALPHA,  HUDid_DB_HEADER + HUDid_DB_MapTint,	CR_UNTRANSLATED, 		int2fix(HUDX_MEDIUM/2), 			int2fix(HUDY_MEDIUM/2),			ClientTicDelay, 0.75);
+
+
+		// Notice
+		SetFont("DBFONT");
+		HudMessage(s:"PRESS ANY ACTION BUTTON TO CLOSE THIS WINDOW";
+									HUDMSG_PLAIN|HUDMSG_ALPHA,  0,					CR_GOLD, 				int2fix(HUDX_MEDIUM/2), 			int2fix(HUDY_MEDIUM/2 + 212),	ClientTicDelay, 1.0);
+
+}
+
+
+
+
+function void DrawDatabaseTransaction (str String)
+{
+SetHUDSize(HUDX_VERYBIG, HUDY_VERYBIG, 0);
+SetFont("STDISK");
+HudMessage(s:String;			HUDMSG_PLAIN,  	HUDid_DB_HEADER + HUDid_DB_Transaction,	CR_UNTRANSLATED, 		int2fix(HUDX_VERYBIG + 19), 			int2fix(HUDY_VERYBIG - 8),			5.0);
+}
+
+
+
+
+function str DB_RemoveBadChars (str String)
+{
+int counter;
+str NewString = "";
+while (counter < StrLen(String))
+	{
+	if (	(GetChar(String, counter) >= 32)	&& (GetChar(String, counter) < 123)	)		NewString = StrParam(s:NewString, c:GetChar(String, counter));
+	else																					NewString = StrParam(s:NewString, s:"-");
+	counter++;
+	}
+
+return Newstring;
+}
+
+
+
+function str DB_DeleteFromStr (str String, str Part)
+{
+int counter, i;
+str NewString = String;
+bool Found;
+int StartDeletingFrom;
+
+while (counter < StrLen(String))
+	{
+	if (GetChar(String, counter) == GetChar(Part, i))		i++;
+	else													i = 0;
+
+
+
+	counter++;
+
+	if (i >= StrLen(Part))
+							{
+							Found = TRUE;
+							StartDeletingFrom 	= 	counter - i;
+							}
+
+	}
+
+
+if (Found)
+	{
+	NewString = "";
+	counter = 0; i = 0;
+	while (counter <   StrLen(String) - StrLen(Part))
+		{
+		if (!((counter >= StartDeletingFrom)	&&		(counter < StartDeletingFrom + StrLen(Part))))
+			NewString = StrParam(s:NewString, c:GetChar(String, counter));
+
+		counter++;
+		}
+
+
+
+	}
+
+
+
+return Newstring;
+}
+
+
+
+
+Script "DB_BackToAngle" (int Password, int Angle) NET
+{
+if (!IsNetworkGame())			Terminate;
+if (!PasswordMatch(Password))	Terminate;
+SetActorAngle(0, Angle);
+
+}
+
+
+
+Script "DB_DSFB" (int Password, int DuelCooldown) NET
+{
+if (!PasswordMatch(Password))	Terminate;
+ConsoleCommand(StrParam(s:"set DB_CurrentScore", i:PlayerNumber(), s:" ", i:GetCVar(StrParam(s:"DB_CurrentScore", i:PlayerNumber())) - DuelCooldown));
+//log(n:PlayerNumber() + 1, s:"  ", i:-DuelCooldown, s:" = ", i:GetCVar(StrParam(s:"DB_CurrentScore", i:PlayerNumber())));
+}
+
+
+
+
+
+
+
+function void DB_DuelRankShowChange (int Type, int Position, int PlayerNum)
+{
+int Hold = 4.0;	int FadeOut = 2.0;
+str Font1	= "";
+str Font23	= "";
+str String1 = "";
+str String2 = "";
+str String3 = "";
+int Color;
+int X1, X23;
+
+		Font1		= "DBFONTS";
+		Font23		= "DBFONT";
+		String2		= String_Ending(StripColors(StrParam(n:PlayerNum + 1)) ,  18, "..");
+		//String2		= StringFill_str	(String_Ending(StripColors(StrParam(n:PlayerNum + 1)) ,  18, ".."), 18,	"~");
+
+Switch(Type)
+	{
+	case 0:	//winner
+
+		String1		= StrParam(s:"\cq", c:DBicon_UP);
+		String3		= StrParam(s:"+", i:Position	);//StringFill_str	(StrParam(s:"+", i:Position	),	 4,	"~");
+		X1			= HUDX_BIG/2 - HUDX_BIG/4;
+		X23			= HUDX_MEDIUM/2 - HUDX_MEDIUM/4;
+		Color		= CR_DARKGREEN;
+	break;
+
+	case 1: //loser
+		String1		= StrParam(s:"\cg", c:DBicon_DOWN);
+		String3		= StrParam(s:"-", i:Position	);//StringFill_str	(StrParam(s:"-", i:Position	),	 4,	"~");
+		X1			= HUDX_BIG/2 + HUDX_BIG/4;
+		X23			= HUDX_MEDIUM/2 + HUDX_MEDIUM/4;
+		Color		= CR_RED;
+	break;
+
+
+	case 2: //ragequitter
+
+		X23			= HUDX_MEDIUM/2;
+		String1		= "";
+
+		String2		= 	StrParam(s: StringFill_str	(String_Ending(StripColors(StrParam(n:PlayerNum + 1)),   18, ".."), 18,	"~"), s:"\n\n",
+						s:"aborted this duel~\n\n",
+						s:"and their rank has\n\n",
+						s:"been lowered!~~~~~");
+		String3		= "";
+		Color		= CR_ORANGE;
+
+	break;
+	}
+
+
+
+
+
+// STRING 1:
+SetHUDSize(HUDX_BIG,	HUDY_BIG,	FALSE);
+SetFont(Font1);
+HudMessageBold	(s:String1;		HUDMSG_FADEOUT|HUDMSG_NOWRAP, 	0, Color,			int2fix(X1),	int2fix(HUDY_BIG/2 - HUDY_BIG/3 - 16),				Hold, FadeOut);
+
+
+//STRING 2:
+SetHUDSize(HUDX_MEDIUM,	HUDY_MEDIUM,	FALSE);
+SetFont(Font23);
+HudMessageBold	(s:String2;		HUDMSG_FADEOUT|HUDMSG_NOWRAP, 	0, Color,			int2fix(X23),	int2fix(HUDY_MEDIUM/2 - HUDY_MEDIUM/3 + 8),			Hold, FadeOut);
+
+//STRING 3:
+SetHUDSize(HUDX_MEDIUM,	HUDY_MEDIUM,	FALSE);
+SetFont(Font23);
+HudMessageBold	(s:String3;		HUDMSG_FADEOUT|HUDMSG_NOWRAP, 	0, Color,			int2fix(X23),	int2fix(HUDY_MEDIUM/2 - HUDY_MEDIUM/3 -16),			Hold, FadeOut);
+}
+
+
+
+
+
+
+
+script "RevealDBAccounts" (int CCount, int From) NET
+{
+if (CCount != ClientCount())	Terminate;
+SetHUDSize(HUDX_MEDIUM,	HUDY_MEDIUM,	FALSE);
+SetFont("DBFONT");
+str String = "";
+int counter;
+
+while (counter < 10)
+	{
+	if (GetCVarString(StrParam(s:"DB_Acc", i:From + counter, s:"ACCOUNT")))
+	String = StrParam(
+					s:StringFill_str	(StrParam(i:From + counter, s:"."), 													3,	"~"),
+					s:"",
+					s:StringFill_str	(GetCVarString(StrParam(s:"DB_Acc", i:From + counter, s:"ACCOUNT")),					32,	"~"),
+					s:" ",
+					s:StringFill_str	(StripColors(GetCVarString(StrParam(s:"DB_Acc", i:From + counter, s:"PLAYERNAME"))),	32,	"~"),
+					s:" ",
+					s:StringFill_str	(GetCVarString(StrParam(s:"DB_Acc", i:From + counter, s:"FLAGNAME")),					25,	"~"),
+					s:" ",
+					s:StringFill_str	(StrParam(i:GetCVar(StrParam(s:"DB_Acc", i:From + counter, s:"FLAGUPDATE"))),			5,	"~"),
+					s:" ",
+					s:StringFill_str	(StrParam(i:GetCVar(StrParam(s:"DB_Acc", i:From + counter, s:"DUELELO"))),				3,	"~")
+					);
+	else String = "";
+
+
+	HudMessage	(s:String;
+	HUDMSG_FADEOUT|HUDMSG_NOWRAP, 	0, CR_WHITE,			int2fix(HUDX_MEDIUM/2),	int2fix(32 + (From + counter)*16),				10.0, 4.0);
+
+	HudMessage	(s:"DB IS  ", s:GetCVarString("databasefile");
+	HUDMSG_FADEOUT|HUDMSG_NOWRAP, 	0, CR_GREEN,			int2fix(HUDX_MEDIUM/2),	int2fix(HUDY_MEDIUM/2 + HUDY_MEDIUM/4),			10.0, 4.0);
+
+	HudMessage	(s:"Registered Players: ", i:GetCVar("DB_RegisteredPlayers");
+	HUDMSG_FADEOUT|HUDMSG_NOWRAP, 	0, CR_LIGHTBLUE,		int2fix(HUDX_MEDIUM/2),	int2fix(HUDY_MEDIUM/2 + HUDY_MEDIUM/4 + 16),	10.0, 4.0);
+	counter++;
+	}
+
+
+}

@@ -20820,7 +20820,7 @@ int Result = Char;
 
 
 
-Result = RemoveBadCharEnc(Result);
+Result = RemoveBadCharEnc(Result); 
 
 
 Return Result;

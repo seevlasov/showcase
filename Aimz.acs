@@ -1,0 +1,2745 @@
+
+// mod by ZEBERPAL
+
+
+#library "ZAIM"
+#include "zcommon.acs"
+
+#libdefine CAMERA_TID				232100
+#libdefine FAKE_TID					232101
+#libdefine LASER_TID				232102
+#libdefine SHOT_TID					233103
+#libdefine SpawnPoint_TID			233104
+#libdefine CheckPointEnter_TID		233105
+#libdefine CheckPointExit_TID		233106
+#libdefine Weapon_TID				233107
+#libdefine WeaponShot_TID			233108
+#libdefine DeathCamera_TID			233109
+#libdefine FakeBody_TID				233110
+#libdefine DashBody_TID				233111
+#libdefine Spectate_TID				233112
+#libdefine Key_TID					232200 //(reserved up to 100)
+#libdefine DARKNESS_TID				232500 //(reserved up to 10)
+
+#libdefine DeathCameraDistance		64
+#libdefine WeaponShotVariety		3
+#libdefine ZAM_DarknessAlpha		0.25
+#libdefine DarknessSpheres			4
+#libdefine CameraDistance			48
+#libdefine DefaultTranslation		255
+#libdefine StandartVolume			127
+#libdefine ZAM_Weapon				0
+#libdefine ZAM_Ammo					1
+#libdefine ZAM_Give					0
+#libdefine ZAM_Take					1
+#libdefine InvPukeDelay				15
+#libdefine ZAMGAME					32732
+
+
+#libdefine NotSpectator				0
+#libdefine TrueSpectator			1
+#libdefine DeadSpectator			2
+#libdefine LaserAlphaFade			0.005
+#libdefine LaserAlphaMin			0.125
+#libdefine ClientTicDelay			0.05
+#libdefine MaxCameraPitch			0.075
+#libdefine HUDid_ButtonInfo			232000
+#libdefine HUDid_BLOCK				232001
+#libdefine HUDid_CROSSHAIR			232002
+#libdefine HUDid_ViewSwitch			232003
+#libdefine HUDid_WeaponIcon			232004
+#libdefine HUDid_LoadingInvMsg		232005
+#libdefine HUDid_Scale				232010
+#libdefine HUDid_WeaponryCursor		232013
+#libdefine HUDid_WeaponryTint		232014
+#libdefine HUDid_Border				232015
+#libdefine HUDid_HealthFlash		232016
+
+
+#libdefine HUDid_BackgroundTint		232045
+#libdefine CrossBaseOffset			8
+#libdefine MaxCrossOffset			192
+#libdefine MaxCrossOffsetMove		40
+#libdefine CrosshairAlpha			0.25
+#libdefine MinInputReveal			0.2
+
+#libdefine HUDX_FULLSCREEN 			8
+#libdefine HUDY_FULLSCREEN 			6
+#libdefine HUDX_TINY				1920
+#libdefine HUDY_TINY				1440
+#libdefine HUDX_VERYSMALL			1280
+#libdefine HUDY_VERYSMALL			960
+#libdefine HUDX_SMALL 				1024
+#libdefine HUDY_SMALL 				768
+#libdefine HUDX_MEDIUM 				640
+#libdefine HUDY_MEDIUM 				480
+#libdefine HUDX_BIG 				320
+#libdefine HUDY_BIG 				240
+#libdefine HUDX_VERYBIG 			160
+#libdefine HUDY_VERYBIG 			120
+#libdefine FPS_width 				HUDX_MEDIUM
+#libdefine FPS_height 				HUDY_MEDIUM
+#libdefine HUDBAR_BackAlpha			0.2
+#libdefine HUDBAR_SelWepAlpha		0.1
+#libdefine NoAlpha					1.0
+#libdefine HUDBAR_AmmoStart			32
+#libdefine HUDBAR_MaxWeapChars		24
+
+#libdefine FPS_AngMaxX 				8192
+#libdefine FPS_AngMaxY				FPS_AngMaxX * FPS_height / FPS_width
+#libdefine SEC 						35
+#libdefine ThirdPersonMaX			30
+
+#libdefine wi_SCANorPROJ 			1
+#libdefine wi_DAMAGE 				2
+#libdefine wi_RANGE	 				3
+#libdefine wi_PREOFFSET	 			4
+#libdefine wi_POSTOFFSET	 		5
+#libdefine wi_SHOTSFIRED 			6
+#libdefine wi_DELAY 				7
+#libdefine wi_COST					8
+#libdefine MaxPlayers				32
+
+
+
+int 	PlayerMaxHealth[MaxPlayers];
+bool	KeyCollected[MaxPlayers][99];
+
+function int int2fix(int value)
+{
+	return value * 1.0;
+}
+
+function int abs (int x)
+{
+	if (x < 0)
+	return -x;
+
+	return x;
+}
+
+function int GetCVarFixed(str name)	//ZZYZX
+{
+    str c = GetCVarString(name);
+
+    // [-|+][123123123][.123123123]
+
+    int part_integer = 0;
+    int part_fractional = 0;
+
+    // first, get the location of the dot
+    int i;
+    int dot = 0;
+    for (i = 0; i < StrLen(c); i++)
+    {
+        if (GetChar(c, i) == '.')
+            break;
+    }
+    dot = i;
+
+    bool negative = false;
+
+    for (i = 0; i < dot; i++)
+    {
+        if (i == 0 && (GetChar(c, i) == '-'))
+        {
+            negative = true;
+        }
+        else
+        {
+            int ch = GetChar(c, i);
+            ch -= 0x30;
+            int countOr = dot-i-1;
+            for (int j = 0; j < countOr; j++)
+                ch *= 10;
+            part_integer += ch;
+        }
+    }
+
+    for (i = dot+1; i < StrLen(c); i++)
+    {
+        ch = GetChar(c, i);
+        ch -= 0x30;
+        ch <<= 16;
+        countOr = i-dot;
+        for (j = 0; j < countOr; j++)
+            ch /= 10;
+        part_fractional += ch;
+    }
+
+    return ((part_integer & 0xFFFF) << 16) | (part_fractional & 0xFFFF);
+}
+
+
+
+function bool KeyReleased(int key)
+{
+    int buttons     = GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS);
+    int oldbuttons  = GetPlayerInput(ConsolePlayerNumber(), INPUT_OLDBUTTONS);
+    int newbuttons  = (buttons ^ oldbuttons) & oldbuttons;
+
+    if ((newbuttons & key) == key) { return true; }
+        return false;
+}
+
+
+function int PosNegZero(int Num)
+{
+int Result;
+if (Num <= 0) 	Result = -1;
+else 			Result = 1;
+return Result;
+}
+
+
+
+function bool BoolSwitch (bool Value)
+{
+if (Value == true) Value = false;
+else Value = true;
+return Value;
+}
+
+function bool PasswordMatch (int Password)
+{
+bool Result;
+if ((Password == PasswordIs()) | (Password == OldPasswordIs()))			Result = TRUE;
+return Result;
+}
+
+
+function int PasswordIs (void)
+{
+int Result;
+Result = GetCVar("ZAM_Pass1") + GetCVar("ZAM_Pass2") + GetCVar("ZAM_Pass3") + GetCVar("ZAM_Pass4");
+return Result;
+}
+
+function int OldPasswordIs (void)
+{
+int Result;
+Result = GetCVar("ZAM_OldPass1") + GetCVar("ZAM_OldPass2") + GetCVar("ZAM_OldPass3") + GetCVar("ZAM_OldPass4");
+return Result;
+}
+
+function bool ClientExist (int PlayerNum)
+{
+bool Result;
+if (PlayerInGame(PlayerNum) | (PlayerIsSpectator(PlayerNum) > 0))	Result = TRUE;
+
+return Result;
+}
+
+
+function int StrToNum(str s)	//AToI
+{
+    int start = 0;
+    bool negative = false;
+    int n = 0;
+    int len = StrLen(s);
+
+    // Check if we start with a negative sign
+    if (GetChar(s, 0) == '-')
+    {
+        negative = true;
+        start++;
+    }
+
+    // Go through every character in the string
+    for (int i=start; i<len; i++)
+    {
+        int char = GetChar(s, i);
+
+        // Check that we are actually converting a number
+        if (char < '0' || char > '9')
+        {
+            //print(s:"ERROR, attempting to convert ", c:char, s:" to number!");
+            continue;
+        }
+
+        // Add the number to our total
+        n = n*10 + (char-'0');
+    }
+
+    if (negative)
+        n = -n;
+
+    return n;
+}
+
+
+
+
+function bool CheckActorPosition (int TID, int range, int PosTID)
+{
+bool Result;
+
+if 	(
+	((GetActorX(TID) >> 16) > (GetActorX(posTID) >> 16) - range) &&
+	((GetActorY(TID) >> 16) > (GetActorY(posTID) >> 16) - range) &&
+	//((GetActorZ(TID) >> 16) > (GetActorZ(posTID) >> 16) - range) &&
+	((GetActorX(TID) >> 16) < (GetActorX(posTID) >> 16) + range) &&
+	((GetActorY(TID) >> 16) < (GetActorY(posTID) >> 16) + range) //&&
+	//((GetActorZ(TID) >> 16) < (GetActorZ(posTID) >> 16) + range)
+	)
+	Result = true;
+
+return Result;
+}
+
+
+
+
+
+
+
+
+
+function str LeadingZeros (int Value, int ZeroesCount)
+{
+    int i;
+    str result = StrParam(d:Value);
+    int len = StrLen(result);
+    for (i=len; i<ZeroesCount; i++)
+        result = StrParam(s:"0", s:result);
+    return result;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#libdefine MaxTranslations			11
+Script "ZAM_OPEN"	OPEN
+{
+int EveryFourSeconds, EverySecond, EveryBit, counter, i, p;
+int Music = random(GetCvar("ZAM_MinMusic"),GetCvar("ZAM_MaxMusic"));
+str String = "";
+//SetCVarString("ZAM_MapID", LeadingZeros(StrLen(StrParam(n: PRINTNAME_LEVELNAME)), 2));
+
+
+while(counter < 5)
+	{
+	String = StrParam(s:String, i:random(1, 9));
+	counter++;
+	}
+SetCVarString("ZAM_MapID", String);
+counter = 0;
+
+
+
+
+for (i = 0; i < MaxPlayers; i++)		PlayerMaxHealth[i] = GetCvar("ZAM_PlayerMaxHealth");
+
+
+CreateTranslation (DefaultTranslation + 0, 		112:127=112:127);
+CreateTranslation (DefaultTranslation + 1, 		112:127=64:79);
+CreateTranslation (DefaultTranslation + 2, 		112:127=176:191);
+CreateTranslation (DefaultTranslation + 3, 		112:127=32:47);
+CreateTranslation (DefaultTranslation + 4, 		112:127=96:111);
+CreateTranslation (DefaultTranslation + 5, 		112:127=200:207);
+CreateTranslation (DefaultTranslation + 6, 		112:127=217:223);
+CreateTranslation (DefaultTranslation + 7, 		112:127=232:235);
+CreateTranslation (DefaultTranslation + 8, 		112:127=128:143);
+CreateTranslation (DefaultTranslation + 9, 		112:127=240:247);
+CreateTranslation (DefaultTranslation + 10, 	112:127=152:159);
+CreateTranslation (DefaultTranslation + 11, 	112:127=144:151);
+
+	if(IsNetworkGame())
+	{
+
+		if (!GetCvar("SV_NoRespawnInvul"))
+			ConsoleCommand("set SV_NoRespawnInvul 1");
+		if (!GetCvar("Compat_NoCrossHair"))
+			ConsoleCommand("Compat_NoCrossHair 1");
+		if (!GetCvar("sv_ForceSoftwarePitchLimits"))
+			ConsoleCommand("sv_ForceSoftwarePitchLimits 1");
+		if (!GetCvar("sv_Coop_LoseInventory"))
+			ConsoleCommand("sv_Coop_LoseInventory 1");
+		if (!GetCVar("sv_ForceVideoDefaults"))
+			ConsoleCommand("sv_ForceVideoDefaults 1");
+		if (!GetCVar("sv_AwardDamageInsteadKills"))
+			ConsoleCommand("sv_AwardDamageInsteadKills 1");
+		if (GetCVar("sv_Chasecam"))
+			ConsoleCommand("sv_Chasecam 0");
+
+	}
+
+
+	while(TRUE)
+		{
+		if (!EveryFourSeconds)
+			{
+				//Password
+				SetCVar("ZAM_OldPass1", GetCVar("ZAM_Pass1"));	SetCVar("ZAM_Pass1", random(100,225));
+				SetCVar("ZAM_OldPass2", GetCVar("ZAM_Pass2"));	SetCVar("ZAM_Pass2", random(100,225));
+				SetCVar("ZAM_OldPass3", GetCVar("ZAM_Pass3"));	SetCVar("ZAM_Pass3", random(100,225));
+				SetCVar("ZAM_OldPass4", GetCVar("ZAM_Pass4"));	SetCVar("ZAM_Pass4", random(100,225));
+				EveryFourSeconds = Sec*4;
+
+			if (GetCVar("ZAM_Regenerate"))
+			for (i = 0; i < MaxPlayers; i++)
+				{
+				if (GetActorProperty(GetCVar("ZAM_PLAYER_TID") + i, APROP_Health) < 	PlayerMaxHealth[i])
+					SetActorProperty(GetCVar("ZAM_PLAYER_TID") + i, APROP_Health, 		GetActorProperty(GetCVar("ZAM_PLAYER_TID") + i, APROP_Health) + 1);
+				}
+
+
+
+			}
+
+		if (!EverySecond)
+			{
+					if (GetCVar("ZAM_MUSICWAD"))
+						SetMusic(StrParam(s:"ZAMUS", 	i:Music));
+
+			//SetPlayerProperty(1, TRUE, PROP_INSTANTWEAPONSWITCH);
+
+
+			EverySecond = Sec;
+			}
+
+
+		if (!EveryBit)
+			{
+				counter = 0;
+				while(counter < MaxPlayers)
+					{
+					if (GetCVar("ZAM_DontShareKeys"))
+						{
+						Switch(GetCVar("ZAM_DontShareKeys"))
+							{
+							// if player disconnected - remove it.
+							case 1:
+							if (!ClientExist(counter))													for (i = 1; i <= GetCVar("ZAM_Keys"); i++)	KeyCollected[counter][i]	= FALSE;
+							break;
+							// if player died - remove it.
+							case 2:
+							if (!ClientExist(counter))													for (i = 1; i <= GetCVar("ZAM_Keys"); i++)	KeyCollected[counter][i]	= FALSE;
+							if (!(ClassifyActor(GetCVar("ZAM_PLAYER_TID") + counter) & ACTOR_ALIVE))	for (i = 1; i <= GetCVar("ZAM_Keys"); i++)	KeyCollected[counter][i]	= FALSE;
+							//ClearActorInventory(GetCVar("ZAM_PLAYER_TID") + counter);
+							break;	// remove after each death.
+							}
+						}
+
+
+
+					i = 1;
+					while (i <= GetCVar("ZAM_Keys"))
+						{
+						if (CheckActorInventory(GetCVar("ZAM_PLAYER_TID") + counter, GetCVarString(StrParam(s:"ZAM_Key", i:i))))	//has a key
+												{
+												if (!KeyCollected[counter][i])
+													if (!IsTIDUsed(Key_TID + i))	SpawnSpotForced("MapSpot", GetCVar("ZAM_PLAYER_TID") + counter, Key_TID + i, 0);	//first time ever someone picked this key
+
+												if (!GetCVar("ZAM_DontShareKeys"))	for (p = 0; p < MaxPlayers; p++)		KeyCollected[p][i] 			= TRUE;	//share it with everyone
+												else 																		KeyCollected[counter][i]	= TRUE;
+												}
+						//else																							KeyCollected[i] = FALSE;
+						i++;
+						}
+
+
+					ClearActorInventory(GetCVar("ZAM_PLAYER_TID") + counter); //Clear the rest of it
+					//GiveActorInventory(GetCVar("ZAM_PLAYER_TID") + counter, "ZAMweapon", 1);
+
+
+
+					//if (!GetCVar("ZAM_DontShareKeys"))
+					if (ClassifyActor(GetCVar("ZAM_PLAYER_TID") + counter) & ACTOR_ALIVE)
+					for (i = 1; i <= GetCVar("ZAM_Keys"); i++)		GiveActorInventory(GetCVar("ZAM_PLAYER_TID") + counter, GetCVarString(StrParam(s:"ZAM_Key", i:i)) , KeyCollected[counter][i]);
+
+					if (GetActorProperty(GetCVar("ZAM_PLAYER_TID") + counter, APROP_Health) > 		PlayerMaxHealth[counter])
+						SetActorProperty(GetCVar("ZAM_PLAYER_TID") + counter, APROP_Health, 		PlayerMaxHealth[counter]);
+
+					counter++;
+					}
+			EveryBit = 5;
+
+			}
+
+
+		if (EveryFourSeconds > 0)	EveryFourSeconds--;
+		if (EverySecond > 0)		EverySecond--;
+		if (EveryBit > 0)			EveryBit--;
+		delay(1);
+		}
+}
+
+
+
+
+
+
+Script "ZAM_Enter" 	ENTER
+{
+PlayerMaxHealth[PlayerNumber()] = GetCvar("ZAM_PlayerMaxHealth");
+ClearInventory();
+int Trans = random(0, MaxTranslations);
+Thing_Remove(GetCVar("ZAM_PLAYER_TID") 	+ PlayerNumber());
+Thing_Remove(CAMERA_TID);
+Thing_Remove(FAKE_TID);
+Thing_Remove(LASER_TID);
+Thing_ChangeTID(	ActivatorTID(),	GetCVar("ZAM_PLAYER_TID") + PlayerNumber());
+SetActorProperty(		GetCVar("ZAM_PLAYER_TID") + PlayerNumber(), 		APROP_RenderStyle, 		STYLE_Translucent);
+SetActorProperty(		GetCVar("ZAM_PLAYER_TID") + PlayerNumber(), 		APROP_DamageMultiplier, 1.0);
+//ForceStart
+if (GetCVar("ZAM_StartX") ||GetCVar("ZAM_StartY") )
+	SetActorPosition(GetCVar("ZAM_PLAYER_TID") + PlayerNumber(), int2fix(GetCVar("ZAM_StartX")), int2fix(GetCVar("ZAM_StartY")), 0, 1);
+ExecuteClientScript(ZAMGAME, PlayerNumber(), Trans, 0);
+LevelGreet();
+}
+
+
+Script "ZAM_Respawn" 	RESPAWN
+{
+if (GetCVar("ZAM_DeathPenalty"))  //need to be worked on
+	{
+	if (PlayerMaxHealth[PlayerNumber()] > GetCvar("ZAM_PlayerMaxHealth")/2)
+			PlayerMaxHealth[PlayerNumber()] = PlayerMaxHealth[PlayerNumber()] - GetCvar("ZAM_PlayerMaxHealth")/4;
+
+					SetFont("ZAMRFONT");		SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+					HudMessage(s:"Max Health reduced to \cg", i:PlayerMaxHealth[PlayerNumber()], s:" HP\n\nTP speed increased, FP damage increased";		HUDMSG_FADEOUT, 0, CR_DARKRED, 		int2fix(HUDX_MEDIUM/2), 	int2fix(HUDY_MEDIUM/2), int2fix(GetCVar("ZAM_RespawnTime")/2), 2.0);
+	}
+
+	SetFont("ZAMFADEB");	SetHUDSize(HUDX_FULLSCREEN,		HUDY_FULLSCREEN,	FALSE);
+	HudMessage(s:"A";		HUDMSG_FADEOUT, HUDid_BLOCK, CR_UNTRANSLATED, 	int2fix(HUDX_FULLSCREEN/2), 	int2fix(HUDY_FULLSCREEN/2), int2fix(GetCVar("ZAM_RespawnTime")), 2.0);
+
+
+ClearInventory();
+int Trans = random(0, MaxTranslations);
+Thing_Remove(GetCVar("ZAM_PLAYER_TID") 	+ PlayerNumber());
+Thing_Remove(CAMERA_TID);
+Thing_Remove(FAKE_TID);
+Thing_Remove(LASER_TID);
+Thing_ChangeTID(	ActivatorTID(),	GetCVar("ZAM_PLAYER_TID") + PlayerNumber());
+SetActorProperty(		GetCVar("ZAM_PLAYER_TID") + PlayerNumber(), 		APROP_RenderStyle, 		STYLE_Translucent);
+SetActorProperty(		GetCVar("ZAM_PLAYER_TID") + PlayerNumber(), 		APROP_DamageMultiplier, 1.0);
+//ForceStart
+if (GetCVar("ZAM_StartX") ||GetCVar("ZAM_StartY") )
+	SetActorPosition(GetCVar("ZAM_PLAYER_TID") + PlayerNumber(), int2fix(GetCVar("ZAM_StartX")), int2fix(GetCVar("ZAM_StartY")), 0, 1);
+ExecuteClientScript(ZAMGAME, PlayerNumber(), Trans, GetCvar("ZAM_PlayerMaxHealth")/PlayerMaxHealth[PlayerNumber()]);
+SetActorProperty(GetCVar("ZAM_PLAYER_TID") 	+ PlayerNumber(), APROP_Invulnerable, TRUE);
+delay(GetCVar("ZAM_RespawnTime")*SEC);
+LevelGreet();
+delay(SEC*3);
+SetActorProperty(GetCVar("ZAM_PLAYER_TID") 	+ PlayerNumber(), APROP_Invulnerable, FALSE);
+}
+
+
+
+
+
+
+Script "ZAM_OPENCLIENT"	OPEN	CLIENTSIDE
+{
+//if(!ClientExist(ConsolePlayerNumber())) Terminate;
+//SetActivatorToPlayer(ConsolePlayerNumber());
+bool VidMode = GetCVar("vid_renderer");
+while(TRUE)//(GetGameModeState() != GAMESTATE_INRESULTSEQUENCE)
+	{
+	if (!VidMode)
+		{
+		//SetCVar("ZAM_TPcrosshair", TRUE);
+
+			SetFont("ZAMRFONT");		SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+			HudMessage(s:"Software renderer is not supported. Switch it to Hardware renderer. \n\nGo to \cgOPTIONS -> SET VIDEO MODE -> Renderer OpenGL \crand restart Zandronum.";
+			HUDMSG_PLAIN, 0, CR_DARKRED, 		int2fix(HUDX_MEDIUM/2), 	int2fix(HUDY_MEDIUM/2 - HUDY_MEDIUM/4 - HUDY_MEDIUM/6),	ClientTicDelay);
+
+			if (PlayerIsSpectator(ConsolePlayerNumber()) == NotSpectator)
+				{
+				SetFont("ZAMFADEB");	SetHUDSize(HUDX_FULLSCREEN,		HUDY_FULLSCREEN,	FALSE);
+				HudMessage(s:"A";		HUDMSG_PLAIN, HUDid_BLOCK, CR_UNTRANSLATED, 	int2fix(HUDX_FULLSCREEN/2), 	int2fix(HUDY_FULLSCREEN/2), ClientTicDelay);
+				}
+
+		}
+	else
+		{
+			if (PlayerIsSpectator(ConsolePlayerNumber()) == NotSpectator)
+				if (!GetCVar("GL_USE_MODELS"))
+					{
+					ConsoleCommand("GL_USE_MODELS 1");
+					SetFont("ZAMRFONT");		SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+					HudMessage(s:"This mod requires to have 3D models on. Switched them on.";		HUDMSG_FADEOUT, 0, CR_DARKRED, 		int2fix(HUDX_MEDIUM/2), 	int2fix(HUDY_MEDIUM/2 - HUDY_MEDIUM/4 - HUDY_MEDIUM/6), 4.0, 1.0);
+					}
+		}
+
+	delay(1);
+	}
+
+}
+
+
+Script ZAMGAME (int Trans, int Respawned) CLIENTSIDE
+{
+bool GotReset, AllowedToShoot;
+bool ZAM_ViewMode = GetCVar("ZAM_ViewMode");
+int counter, StopAngle, StopPitch, a, i, f, LaserAlpha, LaserShakeX, LaserShakeY, TruePlayer, MinusDist, p, c, OldHealth, HoldSwitch, DeltaX, DeltaY, HealthDelay,
+FPS_X, FPS_Y, CrossOffset, WeaponDelay, DistAdd, OldLightLevel, EverySec, EveryStep, RespawnFade, CheckpointHold, interval, OldWeaponType, SpyIn, DashDelay, ShowKeys;
+str s, ss, String;
+int Scale = GetCvar("ZAM_StartScale");
+int WeaponType = GetCvar("ZAM_StartupWeapon");
+int Equiped = WeaponType;
+int TPside = ThirdPersonMaX * PosNegZero(GetCvar("ZAM_TPside"));
+int SpyingOn = -1;
+if (Respawned)
+		{
+		Thing_Remove(DeathCamera_TID);
+		Thing_Remove(FakeBody_TID);
+		RespawnFade = GetCVar("ZAM_RespawnTime");
+		}
+
+//if (IsNetworkGame())
+//	{
+	Thing_Remove(SpawnPoint_TID);
+	SpawnForced("ClientSpotLoop",	GetActorX(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()), 																	//X
+									GetActorY(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()), 																	//Y
+									GetActorZ(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()), 		//Z
+									SpawnPoint_TID, 0);
+//	}
+
+
+
+OldHealth = GetActorProperty(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), APROP_Health);
+
+delay(1);
+SetActivatorToPlayer(ConsolePlayerNumber());
+
+
+
+
+
+
+
+
+
+
+
+
+		//CHECKPOINT set at start
+
+
+		Thing_Remove(CheckPointEnter_TID);
+		SpawnForced("ZAM_Checkpoint",	GetActorX(SpawnPoint_TID), 		//X
+										GetActorY(SpawnPoint_TID), 		//Y
+										GetActorZ(SpawnPoint_TID), 		//Z
+										CheckPointEnter_TID, 0);
+
+
+
+		//Check if there is session checkpoint, if yes , then spawn
+		if (!Respawned)
+		if (StrLen("ZAM_Session"))
+			{
+			if (GetChar(GetCVarString("ZAM_Session"), 29)	== 	GetChar(GetCVarString("ZAM_MapID"), 0))
+			if (GetChar(GetCVarString("ZAM_Session"), 4)	== 	GetChar(GetCVarString("ZAM_MapID"), 1))
+			if (GetChar(GetCVarString("ZAM_Session"), 7)	== 	GetChar(GetCVarString("ZAM_MapID"), 2))
+			if (GetChar(GetCVarString("ZAM_Session"), 25)	== 	GetChar(GetCVarString("ZAM_MapID"), 3))
+			if (GetChar(GetCVarString("ZAM_Session"), 14)	== 	GetChar(GetCVarString("ZAM_MapID"), 4))
+
+				{
+
+
+				//x
+				String = "";
+				String = StrParam(s:String, c:GetChar(GetCVarString("ZAM_Session"), 16));
+				String = StrParam(s:String, c:GetChar(GetCVarString("ZAM_Session"), 27));
+				String = StrParam(s:String, c:GetChar(GetCVarString("ZAM_Session"), 8));
+				String = StrParam(s:String, c:GetChar(GetCVarString("ZAM_Session"), 23));
+				String = StrParam(s:String, c:GetChar(GetCVarString("ZAM_Session"), 5));
+				if ((GetChar(GetCVarString("ZAM_Session"), 19) - 48) < 5)  i = -1;		else i = 1;
+
+				//y
+				s = "";
+				s = StrParam(s:s, c:GetChar(GetCVarString("ZAM_Session"), 31));
+				s = StrParam(s:S, c:GetChar(GetCVarString("ZAM_Session"), 20));
+				s = StrParam(s:S, c:GetChar(GetCVarString("ZAM_Session"), 2));
+				s = StrParam(s:S, c:GetChar(GetCVarString("ZAM_Session"), 9));
+				s = StrParam(s:S, c:GetChar(GetCVarString("ZAM_Session"), 22));
+				if ((GetChar(GetCVarString("ZAM_Session"), 11) - 48) < 5)  a = -1;		else a = 1;
+
+				//z
+				ss = "";
+				ss = StrParam(s:ss, c:GetChar(GetCVarString("ZAM_Session"), 15));
+				ss = StrParam(s:Ss, c:GetChar(GetCVarString("ZAM_Session"), 13));
+				ss = StrParam(s:Ss, c:GetChar(GetCVarString("ZAM_Session"), 18));
+				ss = StrParam(s:Ss, c:GetChar(GetCVarString("ZAM_Session"), 3));
+				ss = StrParam(s:Ss, c:GetChar(GetCVarString("ZAM_Session"), 26));
+				if ((GetChar(GetCVarString("ZAM_Session"), 24) - 48) < 5)  c = -1;		else c = 1;
+
+				SpawnForced("ZAM_Checkpoint2",	int2fix(StrToNum(String)*i), int2fix(StrToNum(s)*a), int2fix(StrToNum(ss)*c),  CheckPointExit_TID,  random(0, 255));
+
+
+				}
+
+
+			}
+
+
+
+			while ((ClassifyActor(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()) & ACTOR_ALIVE))
+			{
+
+
+
+
+
+				//DRAW HUD
+				DrawHUD(Scale, WeaponType, f, HealthDelay);
+
+				Interval = HUDX_MEDIUM/GetCVar("ZAM_ModMaxWeapons");
+
+
+
+				if (!EveryStep)
+					{
+					if (sqrt(
+						FixedMul(GetActorVelX(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()), GetActorVelX(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber())) +
+						FixedMul(GetActorVelY(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()), GetActorVelY(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber())) +
+						FixedMul(GetActorVelZ(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()), GetActorVelZ(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()))
+						)	  >		0.01)
+													NamedRequestScriptPuke("ZAM_Step", PasswordIs());
+
+					EveryStep = 9;
+
+					}
+
+
+				if (!EverySec)
+					{
+					if (RespawnFade)
+						{
+						SetFont("ZAMRFONT");		SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+						HudMessage(s:"Respawn fade out in \cg", i:RespawnFade, s:"\cr seconds";		HUDMSG_PLAIN, 0, CR_DARKRED, 		int2fix(HUDX_MEDIUM/2), 	int2fix(HUDY_MEDIUM/2 - HUDY_MEDIUM/3), 1.0);
+						RespawnFade--;
+						}
+
+
+
+						if (IsTIDUsed(CheckPointExit_TID))	// DESTINATION CHECKPOINT EXIST
+							{
+								String = "";
+
+
+																																										String = StrParam(s:String, i:random(0, 9));		//0
+																																										String = StrParam(s:String, i:random(0, 9));		//1
+								s = LeadingZeros(abs(GetActorY (CheckPointExit_TID) >>16), 5);			i =	GetChar(s, 2) - 48;											String = StrParam(s:String, i:i);					//2
+								s = LeadingZeros(abs(GetActorZ (CheckPointExit_TID) >>16), 5);			i =	GetChar(s, 3) - 48;											String = StrParam(s:String, i:i);					//3
+																										i =	GetChar(GetCVarString("ZAM_MapID"), 1) - 48;				String = StrParam(s:String, i:i);					//4
+								s = LeadingZeros(abs(GetActorX (CheckPointExit_TID) >>16), 5);			i =	GetChar(s, 4) - 48;											String = StrParam(s:String, i:i);					//5
+																																										String = StrParam(s:String, i:random(0, 9));		//6
+																										i =	GetChar(GetCVarString("ZAM_MapID"), 2) - 48;				String = StrParam(s:String, i:i);					//7
+								s = LeadingZeros(abs(GetActorX (CheckPointExit_TID) >>16), 5);			i =	GetChar(s, 2) - 48;											String = StrParam(s:String, i:i);					//8
+								s = LeadingZeros(abs(GetActorY (CheckPointExit_TID) >>16), 5);			i =	GetChar(s, 3) - 48;											String = StrParam(s:String, i:i);					//9
+																																										String = StrParam(s:String, i:random(0, 9));		//10
+								if(GetActorY (CheckPointExit_TID) < 0)	i = random(0, 4);		else i = random(5, 9);													String = StrParam(s:String, i:i);					//11
+																																										String = StrParam(s:String, i:random(0, 9));		//12
+								s = LeadingZeros(abs(GetActorZ (CheckPointExit_TID) >>16), 5);			i =	GetChar(s, 1) - 48;											String = StrParam(s:String, i:i);					//13
+																										i =	GetChar(GetCVarString("ZAM_MapID"), 4) - 48;				String = StrParam(s:String, i:i);					//14
+								s = LeadingZeros(abs(GetActorZ (CheckPointExit_TID) >>16), 5);			i =	GetChar(s, 0) - 48;											String = StrParam(s:String, i:i);					//15
+								s = LeadingZeros(abs(GetActorX (CheckPointExit_TID) >>16), 5);			i =	GetChar(s, 0) - 48;											String = StrParam(s:String, i:i);					//16
+																																										String = StrParam(s:String, i:random(0, 9));		//17
+								s = LeadingZeros(abs(GetActorZ (CheckPointExit_TID) >>16), 5);			i =	GetChar(s, 2) - 48;											String = StrParam(s:String, i:i);					//18
+								if(GetActorX (CheckPointExit_TID) < 0)	i = random(0, 4);		else i = random(5, 9);													String = StrParam(s:String, i:i);					//19
+								s = LeadingZeros(abs(GetActorY (CheckPointExit_TID) >>16), 5);			i =	GetChar(s, 1) - 48;											String = StrParam(s:String, i:i);					//20
+																																										String = StrParam(s:String, i:random(0, 9));		//21
+								s = LeadingZeros(abs(GetActorY (CheckPointExit_TID) >>16), 5);			i =	GetChar(s, 4) - 48;											String = StrParam(s:String, i:i);					//22
+								s = LeadingZeros(abs(GetActorX (CheckPointExit_TID) >>16), 5);			i =	GetChar(s, 3) - 48;											String = StrParam(s:String, i:i);					//23
+								if(GetActorZ (CheckPointExit_TID) < 0)	i = random(0, 4);		else i = random(5, 9);													String = StrParam(s:String, i:i);					//24
+																										i =	GetChar(GetCVarString("ZAM_MapID"), 3) - 48;				String = StrParam(s:String, i:i);					//25
+								s = LeadingZeros(abs(GetActorZ (CheckPointExit_TID) >>16), 5);			i =	GetChar(s, 4) - 48;											String = StrParam(s:String, i:i);					//26
+								s = LeadingZeros(abs(GetActorX (CheckPointExit_TID) >>16), 5);			i =	GetChar(s, 1) - 48;											String = StrParam(s:String, i:i);					//27
+																																										String = StrParam(s:String, i:random(0, 9));		//28
+																										i =	GetChar(GetCVarString("ZAM_MapID"), 0) - 48;				String = StrParam(s:String, i:i);					//29
+																																										String = StrParam(s:String, i:random(0, 9));		//30
+								s = LeadingZeros(abs(GetActorY (CheckPointExit_TID + ConsolePlayerNumber()) >>16), 5);			i =	GetChar(s, 0) - 48;					String = StrParam(s:String, i:i);					//31
+
+								SetCVarString("ZAM_Session", String);
+
+
+							}
+
+						else 	SetCVarString("ZAM_Session", "");
+
+
+
+
+					if (SpyingOn != -1)		AmbientSound("ZAMSPY", StandartVolume);
+
+
+
+
+					EverySec = Sec;
+					}
+
+				//GL LIGHT
+				SpawnForced("ZAMLight",	GetActorX(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()) + FixedMul(cos(GetActorAngle(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber())), 64.0),
+												GetActorY(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()) + FixedMul(sin(GetActorAngle(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber())), 64.0),
+												GetActorZ(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()) + 8.0, 0, 0);
+
+
+
+
+
+					// KEY MARKER
+					Switch(GetCVar("ZAM_ViewMode"))
+						{
+						CASE FALSE:		
+										if (SpyingOn > -1)		p = Spectate_TID;	
+										else					p = GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber();	
+
+						
+						break;
+						CASE TRUE:		p = CAMERA_TID;											break;
+						}
+
+
+					//function void hudmessageonactor(int tid, int range, str sprite, str text, int id)
+
+					i = 1;
+					if((GetCVar("ZAM_DontShareKeys")) && (ShowKeys))
+
+					while (i <= GetCVar("ZAM_Keys"))
+						{
+							if (IsTIDUsed(Key_TID + i) && (!CheckInventory(GetCVarString(StrParam(s:"ZAM_Key", i:i)))))
+							{
+								int dist, ang, vang, pitch, x, y;
+
+								SetHUDSize(HUDX_MEDIUM, HUDY_MEDIUM, 1);
+								x = GetActorX(Key_TID + i) - GetActorX(p);
+								y = GetActorY(Key_TID + i) - GetActorY(p);
+
+								vang = VectorAngle(x,y);
+								a = (vang - GetActorAngle(p) + 1.0) % 1.0;
+
+								if(((vang+0.125)%0.5) > 0.25) dist = FixedDiv(y, Sin(vang));
+								else dist = FixedDiv(x, Cos(vang));
+
+								if (a < 0.2 || a > 0.8)
+									{
+										pitch = VectorAngle(dist, GetActorZ(Key_TID + i) - (GetActorZ(p) + 41.0));
+										pitch = (pitch + GetActorPitch(p) + 1.0) % 1.0;
+
+										x = HUDX_MEDIUM/2 - ((HUDX_MEDIUM/2) * Sin(a) / Cos(a));
+										y = HUDY_MEDIUM/2 - ((HUDX_MEDIUM/2) * Sin(pitch) / Cos(pitch));
+
+										SetFont("ZAMRFONT");
+										HudMessage(s:GetCVarString(StrParam(s:"ZAM_Key", i:i)); HUDMSG_PLAIN|HUDMSG_ALPHA, Key_TID + i, CR_WHITE, (x<<16), ((y<<16)) -32.0, ClientTicDelay, 0.15);
+									}
+							}
+						i++;
+						}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				//TURORIAL
+
+				//if (!CheckActorPosition(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), GetCVar("ZAM_PlayerRadius")*2, CheckPointEnter_TID))
+			if(GetCvar("ZAM_ShowTutorial"))
+				if(GetCvar("ZAM_Tutorial") < 7)
+					{
+					String = "";
+					Switch(GetCvar("ZAM_Tutorial"))
+						{
+						Case 0:
+						if (!GetCVar("ZAM_ViewMode"))	String = StrParam(s:"hold SECONDARY FIRE \ck(", k:"+altattack", 	s:")\cj to aim.");
+						if (GetCVar("ZAM_ViewMode"))	String = StrParam(s:"hold USE \ck(", k:"+use",	s:")\cj to switch between FIRST/THIRD person modes.");
+						break;
+
+						Case 1:
+						if (!GetCVar("ZAM_ViewMode"))	String = StrParam(s:"hold SCOREBOARD \ck(", k:"+showscores", 	s:")\cj to switch weapons.");
+						if (GetCVar("ZAM_ViewMode"))	String = StrParam(s:"hold USE \ck(", k:"+use",	s:")\cj to switch between FIRST/THIRD person modes.");
+						break;
+
+						Case 2:
+						if (!GetCVar("ZAM_ViewMode"))	String = StrParam(s:"hold USE \ck(", k:"+use",	s:")\cj to switch between FIRST/THIRD person modes.");
+						break;
+
+						Case 3:
+						if (GetCVar("ZAM_ViewMode"))	String = StrParam(s:"press SECONDARY FIRE \ck(", k:"+altattack", 	s:")\cj to flip camera.");
+						if (!GetCVar("ZAM_ViewMode"))	String = StrParam(s:"hold USE \ck(", k:"+use",	s:")\cj to switch between FIRST/THIRD person modes.");
+						break;
+
+						Case 4:
+						if (GetCVar("ZAM_ViewMode"))	String = StrParam(s:"press SPEED \ck(", k:"+speed", 	s:")\cj + MOVEMENT to dash.");
+						if (!GetCVar("ZAM_ViewMode"))	String = StrParam(s:"hold USE \ck(", k:"+use",	s:")\cj to switch between FIRST/THIRD person modes.");
+						break;
+
+						Case 5:
+						if (GetCVar("ZAM_ViewMode"))	String = StrParam(s:"hold USE \ck(", k:"+use",	s:")\cj to switch mode once again.");
+						break;
+
+						Case 6:
+						if (!GetCVar("ZAM_ViewMode"))	String = StrParam(s:"hold FIRE \ck(", k:"+attack", 	s:")\cj while in First Person to spectate your teammates and view database scoreboard(WIP).");
+						if (GetCVar("ZAM_ViewMode"))	String = StrParam(s:"hold USE \ck(", k:"+use",	s:")\cj to switch between FIRST/THIRD person modes.");
+						break;
+						}
+
+						SetHUDSize(HUDX_BIG,		HUDY_BIG,	FALSE);	SetFont("ZAMRFONT");
+						HudMessage(i:GetCvar("ZAM_Tutorial") + 1, s:"/7\n\n", s:String;		HUDMSG_PLAIN, 		0, CR_WHITE, 		int2fix(HUDX_BIG/2), 	int2fix(HUDY_BIG/2 - HUDY_BIG/4),		ClientTicDelay);
+
+					}
+
+
+
+
+
+
+
+
+
+				if (!RespawnFade)
+					{
+
+						if ((CheckActorPosition(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), GetCVar("ZAM_PlayerRadius")*2, CheckPointEnter_TID) == true) && (GetCvar("ZAM_Tutorial") >= 7))
+							{
+								if(GetCvar("ZAM_ShowTutorial"))
+								{
+								SetFont("ZAMRFONT");
+								SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+
+								HudMessage(s:"hold USE \ck(", k:"+use",	s:")\cj to switch between FIRST/THIRD person modes.";				HUDMSG_PLAIN, 		0, CR_WHITE, 		int2fix(HUDX_MEDIUM/2), 	int2fix(HUDY_MEDIUM/2 + HUDY_MEDIUM/8 - 16),		ClientTicDelay);
+								HudMessage(s:"hold SCOREBOARD \ck(", k:"+showscores", 	s:")\cj to switch weapons.";						HUDMSG_PLAIN, 		0, CR_WHITE, 		int2fix(HUDX_MEDIUM/2), 	int2fix(HUDY_MEDIUM/2 + HUDY_MEDIUM/8 - 16*2),		ClientTicDelay);
+
+								SetFont("ZAMRFONT");
+								SetHUDSize(HUDX_VERYBIG,		HUDY_VERYBIG,	FALSE);
+								HudMessage(s:"1ST PSN:";				HUDMSG_PLAIN|HUDMSG_ALPHA, 		0, CR_WHITE, 		int2fix(HUDX_VERYBIG/2 - 64), 	int2fix(HUDY_VERYBIG/2 + 21),		ClientTicDelay, 0.5);
+								HudMessage(s:"3RD PSN:";				HUDMSG_PLAIN|HUDMSG_ALPHA, 		0, CR_WHITE, 		int2fix(HUDX_VERYBIG/2 - 64), 	int2fix(HUDY_VERYBIG/2 + 24 + 12),	ClientTicDelay, 0.5);
+
+								SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+								HudMessage(s:"hold FIRE \ck(", k:"+attack", 	s:")\cj to spectate your teammates.";				HUDMSG_PLAIN, 		0, CR_WHITE, 		int2fix(HUDX_MEDIUM/2 + HUDX_MEDIUM/4), 	int2fix(HUDY_MEDIUM/2 + HUDY_MEDIUM/8 - 16 + 16*2),		ClientTicDelay);
+								HudMessage(s:"hold SECONDARY FIRE \ck(", k:"+altattack", 	s:")\cj to aim.";						HUDMSG_PLAIN, 		0, CR_WHITE, 		int2fix(HUDX_MEDIUM/2 + HUDX_MEDIUM/4), 	int2fix(HUDY_MEDIUM/2 + HUDY_MEDIUM/8 - 16 + 16*3),		ClientTicDelay);
+
+								HudMessage(s:"press FIRE \ck(", k:"+attack", 	s:")\cj to attack.";								HUDMSG_PLAIN, 		0, CR_WHITE, 		int2fix(HUDX_MEDIUM/2 + HUDX_MEDIUM/4), 	int2fix(HUDY_MEDIUM/2 + HUDY_MEDIUM/8 - 12  + 16*5),	ClientTicDelay);
+								HudMessage(s:"press SECONDARY FIRE \ck(", k:"+altattack", 	s:")\cj to flip camera.";				HUDMSG_PLAIN, 		0, CR_WHITE, 		int2fix(HUDX_MEDIUM/2 + HUDX_MEDIUM/4), 	int2fix(HUDY_MEDIUM/2 + HUDY_MEDIUM/8 - 12  + 16*6),	ClientTicDelay);
+								HudMessage(s:"press SPEED \ck(", k:"+speed", 	s:")\cj to dash.";									HUDMSG_PLAIN, 		0, CR_WHITE, 		int2fix(HUDX_MEDIUM/2 + HUDX_MEDIUM/4), 	int2fix(HUDY_MEDIUM/2 + HUDY_MEDIUM/8 - 12  + 16*7),	ClientTicDelay);
+
+								HudMessage(s:"Weapon, item, armor pickups will be ignored";											HUDMSG_PLAIN, 		0, CR_WHITE, 		int2fix(HUDX_MEDIUM/2), 					int2fix(HUDY_MEDIUM/2 + HUDY_MEDIUM/8 + 8 + 16*8),		ClientTicDelay);
+
+								// tint
+								SetFont("ZAMFADEN");
+								HudMessage(s:"A";			HUDMSG_PLAIN|HUDMSG_ALPHA,  HUDid_WeaponryTint,		CR_UNTRANSLATED, 		int2fix(HUDX_MEDIUM/2), 			int2fix(HUDY_MEDIUM/2),			ClientTicDelay, 0.75);
+								}
+
+
+								SetFont("ZAMRFONT");
+								if (IsTIDUsed(CheckPointExit_TID))	// DESTINATION CHECKPOINT EXIST
+									{
+									HudMessage(s:"Press USE \cn(", k:"+use", s:")\ch to teleport to checkpoint";		HUDMSG_PLAIN, 		0, CR_BLUE, 		int2fix(HUDX_MEDIUM/2), 	int2fix(HUDY_MEDIUM/2 - HUDY_MEDIUM/3),	ClientTicDelay);
+									if ((GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) & 	BT_USE) 	&& (!(GetPlayerInput(ConsolePlayerNumber(), INPUT_OLDBUTTONS) & BT_USE)))
+										NamedRequestScriptPuke("ZAM_Checkpoint", PasswordIs(), GetActorX(CheckPointExit_TID), GetActorY(CheckPointExit_TID), GetActorZ(CheckPointExit_TID));
+
+									}
+
+
+							}
+
+
+					if (IsTIDUsed(CheckPointExit_TID))	// DESTINATION CHECKPOINT EXIST
+							SetActorState(CheckPointEnter_TID, "Spawned");
+
+
+					}
+
+
+
+				if (OldLightLevel < (GetActorLightLevel(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber())) << 8)				OldLightLevel += 0.00390625;
+				if (OldLightLevel > (GetActorLightLevel(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber())) << 8)				OldLightLevel -= 0.00390625;
+
+			if (GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) &
+				(BT_FORWARD|BT_BACK|BT_MOVELEFT|BT_MOVERIGHT|BT_JUMP/*|BT_CROUCH*/))
+					{
+					if (CrossOffset < MaxCrossOffsetMove)	CrossOffset += 6;
+					if (DistAdd < 1.0) DistAdd += 0.01;
+
+
+
+					}
+
+			else 	{	if (DistAdd > 0)					DistAdd -= 0.01;	}
+
+
+
+
+
+				if (ZAM_ViewMode != GetCVar("ZAM_ViewMode"))
+					{
+						ZAM_ViewMode = GetCVar("ZAM_ViewMode");
+
+						//SetCVar("ZAM_SwitchedTimes", GetCVar("ZAM_SwitchedTimes") + 1);
+						SetFont("ZAMRFONT");
+						SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+						HudMessage(s:ZAM_ModeString(GetCVar("ZAM_ViewMode"));		HUDMSG_FADEOUT, 0, CR_YELLOW, 		int2fix(HUDX_MEDIUM/2  + 121), 		int2fix(HUDY_MEDIUM/2  + 131),	0.5, 1.0);
+						GotReset = FALSE;
+
+					}
+
+
+				Switch(GetCVar("ZAM_ViewMode"))
+					{
+					Case OFF:		//FIRST PERSON
+
+						Switch(GotReset)
+							{
+							Case FALSE://FIRST PERSON RESET////////////FIRST PERSON RESET////////////FIRST PERSON RESET////////////FIRST PERSON RESET//////////
+
+
+								ChangeCamera(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), 0, 0);
+								SetActivator(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber());
+								Warp(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), 0, 0, 	0,  0, WARPF_INTERPOLATE);
+								NamedRequestScriptPuke("ZAM_Settings", PasswordIs(), OFF);
+								GotReset = True;
+								AllowedToShoot = False;
+								SpawnFakeCamera();
+								ShowKeys = TRUE;
+
+
+
+
+							break;////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+							Case TRUE://FIRST PERSON LOOP////////////FIRST PERSON LOOP////////////FIRST PERSON LOOP////////////FIRST PERSON LOOP//////////
+
+
+								// Prevent F12 bug
+								if (CheckPlayerCamera(ConsolePlayerNumber()) != GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber())
+									ChangeCamera(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), 0, 0);
+
+
+								//BORDER
+								SetFont("ZAMBORDR");
+								SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+								HudMessage(s:"A"; HUDMSG_PLAIN, HUDid_Border, CR_UNTRANSLATED, 	int2fix(HUDX_MEDIUM/2), int2fix(HUDY_MEDIUM/2   - (((GetActorPitch(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()))*9) >> 8)), ClientTicDelay);
+
+
+
+
+							// DRAW PAIN
+							if (OldHealth > GetActorProperty(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), APROP_Health))
+								{
+								DrawPain(OldHealth, GetActorProperty(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), APROP_Health));
+								CrossOffset += OldHealth - GetActorProperty(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), APROP_Health);
+								OldHealth = GetActorProperty(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), APROP_Health);
+								}
+
+							if (GetCVar("ZAM_Tutorial") == 5)	SetCVar("ZAM_Tutorial", GetCVar("ZAM_Tutorial") + 1);
+
+
+							break;
+							}
+
+
+					break;
+
+
+					Case ON:		//THIRD PERSON
+
+						Switch(GotReset)
+							{
+							Case FALSE:	//THIRD PERSON RESET////////////THIRD PERSON RESET////////////THIRD PERSON RESET////////////THIRD PERSON RESET//////////
+
+								StopAngle = GetActorAngle(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber());
+								a = StopAngle;
+								LaserAlpha = 1.0;
+
+								SpawnForced("ClientSpotLoopClip",	GetActorX(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()) + FixedMul(cos(a), int2fix(CameraDistance)), 	//X
+																	GetActorY(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()) + FixedMul(sin(a), int2fix(CameraDistance)), 	//Y
+																	GetActorZ(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()) + 128.0, 										//Z
+																	CAMERA_TID, 0);																							//TID
+
+
+								ChangeCamera(CAMERA_TID, 0, 0);
+								NamedRequestScriptPuke("ZAM_Settings", PasswordIs(), ON);
+
+								NamedRequestScriptPuke("ZAM_SetTranslation", PasswordIs(), Trans);
+								GotReset = True;
+
+
+
+
+
+
+
+							break;////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+							Case TRUE://THIRD PERSON LOOP////////////THIRD PERSON LOOP////////////THIRD PERSON LOOP////////////THIRD PERSON LOOP//////////
+
+								ShowKeys = TRUE;
+								AllowedToShoot = TRUE;
+
+								if (WeaponType <= 1)
+									DrawCrosshair (WeaponType, WeaponDelay, Scale, CrossOffset, FPS_width/2, FPS_height/2);
+
+									SetHUDSize(FPS_width, FPS_height, FALSE);
+									if ((!WeaponDelay) && (Scale >= GetWeaponInfo (WeaponType, wi_COST)))	SetFont("CRS_HORI");		else		SetFont("CRS_HORX");
+									HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_ALPHA, 	HUDid_CROSSHAIR + 101, 	CR_UNTRANSLATED, 	int2fix(FPS_width/2 + 333 + CrossOffset), int2fix(FPS_height/2  + 215), ClientTicDelay, CrosshairAlpha); // RIGHT
+									HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_ALPHA, 	HUDid_CROSSHAIR + 102, 	CR_UNTRANSLATED, 	int2fix(FPS_width/2 + 333 - CrossOffset), int2fix(FPS_height/2  + 215), ClientTicDelay, CrosshairAlpha); // LEFT
+
+
+								// Prevent F12 bug
+								if (CheckPlayerCamera(ConsolePlayerNumber()) != CAMERA_TID)
+									ChangeCamera(CAMERA_TID, 0, 0);
+
+								// there is a proper way probably using player's velocities xy, but i'll just do buttons way
+								i = 0;
+								if ((GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) & 	BT_SPEED) 	&& (!(GetPlayerInput(ConsolePlayerNumber(), INPUT_OLDBUTTONS) & BT_SPEED)))
+									if(( Scale >= GetCvar("ZAM_DashCost")) && (!DashDelay))
+									{
+									if (GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) & 	BT_FORWARD)		i = 1;
+									if (GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) & 	BT_MOVELEFT)	i = 2;
+									if (GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) & 	BT_BACK)		i = 3;
+									if (GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) & 	BT_MOVERIGHT)	i = 4;
+									}
+									else	ActivatorSound("ZAMBREA", StandartVolume);
+
+								if (i)
+									{
+									if (GetCVar("ZAM_Tutorial") == 4)	SetCVar("ZAM_Tutorial", GetCVar("ZAM_Tutorial") + 1);
+									Scale -= GetCvar("ZAM_DashCost");
+									DashDelay = 35;
+									NamedRequestScriptPuke("ZAM_Dash", PasswordIs(), i, Trans);
+									}
+
+
+
+
+								// Rotation stuff
+								if 		(!GetActorVelX(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()) && !GetActorVelY(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()) /*&& !GetActorVelZ(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber())*/ )//	(GetPlayerInput(ConsolePlayerNumber(), INPUT_YAW))
+												TruePlayer = OFF;
+								else			TruePlayer = ON;
+
+
+								Switch(TruePlayer)
+									{
+									Case OFF:
+												SetActorProperty(		GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), 		APROP_Alpha, 	0.0);
+
+
+												SpawnSpotForced("FakePlayer", GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), FAKE_TID, StopAngle >> 8);
+												Thing_SetTranslation (	FAKE_TID, 		DefaultTranslation + Trans);
+												if (LaserAlpha < LaserAlphaMin)		LaserAlpha = LaserAlphaMin;
+												else								LaserAlpha-= LaserAlphaFade;
+
+
+												if (GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) &
+												(BT_USE|BT_ATTACK|BT_ALTATTACK|BT_FORWARD|BT_BACK|BT_MOVELEFT|BT_MOVERIGHT|BT_CROUCH))
+													{//im noob cant turn it into function(lazy))
+													SetActorProperty(		GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), 		APROP_Alpha, 	1.0);
+													StopAngle = GetActorAngle(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber());
+													LaserAlpha = 1.0;
+													Thing_Remove(FAKE_TID);
+													}
+
+									break;
+
+									Case ON:
+												SetActorProperty(		GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), 		APROP_Alpha, 	1.0);
+												StopAngle = GetActorAngle(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber());
+												LaserAlpha = 1.0;
+												Thing_Remove(FAKE_TID);
+									break;
+									}
+
+
+								SetActivator(CAMERA_TID);			//actual camera	change
+								MinusDist = CameraDistance;
+
+
+								while (!Warp(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), -int2fix(MinusDist), int2fix(-TPside), 			int2fix(40),  0, WARPF_INTERPOLATE))
+									{
+										if (MinusDist < 0)	break;
+										MinusDist--;
+									}
+
+								//Lock the camera at horizontal value
+
+								p = GetActorPitch(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber());
+								if (p > MaxCameraPitch)		{	p = MaxCameraPitch;		SetActivatorToPlayer(ConsolePlayerNumber());		NamedRequestScriptPuke("ZAM_SetPlayerPitch", PasswordIs(), p);	}
+								if (p < -MaxCameraPitch)	{	p = -MaxCameraPitch;	SetActivatorToPlayer(ConsolePlayerNumber());		NamedRequestScriptPuke("ZAM_SetPlayerPitch", PasswordIs(), p);	}
+								SetActorPitch(CAMERA_TID, p);
+
+
+
+
+
+
+								// Spawn red laser/////////////////////////////////////////////////////////////////////////////////////
+
+									SpawnForced("ZAM_Laser",
+									GetActorX(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()),
+									GetActorY(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()),
+									GetActorZ(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()) + GetActorViewHeight(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()),
+									LASER_TID, (StopAngle >> 8) + LaserShake (CrossOffset, LaserShakeX));
+
+									SetActorProperty(LASER_TID, APROP_Alpha, LaserAlpha);
+									counter = 1.0 - FixedMul(int2fix(CrossOffset*10), 0.001);
+									if (counter < 0.5) 	counter = 0.5;
+									SetActorProperty(LASER_TID, APROP_ScaleX, counter);
+									SetActorProperty(LASER_TID, APROP_ScaleY, counter);
+
+									SetActorPitch(LASER_TID, -GetActorPitch(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()) + FixedMul(LaserShake (CrossOffset, LaserShakeY), 0.05));
+
+
+
+								//Draw crosshair
+								SetActivatorToPlayer(ConsolePlayerNumber());
+
+
+								// DRAW PAIN
+								if (OldHealth > GetActorProperty(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), APROP_Health))
+									{
+									DrawPain(OldHealth, GetActorProperty(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), APROP_Health));
+									OldHealth = GetActorProperty(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), APROP_Health);
+									}
+
+
+
+
+
+							break;
+							}
+
+					break;
+					}
+
+
+
+
+
+
+									/*
+									  ____  _   _ _____ _____ ___  _   _ ____
+									 | __ )| | | |_   _|_   _/ _ \| \ | / ___|
+									 |  _ \| | | | | |   | || | | |  \| \___ \
+									 | |_) | |_| | | |   | || |_| | |\  |___) |
+									 |____/ \___/  |_|   |_| \___/|_| \_|____/
+
+									*/
+									//MUTUAL FOR 'SHOWSCORES' AND ALTATTACK
+
+									//press
+									//if (!GetCVar("ZAM_ViewMode"))
+									if 	(
+										((GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) & 	BT_SHOWSCORES) 	&& (!(GetPlayerInput(ConsolePlayerNumber(), INPUT_OLDBUTTONS) & BT_SHOWSCORES)))		|
+										((GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) & 	BT_ALTATTACK) 	&& (!(GetPlayerInput(ConsolePlayerNumber(), INPUT_OLDBUTTONS) & BT_ALTATTACK)))
+										)
+
+
+											{
+												//StopAngle = GetActorAngle(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber());
+												FPS_X = FPS_width/2;
+												FPS_Y = FPS_height/2;
+												if (GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) & 	BT_SHOWSCORES)	FPS_X = WeaponType * interval - interval/2;
+
+												StopAngle = GetActorAngle(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber());
+												StopPitch = GetActorPitch(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber());
+												SetActorAngle(CAMERA_TID, StopAngle);
+												SetActorPitch(CAMERA_TID, 0);
+												SetActorProperty(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), APROP_Alpha, 0.0);
+												//if (GetCVar("ZAM_ViewMode"))	SpawnFakeCamera();
+											}
+
+
+
+
+
+									if ((!AllowedToShoot) &&  (GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) 	&	BT_ATTACK))
+										{
+
+											if (SpyIn < 1.0 ) 	SpyIn += 	0.02;
+											if (SpyIn >= 1.0)
+												{
+												counter = 0;
+												if (GetCVar("ZAM_Tutorial") == 6)		SetCVar("ZAM_Tutorial", GetCVar("ZAM_Tutorial") + 1);
+												if (SpyingOn == -1)
+													{
+													while (counter < MaxPlayers)
+														{
+														if ((ClassifyActor(GetCVar("ZAM_PLAYER_TID") + counter) & ACTOR_ALIVE) && (counter != ConsolePlayerNumber()))
+															{
+															SpyingOn = counter;
+															break;
+															}
+														counter++;
+														}
+
+
+															/*
+															Thing_Remove(Spectate_TID);
+															i = 	GetActorAngle(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber())*-1;
+															SpawnForced("ClientSpot",
+																		GetActorX(GetCVar("ZAM_PLAYER_TID")) + FixedMul(cos(i), int2fix(DeathCameraDistance)),
+																		GetActorY(GetCVar("ZAM_PLAYER_TID")) + FixedMul(sin(i), int2fix(DeathCameraDistance)),
+																		GetActorZ(GetCVar("ZAM_PLAYER_TID")) + GetActorViewHeight(GetCVar("ZAM_PLAYER_TID")),
+																		Spectate_TID,  0);
+															SetActorAngle(Spectate_TID, i + 0.5);
+															SetActorPitch(Spectate_TID, 0.025);
+															ChangeCamera(Spectate_TID, 0, 0);
+															*/
+
+
+													}
+												else
+													{
+													if (((GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) & 	BT_FORWARD) 	&& (!(GetPlayerInput(ConsolePlayerNumber(), INPUT_OLDBUTTONS) & BT_FORWARD))) ||
+														((GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) & 	BT_RIGHT) 		&& (!(GetPlayerInput(ConsolePlayerNumber(), INPUT_OLDBUTTONS) & BT_RIGHT))) )
+															{
+															counter = SpyingOn;
+															while (counter < MaxPlayers)
+																{
+																if ((ClassifyActor(GetCVar("ZAM_PLAYER_TID") + counter) & ACTOR_ALIVE) && (counter != ConsolePlayerNumber()) && (counter != SpyingOn))
+																	{
+																	SpyingOn = counter;
+																	break;
+																	}
+																counter++;
+																}
+															}
+
+													if (((GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) & 	BT_BACK) 	&& (!(GetPlayerInput(ConsolePlayerNumber(), INPUT_OLDBUTTONS) & BT_BACK))) ||
+														((GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) & 	BT_LEFT) 	&& (!(GetPlayerInput(ConsolePlayerNumber(), INPUT_OLDBUTTONS) & BT_LEFT))) )
+															{
+															counter = SpyingOn;
+															while (counter > -1)
+																{
+																if ((ClassifyActor(GetCVar("ZAM_PLAYER_TID") + counter) & ACTOR_ALIVE) && (counter != ConsolePlayerNumber()) && (counter != SpyingOn))
+																	{
+																	SpyingOn = counter;
+																	break;
+																	}
+																counter--;
+																}
+															}
+
+													SetFont("ZAMRFONT");
+													SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+													HudMessage(s:"spectating ", n:SpyingOn + 1;				HUDMSG_PLAIN, 		0, CR_WHITE, 		int2fix(HUDX_MEDIUM/2), 	int2fix(HUDY_MEDIUM/2 + HUDY_MEDIUM/4),			ClientTicDelay);
+
+													//ChangeCamera(GetCVar("ZAM_PLAYER_TID") + SpyingOn, 0, 0);
+
+
+													Thing_Remove(Spectate_TID);
+													i = 	GetActorAngle(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber())*-1;
+													SpawnForced("ClientSpot",
+																GetActorX(GetCVar("ZAM_PLAYER_TID") + SpyingOn) + FixedMul(cos(i), int2fix(DeathCameraDistance)),
+																GetActorY(GetCVar("ZAM_PLAYER_TID") + SpyingOn) + FixedMul(sin(i), int2fix(DeathCameraDistance)),
+																GetActorZ(GetCVar("ZAM_PLAYER_TID") + SpyingOn) + GetActorViewHeight(GetCVar("ZAM_PLAYER_TID") + SpyingOn),
+																Spectate_TID,  0);
+													SetActorAngle(Spectate_TID, i + 0.5);
+													SetActorPitch(Spectate_TID, 0.025);
+													ChangeCamera(Spectate_TID, 0, 0);
+
+
+
+
+
+
+													SetFont("ZAMFADES");	SetHUDSize(HUDX_FULLSCREEN,		HUDY_FULLSCREEN,	FALSE);
+													HudMessage(s:"A";		HUDMSG_PLAIN|HUDMSG_ALPHA, 0, CR_UNTRANSLATED, 		int2fix(HUDX_FULLSCREEN/2), 	int2fix(HUDY_FULLSCREEN/2), ClientTicDelay, 0.25);
+													}
+
+
+												}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+											if 		(SpyIn <	MinInputReveal)			a = 0;
+											else										a = SpyIn;
+
+
+											SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+											// SPY ICON
+											SetFont("ZAMEYE");
+											HudMessage(s:"A";			HUDMSG_PLAIN|HUDMSG_ALPHA,  0, 						CR_UNTRANSLATED, 		int2fix(HUDX_MEDIUM/2  + 180), 		int2fix(HUDY_MEDIUM/2  + 131),	ClientTicDelay, a);
+
+											// SPY BAR
+													if (SpyIn >=	1.0)		SetFont("ZAMBS100");
+											else 	if (SpyIn <	0)				SetFont("ZAMBS0");
+											else	SetFont(StrParam(s:"ZAMBS", i:((FixedDiv(SpyIn, 1.0)* 100) >> 16)));
+
+											HudMessage(s:"A";			HUDMSG_PLAIN|HUDMSG_ALPHA,  0, 						CR_UNTRANSLATED, 		int2fix(HUDX_MEDIUM/2  + 121), 		int2fix(HUDY_MEDIUM/2  + 131),	ClientTicDelay, a);
+
+
+											// SPY BAR: background
+											SetFont("ZAMBS100");
+											HudMessage(s:"A";			HUDMSG_PLAIN|HUDMSG_ALPHA,  0, 						CR_UNTRANSLATED, 		int2fix(HUDX_MEDIUM/2  + 121), 		int2fix(HUDY_MEDIUM/2  + 131),	ClientTicDelay, a);
+
+
+
+
+										}
+
+									else
+											{
+											SpyingOn = -1;
+											SpyIn = 0;
+											}
+
+
+
+									//hold
+									if	( GetActorZ (GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber())  <=  GetActorFloorZ(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()) + 8.0)
+									if (sqrt(
+										FixedMul(GetActorVelX(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()), GetActorVelX(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber())) +
+										FixedMul(GetActorVelY(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()), GetActorVelY(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber())) +
+										FixedMul(GetActorVelZ(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()), GetActorVelZ(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()))
+										)	  <		0.02)
+									if ((GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) 	&	(BT_SHOWSCORES))	|	(GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) 	&	(BT_ALTATTACK)))
+										{
+
+
+
+												if (!GetCVar("ZAM_ViewMode"))
+													{
+														SetActivatorToPlayer(ConsolePlayerNumber());
+														SetActorPosition(CAMERA_TID, GetActorX(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()), GetActorY(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()), GetActorZ(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()) + GetActorViewHeight(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()), FALSE);
+														ChangeCamera(CAMERA_TID, 0, 0);
+													}
+
+												// DRAW PAIN
+												if (OldHealth > GetActorProperty(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), APROP_Health))
+													{
+													DrawPain(OldHealth, GetActorProperty(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), APROP_Health));
+													CrossOffset += OldHealth - GetActorProperty(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), APROP_Health);
+													//OldHealth = GetActorProperty(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), APROP_Health);
+													}
+
+
+
+
+
+												DeltaX = FixedDiv(-GetPlayerInput(ConsolePlayerNumber(), INPUT_YAW), 	GetCVarFixed("M_YAW"));
+												FPS_X += DeltaX/100;	FPS_Y += DeltaY/100;
+
+
+												if (GetActorVelX(GetCVar("ZAM_PLAYER_TID") + PlayerNumber()) |
+													GetActorVelY(GetCVar("ZAM_PLAYER_TID") + PlayerNumber()) |
+													GetActorVelZ(GetCVar("ZAM_PLAYER_TID") + PlayerNumber()) |
+													GetActorPitch(GetCVar("ZAM_PLAYER_TID") + PlayerNumber()))
+												NamedRequestScriptPuke("ZAM_SetPhysicsFPS", PasswordIs(), GetActorAngle(CAMERA_TID));
+
+
+
+
+											// SHOW SCORES  (WEAPONRY)
+											if ((GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) 		&	(BT_SHOWSCORES))	&&	(!(GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) 	&	(BT_ALTATTACK))))
+												{
+													if (FPS_X < 0)			FPS_X = 0;
+													if (FPS_X > FPS_width) 	FPS_X = FPS_width;
+
+													counter = 1;
+													while(counter <= GetCVar("ZAM_ModMaxWeapons"))
+														{
+														if ((FPS_X > counter*interval - interval/2 - interval/2)	&&  (FPS_X < counter*interval - interval/2 + interval/2))
+																{
+																WeaponType = counter;
+																if (OldWeaponType != WeaponType)
+																	{
+																	OldWeaponType = WeaponType;
+																	LocalAmbientSound("ZAMFADE", StandartVolume);
+																	}
+																break;
+																}
+														counter++;
+														}
+													DrawWeaponMenu (WeaponType, Equiped, FPS_X);
+													if (GetCVar("ZAM_Tutorial") == 1)	SetCVar("ZAM_Tutorial", GetCVar("ZAM_Tutorial") + 1);
+												}
+
+
+
+
+
+											// ALT ATTACK  (AIM)
+											if ((!(GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) 	&	(BT_SHOWSCORES)))	&&	(GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) 	&	(BT_ALTATTACK)) 	&& 	(!GetCVar("ZAM_ViewMode"))  && 	( GetActorZ (GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber())  <=  GetActorFloorZ(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()) + 8.0)   )
+												{
+													ShowKeys = FALSE;
+													if (GetCVar("ZAM_Tutorial") == 0)	SetCVar("ZAM_Tutorial", GetCVar("ZAM_Tutorial") + 1);
+
+													DeltaY = FixedDiv(-GetPlayerInput(ConsolePlayerNumber(), INPUT_PITCH),	GetCVarFixed("M_PITCH"));
+													if (GetCVar("InvertMouse"))	DeltaY = -DeltaY;	//InvertMouse
+													DeltaY = DeltaY * FPS_width / FPS_height;
+
+
+
+													if (FPS_Y < 0)			FPS_Y = 0;
+													if (FPS_Y > FPS_height) FPS_Y = FPS_height;
+
+
+
+													if (FPS_X < 0)			{
+																			SetActorAngle(CAMERA_TID,	GetActorAngle(CAMERA_TID) 	+ 	-(FPS_X)				*0.001);	FPS_X = 0;
+																			}
+
+													if (FPS_X > FPS_width) 	{
+																			SetActorAngle(CAMERA_TID,	GetActorAngle(CAMERA_TID)  	-	(FPS_X - FPS_width)		*0.001);	FPS_X = FPS_width;
+																			}
+
+
+
+													DrawCrosshair (WeaponType, WeaponDelay, Scale, CrossOffset, FPS_X, FPS_Y);
+
+													// SHOOT
+													AllowedToShoot = TRUE;
+
+
+
+													//3D MODEL
+
+
+													if (GetCVar("ZAM_Allow3DWeapons"))
+														{
+														if (!IsTIDUsed(Weapon_TID))
+															SpawnForced(GetCVarString(StrParam(s:"ZAM_3Dweapon", 			i:WeaponType)), 								0, 0, 0, Weapon_TID,		0);
+
+
+
+
+														SetActorPosition(Weapon_TID,
+														GetActorX(CAMERA_TID) + cos(GetActorAngle(CAMERA_TID) - 0.05	+  FixedMul(0.00035,		-int2fix(FPS_X - FPS_width/2))) *3,
+														GetActorY(CAMERA_TID) + sin(GetActorAngle(CAMERA_TID) - 0.05	+  FixedMul(0.00035,		-int2fix(FPS_X - FPS_width/2))) *3,
+														GetActorZ(CAMERA_TID) - 4.0 + FixedMul(0.005,	-int2fix(FPS_Y - FPS_height/2)),
+														FALSE
+														);
+
+														SetActorAngle(Weapon_TID, GetActorAngle(CAMERA_TID) +  			FixedMul(0.0004,		-int2fix(FPS_X - FPS_width/2)));
+														SetActorPitch(Weapon_TID, GetActorPitch(CAMERA_TID) - 0.025 +	FixedMul(0.0003,		-int2fix(FPS_Y - FPS_height/2)));
+
+
+														}
+
+
+
+
+												}
+
+
+											// ALT ATTACK  (TP)
+											if ((!(GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) 	&	(BT_SHOWSCORES)))	&&	(GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) 	&	(BT_ALTATTACK))  && (!(GetPlayerInput(ConsolePlayerNumber(), INPUT_OLDBUTTONS) & BT_ALTATTACK))	&& 	(GetCVar("ZAM_ViewMode"))  && 	(TPside == ThirdPersonMaX * PosNegZero(GetCvar("ZAM_TPside")))   )
+												{
+												if (GetCVar("ZAM_Tutorial") == 3)	SetCVar("ZAM_Tutorial", GetCVar("ZAM_Tutorial") + 1);
+												SetCVar("ZAM_TPside", BoolSwitch(GetCVar("ZAM_TPside")));
+												}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+										}
+
+
+
+
+									if (	(KeyReleased(BT_ALTATTACK))	 ||	(KeyReleased(BT_SHOWSCORES))	)
+										{
+										ShowKeys = TRUE;
+										SetActorState(Weapon_TID, "Hide");
+										Thing_Remove(WeaponShot_TID);
+										if (sqrt(
+											FixedMul(GetActorVelX(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()), GetActorVelX(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber())) +
+											FixedMul(GetActorVelY(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()), GetActorVelY(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber())) +
+											FixedMul(GetActorVelZ(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()), GetActorVelZ(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()))
+											))	Thing_Remove(Weapon_TID);
+
+
+
+
+
+
+										if (!GetCVar("ZAM_ViewMode"))
+												{
+												SetActorProperty(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), APROP_Alpha, 1.0);
+												ChangeCamera(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), 0, 0);
+												}
+
+										if (Equiped != WeaponType)
+											{
+											Equiped = WeaponType;
+											DrawWeaponNameCorner(WeaponType, CR_GOLD, ClientTicDelay, 1.0);
+											DrawWeaponNameCorner(WeaponType, CR_GOLD, ClientTicDelay, 1.0);
+											LocalAmbientSound("ZAMEQUIP", StandartVolume);
+											}
+										AllowedToShoot = False;
+										}
+
+
+
+						if (AllowedToShoot)
+							{
+							if (	GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) 	&	BT_ATTACK)
+								if (!WeaponDelay)
+									if (Scale >= GetWeaponInfo (WeaponType, wi_COST))
+										{
+
+											CrossOffset += GetWeaponInfo (WeaponType, wi_PreOFFSET);
+
+											if (WeaponType <= 1)		//if is CheckPoint
+												{
+													Thing_Remove(CheckPointExit_TID);
+													SpawnForced("ZAM_Checkpoint2",	GetActorX(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()), 																	//X
+																					GetActorY(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()), 																	//Y
+																					GetActorZ(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()), 		//Z
+																					CheckPointExit_TID,  GetActorAngle(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()));
+													SetFont("ZAMRFONT");	SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+													HudMessage(s:"CHECKPOINT PLACED!";								HUDMSG_FADEOUT, 0, CR_LIGHTBLUE, 			int2fix(HUDX_MEDIUM/2), 	int2fix(HUDY_MEDIUM/2),		 3.0, 1.0);
+													HudMessage(s:"you can now teleport here from start area";		HUDMSG_FADEOUT, 0, CR_LIGHTBLUE, 			int2fix(HUDX_MEDIUM/2), 	int2fix(HUDY_MEDIUM/2 + 16), 3.0, 1.0);
+													SetFont("ZAMFADEL");	SetHUDSize(HUDX_FULLSCREEN,		HUDY_FULLSCREEN,	FALSE);
+													HudMessage(s:"A";		HUDMSG_FADEOUT, 0, CR_UNTRANSLATED, 		int2fix(HUDX_FULLSCREEN/2), 	int2fix(HUDY_FULLSCREEN/2), 0, 1.0);
+													LocalAmbientSound("ZAMSAVE", StandartVolume);
+												}
+
+											else
+											{
+											// First Person Shot
+											NamedRequestScriptPuke("ZAM_ShootFPS",
+																StrToNum(StrParam(i:PasswordIs(), i: GetCVar("ZAM_ViewMode"), i:WeaponType)),
+																StrToNum(StrParam(s:"9", s:LeadingZeros(FPS_X, 3), s:LeadingZeros(FPS_Y, 3))),
+																CrossOffset,
+																GetActorAngle(CAMERA_TID));
+
+											//3D shot
+											if((GetCVar("ZAM_Allow3DWeapons")))
+												{
+												i = random(1, WeaponShotVariety);
+												SpawnForced(StrParam(s:GetCVarString(StrParam(s:"ZAM_3Dweapon", i:WeaponType)), s:"Shot", i:i),		0, 0, 0, WeaponShot_TID + i,	0);
+												SetActorProperty(WeaponShot_TID + i, APROP_Alpha, GetCVar("ZAM_WeaponShotAlpha"));
+												SetActorState(Weapon_TID, 	"Shot");
+												SetActorState(WeaponShot_TID + i, "Shot");
+												}
+
+
+
+
+											}
+
+											CrossOffset += GetWeaponInfo (WeaponType, wi_PostOFFSET);
+											WeaponDelay = GetWeaponInfo (WeaponType, wi_DELAY);
+
+											Scale -= GetWeaponInfo (WeaponType, wi_COST);
+
+										}
+									else
+										{
+										WeaponDelay = 15;
+										LocalAmbientSound("ZAMCLICK", StandartVolume);
+										}
+							}
+
+							//control 3d shot
+							counter = 1;
+							while(counter <= WeaponShotVariety)
+							{
+							if (IsTIDUsed(WeaponShot_TID + counter))
+								{
+								SetActorPosition(WeaponShot_TID + counter, GetActorX(Weapon_TID), GetActorY(Weapon_TID), GetActorZ(Weapon_TID), false);
+								SetActorAngle(WeaponShot_TID + counter, 	GetActorAngle(Weapon_TID));			SetActorPitch(WeaponShot_TID,	 GetActorPitch(Weapon_TID));
+								}
+
+							counter++;
+							}
+
+
+
+
+
+						if (GetPlayerInput(ConsolePlayerNumber(), INPUT_BUTTONS) &
+						(BT_USE))	HoldSwitch += 0.02;
+						else		HoldSwitch = 0;
+
+						if 	(HoldSwitch >= 1.0)
+							{
+							if ((GetCVar("ZAM_Tutorial") == 2) || (GetCVar("ZAM_Tutorial") == 5))		SetCVar("ZAM_Tutorial", GetCVar("ZAM_Tutorial") + 1);
+							SetCVar("ZAM_ViewMode", BoolSwitch(GetCVar("ZAM_ViewMode")));
+							HoldSwitch = 0;
+							SetFont("ZAMFADEB");	SetHUDSize(HUDX_FULLSCREEN,		HUDY_FULLSCREEN,	FALSE);
+							HudMessage(s:"A";		HUDMSG_FADEOUT, 0, CR_UNTRANSLATED, 		int2fix(HUDX_FULLSCREEN/2), 	int2fix(HUDY_FULLSCREEN/2), 0, 1.0);
+							LocalAmbientSound("ZAMSWAP", StandartVolume);
+							}
+
+						//Switch Fade
+						if (HoldSwitch >= 0.5)
+							{
+								SetFont("ZAMFADEB");	SetHUDSize(HUDX_FULLSCREEN,		HUDY_FULLSCREEN,	FALSE);
+								HudMessage(s:"A";		HUDMSG_PLAIN|HUDMSG_ALPHA, HUDid_ViewSwitch, CR_UNTRANSLATED, 		int2fix(HUDX_FULLSCREEN/2), 	int2fix(HUDY_FULLSCREEN/2), ClientTicDelay, FixedMul(HoldSwitch - 0.5, 1.0));
+							}
+
+								// S W I T C H
+
+								if 		(HoldSwitch <	MinInputReveal)		a = 0;
+								else										a = HoldSwitch;
+
+								SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+								// SWITCH ICON
+								SetFont("ZAMFLIP");
+								HudMessage(s:"A";			HUDMSG_PLAIN|HUDMSG_ALPHA,  0, 						CR_UNTRANSLATED, 		int2fix(HUDX_MEDIUM/2  + 180), 		int2fix(HUDY_MEDIUM/2  + 131),	ClientTicDelay, a);
+
+								// SWITCH BAR
+										if (HoldSwitch >=	1.0)			SetFont("ZAMBS100");
+								else 	if (HoldSwitch <	0)				SetFont("ZAMBS0");
+								else	SetFont(StrParam(s:"ZAMBS", i:((FixedDiv(HoldSwitch, 1.0)* 100) >> 16)));
+
+								HudMessage(s:"A";			HUDMSG_PLAIN|HUDMSG_ALPHA,  0, 						CR_UNTRANSLATED, 		int2fix(HUDX_MEDIUM/2  + 121), 		int2fix(HUDY_MEDIUM/2  + 131),	ClientTicDelay, a);
+
+
+								// SWITCH BAR: background
+								SetFont("ZAMBS100");
+								HudMessage(s:"A";			HUDMSG_PLAIN|HUDMSG_ALPHA,  0, 						CR_UNTRANSLATED, 		int2fix(HUDX_MEDIUM/2  + 121), 		int2fix(HUDY_MEDIUM/2  + 131),	ClientTicDelay, a);
+
+
+
+
+							// Spawn Darkness/////////////////////////////////////////////////////////////////////////////////////
+							if (GetCVar("ZAM_DarknessDistance"))
+								{
+								counter = 0;
+								while (counter < DarknessSpheres)
+									{
+									counter++;
+									SpawnForced("ZAM_Sphere", GetActorX(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()), GetActorY(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()), GetActorZ(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()), DARKNESS_TID + counter*100, 0);
+									SetActorProperty(DARKNESS_TID + counter*100, APROP_ScaleX, 	FixedMul(FixedMul(GetCVar("ZAM_DarknessDistance") 	, 	int2fix(counter)),  FixedMul(int2fix(BoolSwitch(GetCVar("ZAM_ViewMode")) +1), 3.0 - (DistAdd + (1.0 - OldLightLevel)))));
+									SetActorProperty(DARKNESS_TID + counter*100, APROP_ScaleY, 	FixedMul(FixedMul(GetCVar("ZAM_DarknessDistance") 	, 	int2fix(counter)),  FixedMul(int2fix(BoolSwitch(GetCVar("ZAM_ViewMode")) +1), 3.0 - (DistAdd + (1.0 - OldLightLevel)))));
+									SetActorProperty(DARKNESS_TID + counter*100, APROP_Alpha,	FixedMul(			ZAM_DarknessAlpha, 		int2fix(counter)));
+									}
+								}
+
+
+
+				if (TPside != ThirdPersonMaX * PosNegZero(GetCvar("ZAM_TPside")))
+					{
+					if (ThirdPersonMaX * PosNegZero(GetCvar("ZAM_TPside")) > 0)		TPside +=6;
+					if (ThirdPersonMaX * PosNegZero(GetCvar("ZAM_TPside")) < 0)		TPside -=6;
+					}
+
+				f = BoolSwitch(f);
+
+				if (CrossOffset < CrossBaseOffset)		CrossOffset = CrossBaseOffset;
+				if (CrossOffset > CrossBaseOffset)		CrossOffset--;
+
+
+				if (CrossOffset > MaxCrossOffset)		CrossOffset = MaxCrossOffset;
+				if (WeaponDelay)						WeaponDelay--;
+				if (DashDelay)							DashDelay--;
+				if (GetCVar("fov") != 90)				ConsoleCommand("fov 90");
+				if (Scale < 0)							Scale = 0;
+				if (Scale < GetCVar("ZAM_MaxScale"))	Scale += 1 /*+ random(0, Respawned)*/ + GetCvar("ZAM_ScaleRegen");		//						Scale++;
+				if (EverySec > 0)						EverySec--;
+				if (EveryStep > 0)						EveryStep--;
+				if (HealthDelay > 0)					HealthDelay--;
+				else
+					{
+							if (GetActorProperty(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), APROP_Health) < GetCVar("ZAM_PlayerMaxHealth")/4)	HealthDelay = Sec;
+					else	if (GetActorProperty(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), APROP_Health) < GetCVar("ZAM_PlayerMaxHealth")/2)	HealthDelay = Sec*3;
+
+
+					}
+
+
+
+
+				//DrawWeaponIcon(WeaponType);
+				if (IsTIDUsed(CheckPointExit_TID))	// DESTINATION CHECKPOINT EXIST
+					SetCVarString("ZAM_CheckpointMap", StrParam(n:PRINTNAME_LEVEL, s:" : ", n:PRINTNAME_LEVELNAME));
+
+
+
+				Delay(1);
+				}
+
+
+			if ((ClassifyActor(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()) & ACTOR_DEAD))
+				{
+					if (GetCVar("ZAM_DeathCamera"))
+						{
+						SpawnForced("ClientSpotLoop", GetActorX(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()), GetActorY(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()), GetActorZ(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()), FakeBody_TID,  GetActorAngle(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()) >> 8); 
+						//SpawnSpotForced("ClientSpotLoop", GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), FakeBody_TID,  GetActorAngle(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()) >> 8);
+						ACS_NamedExecute("ZAM_DeathCamera", 0);
+						}
+					Thing_Remove(Weapon_TID);
+					SetFont("ZAM_DEAD");
+					SetHUDSize(HUDX_FULLSCREEN,		HUDY_FULLSCREEN,	FALSE);
+					HudMessage(s:"A";		HUDMSG_FADEINOUT|HUDMSG_ALPHA, 0, CR_UNTRANSLATED, 		int2fix(HUDX_FULLSCREEN/2), 	int2fix(HUDY_FULLSCREEN/2),
+					/*FixedMul(int2fix(OldHealth - GetActorProperty(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), APROP_Health)), 0.025)*/ 0.25, 0.25, 2.0, FixedMul(int2fix(OldHealth - GetActorProperty(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), APROP_Health)), 0.015));
+					OldHealth = GetActorProperty(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), APROP_Health);
+					LocalAmbientSound("ZAMFAIL", StandartVolume);
+					SetHUDSize(HUDX_BIG,		HUDY_BIG,	FALSE);		SetFont("BIGFONT");
+					HudMessage(s:"YOU DIED";		HUDMSG_FADEOUT,  0, CR_RED, 		int2fix(HUDX_BIG/2), 			int2fix(HUDY_BIG/2),	1.5, 2.0);
+				}
+
+
+Terminate;
+}
+
+
+
+Script "ZAM_DeathCamera" (void)	CLIENTSIDE
+{
+int i, j;
+SpawnForced("ClientSpotLoop",	0, 	0, 0,   DeathCamera_TID,  GetActorAngle(FakeBody_TID) >> 8);
+J = GetActorAngle(FakeBody_TID)*-1;
+
+while(((ClassifyActor(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()) & ACTOR_DEAD)))
+	{
+	SetActorPosition(	FakeBody_TID,
+						GetActorX(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()),
+						GetActorY(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()),
+						GetActorZ(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()),	0);
+
+	SetActorPosition(	DeathCamera_TID,
+						GetActorX(FakeBody_TID) + FixedMul(cos(J), int2fix(DeathCameraDistance)),
+						GetActorY(FakeBody_TID) + FixedMul(sin(J), int2fix(DeathCameraDistance)),
+						int2fix(48),
+						0
+					);
+	SetActorAngle(DeathCamera_TID, J + 0.5);
+	SetActorPitch(DeathCamera_TID, 0.075);
+	ChangeCamera(DeathCamera_TID, 0, 0);
+	J+=0.0025;
+	delay(1);
+	}
+}
+
+
+
+function int LaserShake (int CrossOffset, int LaserShakeValue)
+{
+int Result;
+
+
+Switch(random(0,1))
+	{
+	case 0: if (LaserShakeValue	<  	 CrossOffset - CrossBaseOffset) 		{Result = LaserShakeValue + 1; break;}
+	case 1: if (LaserShakeValue	> 	-CrossOffset + CrossBaseOffset) 		{Result = LaserShakeValue - 1; break;}
+	}
+
+
+
+return Result;
+}
+
+
+
+function void DrawCrosshair (int WeaponType, int WeaponDelay, int Scale, int CrossOffset, int FPS_X, int FPS_Y)
+{
+													// DRAW CROSSHAIR
+													SetHUDSize(FPS_width, FPS_height, FALSE);
+													SetActorProperty(LASER_TID, APROP_Alpha, 0.0);
+
+													if (WeaponType <= 1)
+														{
+														if ((!WeaponDelay) && (Scale >= GetWeaponInfo (WeaponType, wi_COST)))
+															{
+															SetFont("ZAMDISK1");
+															HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_ALPHA, 	HUDid_CROSSHAIR + 1, 	CR_UNTRANSLATED, 	int2fix(FPS_X), int2fix(FPS_Y), ClientTicDelay, CrosshairAlpha); // RIGHT
+															SetFont("ZAMRFONT");
+															HudMessage(s:"Set checkpoint here.\n\nIt will overwrite your \ch", s: GetCVarString("ZAM_CheckpointMap"), s:"\cn save"; HUDMSG_PLAIN|HUDMSG_ALPHA, 	HUDid_CROSSHAIR + 2, 	CR_LIGHTBLUE, 	int2fix(FPS_X), int2fix(FPS_Y + 64), ClientTicDelay, CrosshairAlpha); // RIGHT
+
+															}
+														else
+															{
+															SetFont("ZAMDISK0");
+															HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_ALPHA, 	HUDid_CROSSHAIR + 1, 	CR_UNTRANSLATED, 	int2fix(FPS_X), int2fix(FPS_Y), ClientTicDelay, CrosshairAlpha); // RIGHT
+															SetFont("ZAMRFONT");
+															HudMessage(s:"Can't set checkpoint now.\n\nWait... ", i:(GetWeaponInfo (WeaponType, wi_COST) - Scale)/10; HUDMSG_PLAIN|HUDMSG_ALPHA, 	HUDid_CROSSHAIR + 2, 	CR_White, 	int2fix(FPS_X), int2fix(FPS_Y + 64), ClientTicDelay, CrosshairAlpha); // RIGHT
+															}
+
+														}
+													else
+														{
+														if ((!WeaponDelay) && (Scale >= GetWeaponInfo (WeaponType, wi_COST)))	SetFont("CRS_HORI");		else		SetFont("CRS_HORX");
+														HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_ALPHA, 	HUDid_CROSSHAIR + 1, 	CR_UNTRANSLATED, 	int2fix(FPS_X + CrossOffset), int2fix(FPS_Y), ClientTicDelay, CrosshairAlpha); // RIGHT
+														HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_ALPHA, 	HUDid_CROSSHAIR + 2, 	CR_UNTRANSLATED, 	int2fix(FPS_X - CrossOffset), int2fix(FPS_Y), ClientTicDelay, CrosshairAlpha); // LEFT
+														if ((!WeaponDelay) && (Scale >= GetWeaponInfo (WeaponType, wi_COST)))	SetFont("CRS_VERT");		else		SetFont("CRS_VERX");
+														HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_ALPHA, 	HUDid_CROSSHAIR + 3, 	CR_UNTRANSLATED, 	int2fix(FPS_X), int2fix(FPS_Y + CrossOffset), ClientTicDelay, CrosshairAlpha); // DOWN
+														HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_ALPHA, 	HUDid_CROSSHAIR + 4, 	CR_UNTRANSLATED, 	int2fix(FPS_X), int2fix(FPS_Y - CrossOffset), ClientTicDelay, CrosshairAlpha); // UP
+														}
+}
+
+
+
+
+
+
+
+
+
+Script "ZAM_Dash" (int Password, int Direction, int Trans) NET
+{
+int a;
+if (!PasswordMatch(Password))	Terminate;
+ThrustThing((GetActorAngle(ActivatorTID()) >> 8) + 64*(Direction - 1), 8, 1, ActivatorTID());
+
+
+	while(a < 10)
+		{
+
+		SpawnSpotForced("DashPlayer", ActivatorTID(),  0/*DashBody_TID + PlayerNumber()*/, GetActorAngle(ActivatorTID()) >> 8);
+		//Thing_SetTranslation (	DashBody_TID + PlayerNumber(), 		DefaultTranslation + Trans);
+
+		a++;
+		delay(1);
+		}
+}
+
+
+
+Script "ZAM_Checkpoint" (int Password, int X, int Y, int Z) NET
+{
+if (!PasswordMatch(Password))	Terminate;
+
+ThingSound(GetCVar("ZAM_PLAYER_TID") + PlayerNumber(), "ZAMTELEP", StandartVolume);
+SpawnForced("ZAM_TeleportFog", GetActorX(GetCVar("ZAM_PLAYER_TID") + PlayerNumber()), GetActorY(GetCVar("ZAM_PLAYER_TID") + PlayerNumber()), GetActorZ(GetCVar("ZAM_PLAYER_TID") + PlayerNumber()), 0, 0);
+SetActorPosition(GetCVar("ZAM_PLAYER_TID") + PlayerNumber(), X, Y, Z, TRUE);
+SpawnForced("ZAM_TeleportFog", GetActorX(GetCVar("ZAM_PLAYER_TID") + PlayerNumber()), GetActorY(GetCVar("ZAM_PLAYER_TID") + PlayerNumber()), GetActorZ(GetCVar("ZAM_PLAYER_TID") + PlayerNumber()), 0, 0);
+ThingSound(GetCVar("ZAM_PLAYER_TID") + PlayerNumber(), "ZAMTELEP", StandartVolume);
+}
+
+
+
+Script "ZAM_SetPhysicsFPS" (int Password, int Angle) NET
+{
+if (!PasswordMatch(Password))	Terminate;
+
+if (GetActorVelX(GetCVar("ZAM_PLAYER_TID") + PlayerNumber()) | GetActorVelY(GetCVar("ZAM_PLAYER_TID") + PlayerNumber()) | GetActorVelZ(GetCVar("ZAM_PLAYER_TID") + PlayerNumber()))			SetActorVelocity(GetCVar("ZAM_PLAYER_TID") + PlayerNumber(), 0, 0, 0, 0, 0);
+if (GetActorPitch(GetCVar("ZAM_PLAYER_TID") + PlayerNumber()))																									SetActorPitch(GetCVar("ZAM_PLAYER_TID") + PlayerNumber(), 0);
+																																				SetActorAngle(GetCVar("ZAM_PLAYER_TID") + PlayerNumber(), Angle);
+}
+
+
+
+Script "ZAM_Step" (int Password) NET
+{
+if (!PasswordMatch(Password))	Terminate;
+ThingSound(GetCVar("ZAM_PLAYER_TID") + PlayerNumber(), "ZAMSTEP", random(32, StandartVolume));
+}
+
+
+
+Script "ZAM_SetPlayerPitch" (int Password, int Pitch) NET
+{
+if (!PasswordMatch(Password))	Terminate;
+SetActorPitch(GetCVar("ZAM_PLAYER_TID") + PlayerNumber(), Pitch);
+}
+
+Script "ZAM_SetTranslation" (int Password, int Trans) NET
+{
+if (!PasswordMatch(Password))	Terminate;
+Thing_SetTranslation (	GetCVar("ZAM_PLAYER_TID") + PlayerNumber(), 		DefaultTranslation + Trans);
+}
+
+Script "ZAM_Settings" (int Password, int Turn) NET
+{
+if (!PasswordMatch(Password))	Terminate;
+
+Switch(Turn)
+	{
+	CASE OFF:
+	SetActorProperty(GetCVar("ZAM_PLAYER_TID") + PlayerNumber(), APROP_DamageMultiplier, 1.0);
+	SetActorProperty(GetCVar("ZAM_PLAYER_TID") + PlayerNumber(), APROP_Speed, FixedMul(FixedDiv(GetCVar("ZAM_PlayerSpeed"), 100.0),	100.0));
+	break;
+
+	CASE ON:
+	SetActorProperty(GetCVar("ZAM_PLAYER_TID") + PlayerNumber(), APROP_DamageMultiplier, 0.85);
+	SetActorProperty(GetCVar("ZAM_PLAYER_TID") + PlayerNumber(), APROP_Speed, //FixedMul(FixedDiv(GetCVar("ZAM_PlayerSpeed"), 85.0),	100.0)
+	FixedMul(      FixedMul(FixedDiv(GetCVar("ZAM_PlayerSpeed"), 100.0),	70.0)         ,  FixedMul(FixedDiv(int2fix(GetCvar("ZAM_PlayerMaxHealth")),  int2fix(PlayerMaxHealth[PlayerNumber()])  ),     0.525)				  )
+
+	// int2fix(GetCvar("ZAM_PlayerMaxHealth")/PlayerMaxHealth[PlayerNumber()])                 )
+	);
+	if (GetActorProperty(GetCVar("ZAM_PLAYER_TID") + PlayerNumber(), APROP_Speed) < FixedMul(FixedDiv(GetCVar("ZAM_PlayerSpeed"), 100.0),	70.0))
+			SetActorProperty(GetCVar("ZAM_PLAYER_TID") + PlayerNumber(), APROP_Speed, FixedMul(FixedDiv(GetCVar("ZAM_PlayerSpeed"), 100.0),	70.0));
+
+	break;
+
+	}
+
+
+
+}
+
+
+
+
+function void DrawWeaponKey (int CurrWeapon)
+{
+
+SetFont("ZAMRFONT");
+SetHUDSize(HUDX_SMALL,		HUDY_SMALL,	FALSE);
+HudMessage(s:"\cuPREV. WEAPON:\n\cj", k:"+Speed", s:"\n\n\cuNEXT  WEAPON:\n\cj", k:"+crouch";			HUDMSG_PLAIN|HUDMSG_ALPHA, 0, CR_GREY, 		int2fix(HUDX_SMALL/2 + HUDX_SMALL/4 + HUDX_SMALL/3), 	int2fix(HUDY_SMALL/2 + HUDY_SMALL/4 + HUDY_SMALL/8 + HUDY_SMALL/16),	ClientTicDelay, 0.5);
+//HudMessage(s:"\n\n\cuNEXT  WEAPON:\n\cj", k:"+crouch";			HUDMSG_PLAIN|HUDMSG_ALPHA, 0, CR_GREY, 		int2fix(HUDX_SMALL/2 + HUDX_SMALL/4 + HUDX_SMALL/3), 	int2fix(HUDY_SMALL/2 + HUDY_SMALL/4 + HUDY_SMALL/8 + HUDY_SMALL/16),	ClientTicDelay, 0.5);
+}
+
+
+
+
+
+
+
+
+function str ZAM_ModeString (int Enable)
+{
+str String;
+Switch(Enable)
+	{
+	case OFF:	String = "First Person Mode"; 	break;
+	case ON: 	String = "Third Person Mode";	break;
+	}
+return String;
+}
+
+
+
+
+Script "ZAM_ShootFPS" (int PassWeaponType, int FPSxFPSy, int CrossOffset, int CameraAngle) NET	// + ZZYZX
+{
+str String = ""; str Source = "";
+int Password, counter;
+
+
+//Converting Data: Password;
+counter = 0;	String = "";
+Source = StrParam(i:PassWeaponType);
+while(counter < 3)
+	{
+	String = StrParam(s:String, c:GetChar(Source, counter));
+	counter++;
+	}
+Password = StrToNum(String);
+if (!PasswordMatch(Password))	Terminate;
+
+
+
+
+int dx, dy, dz, cdx, cdy, cdz, CoordX, CoordY,  UTID, FPS_EmitHeight,
+AngFinalX, AngFinalY, HeightDiff, AngFixX, AngFixY, HudQuartX, ShotsCounter,
+ShotsAmount, ViewType, WeaponType, FPS_X, FPS_Y, defFPS_X, defFPS_Y;
+
+
+//Converting Data: ViewType
+counter = 3;	String = "";
+Source = StrParam(i:PassWeaponType);
+while(counter < 4)
+	{
+	String = StrParam(s:String, c:GetChar(Source, counter));
+	counter++;
+	}
+ViewType = StrToNum(String);
+
+//Converting Data: WeaponType
+counter = 4;	String = "";
+Source = StrParam(i:PassWeaponType);
+while(counter < StrLen(Source))
+	{
+	String = StrParam(s:String, c:GetChar(Source, counter));
+	counter++;
+	}
+WeaponType = StrToNum(String);
+
+
+//Converting Data: FPS x
+counter = 1;	String = "";
+Source = StrParam(i:FPSxFPSy);
+while(counter < 4)
+	{
+	String = StrParam(s:String, c:GetChar(Source, counter));
+	counter++;
+	}
+defFPS_X = StrToNum(String);
+
+//Converting Data: FPS y
+counter = 4;	String = "";
+Source = StrParam(i:FPSxFPSy);
+while(counter < 7)
+	{
+	String = StrParam(s:String, c:GetChar(Source, counter));
+	counter++;
+	}
+defFPS_Y = StrToNum(String);
+
+
+
+
+
+
+
+
+ActivatorSound(GetCVarString(StrParam(s:"ZAM_ShotSound", i:WeaponType)), StandartVolume);
+
+
+ShotsAmount 	= GetWeaponInfo (WeaponType, wi_SHOTSFIRED);
+ShotsCounter 	= 0;
+
+while(ShotsCounter < ShotsAmount)
+
+{
+		FPS_X			=	defFPS_X + random(-CrossOffset, +CrossOffset);
+		FPS_Y			=	defFPS_Y + random(-CrossOffset, +CrossOffset);
+		FPS_EmitHeight	= 	GetActorViewHeight(GetCVar("ZAM_PLAYER_TID") + PlayerNumber()) - 16.0;
+
+		Switch(ViewType)
+			{
+			case TRUE:	FPS_EmitHeight	= 	GetActorViewHeight(GetCVar("ZAM_PLAYER_TID") + PlayerNumber());		break;
+			}
+
+
+		AngFinalY  		= 	-((FPS_AngMaxY * (FPS_height / 2 - FPS_Y)/(FPS_height / 2)));
+
+		HeightDiff 		= 	FPS_AngMaxY * ((GetActorViewHeight(GetCVar("ZAM_PLAYER_TID") + PlayerNumber()) - FPS_EmitHeight) >> 16) / FPS_height;
+		AngFinalX		=	FPS_AngMaxX * ((FPS_width / 2) - FPS_X) / (FPS_width / 2);
+		AngFinalY  		-= 	HeightDiff;
+		AngFixY 		= 	abs((FPS_width/2) - FPS_X) * 0.2 / (FPS_width / 2);
+		AngFinalY 		= 	FixedMul(AngFinalY, 1.0 - AngFixY);
+
+		HudQuartX 		= 	FPS_width / 2 / 2;
+		AngFixX 		= 	abs(FPS_width/2 - FPS_X);
+		AngFixX 		= 	(1.0 - (abs(HudQuartX - AngFixX) * 1.0 / HudQuartX));
+
+		AngFinalX 		=  	FPS_AngMaxX * ((FPS_width/2) 	- FPS_X) / (FPS_width/2) ;
+		AngFinalX  		= 	FixedMul(AngFinalX, 1.0 + 	((sin(AngFixX / 2) + 1.0) / 8	)) * AngFixX / 1.0 + AngFinalX * (1.0 - AngFixX) / 1.0;
+		AngFinalX  		+= 	CameraAngle;
+
+		Switch(ViewType)
+			{
+			case TRUE:
+			AngFinalX = GetActorAngle(GetCVar("ZAM_PLAYER_TID") + PlayerNumber())  + FixedMul(int2fix(random(-CrossOffset, +CrossOffset)), 0.0005);
+			AngFinalY = GetActorPitch(GetCVar("ZAM_PLAYER_TID") + PlayerNumber())  + FixedMul(int2fix(random(-CrossOffset, +CrossOffset)), 0.00025);
+			break;
+			}
+
+
+		dx = 1.0; 		dy = 0; 		dz = 0;
+		cdx = dx; 		cdy = dy; 		cdz = dz;
+
+		dz = FixedMul(cdz, cos(AngFinalY)) - FixedMul(cdx, sin(AngFinalY));
+		dx = FixedMul(cdz, sin(AngFinalY)) + FixedMul(cdx, cos(AngFinalY));
+
+		cdx = dx; cdy = dy; cdz = dz;
+
+		dx = FixedMul(cdx, cos(AngFinalX)) - FixedMul(cdy, sin(AngFinalX));
+		dy = FixedMul(cdx, sin(AngFinalX)) + FixedMul(cdy, cos(AngFinalX));
+
+
+																//32
+		CoordX = cos(CameraAngle) + GetActorX(GetCVar("ZAM_PLAYER_TID") + PlayerNumber());
+		CoordY = sin(CameraAngle) + GetActorY(GetCVar("ZAM_PLAYER_TID") + PlayerNumber());
+
+
+
+
+
+			Switch(GetWeaponInfo (WeaponType, wi_SCANorPROJ))
+				{
+
+				CASE 0:	//Hitscan
+					LineAttack(GetCVar("ZAM_PLAYER_TID") + PlayerNumber(),  AngFinalX, AngFinalY, GetWeaponInfo(WeaponType, wi_DAMAGE)  * (GetCvar("ZAM_PlayerMaxHealth")/ PlayerMaxHealth[PlayerNumber()]), GetCVarString(StrParam(s:"ZAM_ShotType", i:WeaponType)), "None", int2fix(GetWeaponInfo(WeaponType, wi_RANGE)), FHF_NORANDOMPUFFZ, 0);
+				break;
+
+
+
+				CASE 1:	//Projectile
+
+					UTID = UniqueTID();
+					SpawnProjectile(GetCVar("ZAM_PLAYER_TID") + PlayerNumber(), GetCVarString(StrParam(s:"ZAM_ShotType", i:WeaponType)), CameraAngle >> 8, 0, 0, 0, UTID);
+					SetActorAngle(UTID, AngFinalX);
+					SetActorPosition(UTID, CoordX, CoordY, GetActorZ(GetCVar("ZAM_PLAYER_TID") + PlayerNumber()) + FPS_EmitHeight - 4.0, false);
+					SetActorVelocity(UTID, dx*16, dy*16, dz*16, false, true);
+
+				break;
+				}
+
+
+	ShotsCounter++;
+}
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+function int GetWeaponInfo (int WeaponType, int InfoType)
+{
+str String = "";
+int counter, SplitCounter, Value;
+
+
+
+
+if (StrLen(GetCVarString(StrParam(s:"ZAM_WeaponInfo", i:WeaponType))))
+	{
+
+
+
+
+		while (counter < StrLen(GetCVarString(StrParam(s:"ZAM_WeaponInfo", i:WeaponType))))
+			{
+			if 	(GetChar(GetCVarString(StrParam(s:"ZAM_WeaponInfo", i:WeaponType)), counter) == '#')
+									{
+									SplitCounter++;
+									if (SplitCounter  !=  InfoType)
+										{
+										if (SplitCounter < InfoType)		{	String = "";	/*SplitCounter++;*/	}
+										else if (SplitCounter > InfoType)	break;
+										}
+									}
+
+
+			if ((GetChar(GetCVarString(StrParam(s:"ZAM_WeaponInfo", i:WeaponType)), counter) != '#') 	&& 	(SplitCounter == InfoType))
+									{
+									String = StrParam(s:String, c:GetChar(GetCVarString(StrParam(s:"ZAM_WeaponInfo", i:WeaponType)), counter));
+									}
+
+
+
+			counter++;
+			}
+	}
+
+
+
+if (StrLen(String))
+	{
+	Value = StrToNum(String);
+	}
+
+
+
+return Value;
+}
+
+
+
+function void DrawPain (int OldHealth, int CurrHealth)
+{
+		SetFont("ZAM_PAIN");
+		SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+		HudMessage(s:"A";		HUDMSG_FADEINOUT|HUDMSG_ALPHA, 0, CR_UNTRANSLATED, 		int2fix(HUDX_MEDIUM/2), 	int2fix(HUDY_MEDIUM/2),
+		FixedMul(int2fix(OldHealth - CurrHealth), 0.03), 0.25, 3.0, FixedMul(int2fix(OldHealth - CurrHealth), 0.02));
+		OldHealth = CurrHealth;
+}
+
+function void LevelGreet (void)
+{
+		LocalAmbientSound("ZAMENTER", StandartVolume);
+		SetHUDSize(HUDX_SMALL,		HUDY_SMALL,	FALSE);			SetFont("SMALLFONT");
+		HudMessage(s:"- ", n: PRINTNAME_LEVEL , 	 s:" -";		HUDMSG_FADEINOUT,  0, CR_GREY, 		int2fix(HUDX_SMALL/2), 				int2fix(HUDY_SMALL/2 - HUDY_SMALL/8 - HUDY_SMALL/24),	3.0, 2.0, 2.0);
+		SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);		SetFont("BIGFONT");
+		HudMessage(s:"--- ", n: PRINTNAME_LEVELNAME, s:" ---";		HUDMSG_FADEINOUT,  0, CR_GREY, 		int2fix(HUDX_MEDIUM/2), 			int2fix(HUDY_MEDIUM/2 - HUDY_MEDIUM/8),					3.0, 2.0, 2.0);
+}
+
+
+
+
+
+
+
+
+function void DrawHUD (int Scale, int WeaponType, int f, int HealthDelay)
+{
+int counter, i, d;
+str String = "";
+
+SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+
+
+
+		// K E Y S
+
+
+		counter = 1;	i = 0;
+		while (counter <= GetCVar("ZAM_Keys"))
+			{
+			if (CheckInventory(GetCVarString(StrParam(s:"ZAM_Key", i:counter))))
+				{
+				SetFont("ZAMRFONT");
+				d = 0; String = "";
+				while (d < 22)
+					{
+					if (GetChar(GetCVarString(StrParam(s:"ZAM_Key", i:counter)), d))	String = StrParam(s:String, c:GetChar(GetCVarString(StrParam(s:"ZAM_Key", i:counter)), d));
+					else																String = StrParam(s:String, c:' ');
+					d++;
+					}
+
+
+				HudMessage(s:String;			HUDMSG_PLAIN|HUDMSG_ALPHA,  0, 						CR_GREY, 		int2fix(HUDX_MEDIUM/2  - 333), 		int2fix(HUDY_MEDIUM/2  + 231 - i*12),	ClientTicDelay, HUDBAR_BackAlpha*2);
+				i++;
+				}
+			counter++;
+			}
+
+
+
+
+		// H E A L T H
+
+		// FLASH
+		i = 0;
+		if (GetActorProperty(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), APROP_Health) < GetCVar("ZAM_PlayerMaxHealth")/4)
+							{
+							if (!HealthDelay)
+								{
+								SetFont("ZAMBRLOW");
+								HudMessage(s:"A";	HUDMSG_FADEINOUT|HUDMSG_ALPHA,  HUDid_HealthFlash, 		CR_UNTRANSLATED, 		int2fix(HUDX_MEDIUM/2  - 116), 		int2fix(HUDY_MEDIUM/2  + 231),	0, 0.25, 1.0, 0.75);
+								}
+							i = f;
+							}
+
+		else if (GetActorProperty(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), APROP_Health) < GetCVar("ZAM_PlayerMaxHealth")/2)
+			{
+			if (!HealthDelay)
+				{
+				SetFont("ZAMBRSAT");
+				HudMessage(s:"A";			HUDMSG_FADEINOUT|HUDMSG_ALPHA,  HUDid_HealthFlash, 		CR_UNTRANSLATED, 		int2fix(HUDX_MEDIUM/2  - 116), 		int2fix(HUDY_MEDIUM/2  + 231),	0, 1.0, 2.0, 0.25);
+				}
+			}
+
+
+		// HEALTH ICON
+
+		SetFont("ZAMHUDHP");
+		if (!i)
+		HudMessage(s:"A";			HUDMSG_PLAIN|HUDMSG_ALPHA,  0, 						CR_UNTRANSLATED, 		int2fix(HUDX_MEDIUM/2  - 225), 		int2fix(HUDY_MEDIUM/2  + 231),	ClientTicDelay, HUDBAR_BackAlpha*2);
+
+		// HEALTH BAR
+				if (GetActorProperty(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), APROP_Health) > GetCVar("ZAM_PlayerMaxHealth"))		SetFont("ZAMBB100");
+		else 	if (GetActorProperty(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), APROP_Health) < 0)										SetFont("ZAMBB0");
+		else	SetFont(StrParam(s:"ZAMBB", i:((FixedDiv(Int2Fix(GetActorProperty(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber(), APROP_Health)), Int2Fix(GetCVar("ZAM_PlayerMaxHealth")))* 100) >> 16)));
+		HudMessage(s:"A";			HUDMSG_PLAIN|HUDMSG_ALPHA,  0, 						CR_UNTRANSLATED, 		int2fix(HUDX_MEDIUM/2  - 116), 		int2fix(HUDY_MEDIUM/2  + 231),	ClientTicDelay, HUDBAR_BackAlpha);
+
+
+		// HEALTH BAR: background
+		SetFont("ZAMBB100");
+		HudMessage(s:"A";			HUDMSG_PLAIN|HUDMSG_ALPHA,  0, 						CR_UNTRANSLATED, 		int2fix(HUDX_MEDIUM/2  - 116), 		int2fix(HUDY_MEDIUM/2  + 231),	ClientTicDelay, HUDBAR_BackAlpha);
+
+
+
+
+
+		// A M M O    S C A L E
+
+		// AMMO ICON
+		SetFont("ZAMHUDAM");
+		if (Scale < GetCVar("ZAM_MaxScale")/6)	i = f; else i = 0;
+		if (!i)
+		HudMessage(s:"A";			HUDMSG_PLAIN|HUDMSG_ALPHA,  0, 						CR_UNTRANSLATED, 		int2fix(HUDX_MEDIUM/2  + 23), 		int2fix(HUDY_MEDIUM/2  + 231),	ClientTicDelay, HUDBAR_BackAlpha*2);
+
+		// AMMO BAR
+				if (Scale > GetCVar("ZAM_MaxScale"))		Scale = GetCVar("ZAM_MaxScale");
+		else 	if (Scale < 0)								Scale = 0;
+		SetFont(StrParam(s:"ZAMBB", i:Scale/2/10));
+		HudMessage(s:"A";			HUDMSG_PLAIN|HUDMSG_ALPHA,  0, 						CR_UNTRANSLATED, 		int2fix(HUDX_MEDIUM/2  + 132), 		int2fix(HUDY_MEDIUM/2  + 231),	ClientTicDelay, HUDBAR_BackAlpha);
+
+
+		SetFont(StrParam(s:"ZAMBB", i:GetWeaponInfo (WeaponType, wi_COST)/2/10));
+		if (Scale	 <= GetWeaponInfo (WeaponType, wi_COST))
+		HudMessage(s:"A";			HUDMSG_PLAIN|HUDMSG_ALPHA,  0, 						CR_UNTRANSLATED, 		int2fix(HUDX_MEDIUM/2  + 132),		int2fix(HUDY_MEDIUM/2  + 231),	ClientTicDelay, HUDBAR_BackAlpha);
+		else
+		HudMessage(s:"A";			HUDMSG_PLAIN|HUDMSG_ALPHA,  0, 						CR_UNTRANSLATED, 		int2fix(HUDX_MEDIUM/2  + 132 + 2 + ((FixedDiv(Int2Fix(Scale - GetWeaponInfo (WeaponType, wi_COST)), Int2Fix(GetCVar("ZAM_MaxScale")))* 100) >> 16)*2),
+																																					int2fix(HUDY_MEDIUM/2  + 231),	ClientTicDelay, HUDBAR_BackAlpha);
+
+
+		// AMMO BAR: background
+		SetFont("ZAMBB100");
+		HudMessage(s:"A";			HUDMSG_PLAIN|HUDMSG_ALPHA,  0, 						CR_UNTRANSLATED, 		int2fix(HUDX_MEDIUM/2  + 132), 		int2fix(HUDY_MEDIUM/2  + 231),	ClientTicDelay, HUDBAR_BackAlpha);
+
+
+
+
+		DrawWeaponNameCorner(WeaponType, CR_WHITE, ClientTicDelay, 0);
+
+
+
+
+
+
+
+		// HUD bottom tint
+		SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);		SetFont("ZAMHUDFD");
+		HudMessage(s:"A";			HUDMSG_PLAIN|HUDMSG_ALPHA,  HUDid_BackgroundTint,	CR_UNTRANSLATED, 		int2fix(HUDX_MEDIUM/2), 			int2fix(HUDY_MEDIUM/2),			ClientTicDelay, NoAlpha);
+}
+
+
+
+
+
+function void DrawWeaponNameCorner (int WeaponType, int Color, int HoldTime, int FadeTime)
+{
+str String = "";
+int counter, i;
+
+		counter = 0;	i = StrLen(GetCVarString(StrParam(s:"ZAM_WeaponType", i:WeaponType)));
+		while (counter < i)
+			{
+			if (((counter == HUDBAR_MaxWeapChars - 1) |	(counter == HUDBAR_MaxWeapChars - 2))	&&	(StrLen(GetCVarString(StrParam(s:"ZAM_WeaponType", i:WeaponType)))  > HUDBAR_MaxWeapChars))
+					String = StrParam(s:String, c:'.');
+
+			else
+					String = StrParam(s:String, c:GetChar(GetCVarString(StrParam(s:"ZAM_WeaponType", i:WeaponType)), counter));
+
+
+			counter++;
+			}
+
+
+		// Weapon Name
+		SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+		SetFont("ZAMRFONT");
+		HudMessage(s:String;			HUDMSG_FADEOUT|HUDMSG_ALPHA,  0, 						Color, 		int2fix(HUDX_MEDIUM/2  + 333), 		int2fix(HUDY_MEDIUM/2  + 231),	HoldTime, FadeTime, HUDBAR_BackAlpha*2);
+
+
+}
+
+
+
+
+
+
+
+
+function void DrawWeaponMenu (int WeaponType, int Equiped, int FPS_X)
+{
+str String = "";	str EdgeImg = "";
+int WeaponCounter, counter, i, interval, EdgeAlpha;
+int StringColor;
+bool CurrWeapon;
+
+
+SetHUDSize(HUDX_MEDIUM,		HUDY_MEDIUM,	FALSE);
+
+interval = HUDX_MEDIUM/GetCVar("ZAM_ModMaxWeapons");
+
+WeaponCounter = 1;
+
+
+
+while(WeaponCounter <= GetCVar("ZAM_ModMaxWeapons"))
+	{
+		String = "";
+		counter = 	HUDBAR_MaxWeapChars;
+
+		while (counter > 0)
+			{
+			counter--;
+
+
+					if (((counter == HUDBAR_MaxWeapChars - 2) |	(counter == HUDBAR_MaxWeapChars - 3))	&&	(StrLen(GetCVarString(StrParam(s:"ZAM_WeaponType", i:WeaponCounter)))  >= HUDBAR_MaxWeapChars))
+							{
+									if 	 (GetChar(GetCVarString(StrParam(s:"ZAM_WeaponType", i:WeaponCounter)), counter))			String = StrParam(s:String, s:".", s:"\n");
+							else 	if	(!GetChar(GetCVarString(StrParam(s:"ZAM_WeaponType", i:WeaponCounter)), counter))			String = StrParam(s:String, s:" ", s:"\n");
+							else						String = StrParam(s:String, c:GetChar(GetCVarString(StrParam(s:"ZAM_WeaponType", i:WeaponCounter)), counter), s:"\n");
+							}
+
+
+					else
+							{
+							if	(!GetChar(GetCVarString(StrParam(s:"ZAM_WeaponType", i:WeaponCounter)), counter))			String = StrParam(s:String, s:" ", s:"\n");
+							else				String = StrParam(s:String, c:GetChar(GetCVarString(StrParam(s:"ZAM_WeaponType", i:WeaponCounter)), counter), s:"\n");
+							}
+			}
+
+
+
+		if ((FPS_X > WeaponCounter*interval - interval/2 - interval/2)	&&  (FPS_X < WeaponCounter*interval - interval/2 + interval/2))			CurrWeapon = TRUE;
+		else																																	CurrWeapon = FALSE;
+
+		Switch(CurrWeapon)
+			{
+			case FALSE:		if (WeaponCounter == Equiped)	StringColor = CR_BLACK;	 	else
+																								{
+																								if (WeaponCounter <= 1)		StringColor = CR_LIGHTBLUE;
+																								else						StringColor = CR_WHITE;
+																								}
+																																break;
+
+			case TRUE:																			StringColor = CR_GOLD;			break;
+			}
+
+
+		SetFont("ZAMRFONV");
+		HudMessage(s:String;			HUDMSG_PLAIN|HUDMSG_ALPHA,  0,	StringColor, 		int2fix(WeaponCounter*interval - interval/2), 			int2fix(HUDY_MEDIUM/2 + HUDY_MEDIUM/7),			ClientTicDelay, NoAlpha);
+
+
+
+
+		if ((WeaponType - WeaponCounter <= 1)	&& 	(WeaponType - WeaponCounter > -1))	{	EdgeImg = "ZAMWEPEG";	EdgeAlpha = 0.35;	}
+		else																			{	EdgeImg = "ZAMWEPED";	EdgeAlpha = 0.15;	}
+
+		// WEAPON Border
+		if (WeaponCounter < GetCVar("ZAM_ModMaxWeapons"))
+			{
+			SetFont(EdgeImg);
+			HudMessage(s:"A";			HUDMSG_PLAIN|HUDMSG_ALPHA,  0,	CR_UNTRANSLATED, 		int2fix(WeaponCounter*interval), 			int2fix(HUDY_MEDIUM/2 + 96),			ClientTicDelay, EdgeAlpha);
+
+			}
+
+	if (WeaponCounter == WeaponType)
+			{
+			counter = WeaponCounter*interval - interval/2 - interval/2 + 2;
+			while (counter < WeaponCounter*interval - interval/2 + interval/2)
+				{
+
+				SetFont("ZAMWEPIG");
+				HudMessage(s:"A";			HUDMSG_PLAIN|HUDMSG_ALPHA,  0,	CR_UNTRANSLATED, 		int2fix(counter), 			int2fix(HUDY_MEDIUM/2 + 96),			ClientTicDelay, 	HUDBAR_SelWepAlpha);
+				counter++;
+				}
+			}
+
+	WeaponCounter++;
+	}
+
+		// WEAPONRY cursor
+		SetFont("ZAMRFONT");
+		HudMessage(s:"^";			HUDMSG_PLAIN|HUDMSG_ALPHA,  HUDid_WeaponryCursor,	CR_GOLD, 				int2fix(FPS_X), 					int2fix(HUDY_MEDIUM/2 + 200),	ClientTicDelay, NoAlpha);
+
+
+		// WEAPONRY tint
+		SetFont("ZAMWEPFD");
+		HudMessage(s:"A";			HUDMSG_PLAIN|HUDMSG_ALPHA,  HUDid_WeaponryTint,		CR_UNTRANSLATED, 		int2fix(HUDX_MEDIUM/2), 			int2fix(HUDY_MEDIUM/2),			ClientTicDelay, NoAlpha);
+
+
+		// Scoreboard Notice
+		SetFont("ZAMRFONT");
+		HudMessage(s:GetCVarString("ZAM_ScoreboardString");
+									HUDMSG_PLAIN|HUDMSG_ALPHA,  0,						CR_DARKGREEN, 			int2fix(HUDX_MEDIUM/2), 			int2fix(HUDY_MEDIUM/2 + 212),	ClientTicDelay, NoAlpha);
+
+}
+
+
+
+
+function void SpawnFakeCamera (void)
+{
+Thing_Remove(CAMERA_TID);
+SpawnForced("ClientSpotLoop",	GetActorX(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()), 																				//X
+								GetActorY(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()), 																				//Y
+								GetActorZ(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()) + GetActorViewHeight(GetCVar("ZAM_PLAYER_TID") + ConsolePlayerNumber()), 		//Z
+								CAMERA_TID, 0);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+function str StripColors(str input) //DrinkyBird + Mr.Satan
+{
+  str output = ""; bool isCol = false; bool isBracket = false;
+  for (int i = 0; i < StrLen(input); i++)
+  {
+    int c = GetChar(input, i);
+    if (GetChar(input, i) == '\\' && GetChar(input, i + 1) == 'c') { isCol = true; i++; }
+    else if (c == 0x1C) { isCol = true; }
+    else if (isCol)
+    {
+      if (c == '[') { isBracket = true; }
+      else if (c == ']') { isBracket = false; }
+      if (!isBracket) { isCol = false; }
+    }
+    else { output = StrParam(s: output, c: c); }
+  }
+  return output;
+}
+
+/*
+
+#libdefine MaxWinners 16
+
+
+
+
+script "test" OPEN
+{
+delay(5*35);
+int counter, i;
+str String = "";
+str Name = "";
+str Letter = "";
+if (!StrLen(GetCVarString("GameName")))		Terminate;
+else
+	{
+	//ConsoleCommand(StrParam(s:"set databasefile ", s:GetCVarString("GameName")));
+	BeginDBTransaction();		//import map's db, even if there is none;
+
+	if (!StrLen(GetDBEntryString(StrParam(n:PRINTNAME_LEVEL), "Winner1")))
+		{
+		i = 1;
+		while(i <= MaxWinners)
+			{
+			log(i:i);
+			String =	StrParam(n:PRINTNAME_LEVEL);
+			Name =		StrParam(s:"Winner", i:i);
+			SetDBEntryString(String, Name, "");
+			i++;
+			}
+		}
+
+
+	i = 1;
+	while(i <= MaxWinners)
+		{
+		// Importing map winners to virtual cvars from database
+		//ConsoleCommand(StrParam(s:"set DB_Winner", i:i, s:" ", s:GetDBEntryString(StrParam(n:PRINTNAME_LEVEL), StrParam(s:"Winner", i:i)) ));
+		String =	StrParam(s:"DB_Winner", i:i);
+		Name = 		StrParam(n:PRINTNAME_LEVEL);
+		Letter =	StrParam(s:"Winner", i:i);
+		SetCVarString(String, GetDBEntryString(Name, Letter));
+		i++;
+		}
+
+	EndDBTransaction();
+	}
+
+
+
+
+String = StrParam(n:PRINTNAME_LEVEL);
+
+if (!StrLen(GetCVarString("DB_OldMap")))	SetCVarString("DB_OldMap", String); //ConsoleCommand(StrParam(s:"set DB_OldMap ", n:PRINTNAME_LEVEL));	//if this is the first time
+else
+	{
+	log(s:"AAA");
+	String = StrParam(n:PRINTNAME_LEVEL);
+	if (StrICmp(String,   GetCVarString("DB_OldMap") ))	//Current and temporary maps don't match,  	then remembering all the winners from previous map
+		{
+		log(s:"BBB");
+		i = 1;
+		while (i <= MaxWinners)
+			{
+			String = StrParam(s:"DB_Winner", i:i);
+			if (StrLen(GetCVarString(String)))	i++;	//moving 'i' to a free index slot
+			else 	break;
+			}
+		log(s:"iii ", i:i);
+		BeginDBTransaction();
+
+		// import all players ingame in cvar
+		counter = 0;
+		if (i <= MaxWinners)
+			while (counter < MaxPlayers)
+				{
+				if (ClientExist(counter))
+					{
+					log(s:"CCC");
+					Name = StrParam(n:counter + 1, s:"~~~", s: Strftime (SystemTime(), "%F", true));
+
+					//ConsoleCommand(StrParam(s:"set DB_Winner", i:i,  s:" ", s:String));
+					String = StrParam(s:"Winner", i:i);
+					SetDBEntryString(GetCVarString("DB_OldMap"), String, Name);
+					i++;
+					}
+				if (i > MaxWinners)	break;
+				counter++;
+				}
+
+
+		EndDBTransaction();
+
+		//after everyting is done merge map names
+		//ConsoleCommand(StrParam(s:"set DB_OldMap ", n:PRINTNAME_LEVEL));
+		SetCVarString("DB_OldMap", StrParam(n:PRINTNAME_LEVEL));
+		log(s:"DDD");
+		}
+	}
+
+}
+
+
+script "win" (void) NET CLIENTSIDE
+{
+int i = 1;
+while(i <= MaxWinners)
+	{
+	log(s:GetCVarString(StrParam(s:"DB_Winner", i:i)));
+	i++;
+	}
+}
+
+
+script "win2" (void) NET CLIENTSIDE
+{
+str String = StrParam(n:PRINTNAME_LEVEL);
+log(i:StrCmp(String,   "MAP02" ));
+
+}
+*/
